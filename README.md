@@ -38,10 +38,7 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
 ![Teaser](image/data_sample.png)
 
    
-2. Download pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder. 
-
-
-3. Pretrain with scripts in *finetune/* folder, such as
+2. Download pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into root folder. Or pretrain with scripts in *finetune/* folder to get your own checkpoint, such as
 
     ```
     python finetune/flan_t5_finetune.py
