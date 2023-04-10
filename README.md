@@ -10,13 +10,18 @@ Human intelligence has the remarkable ability to assemble basic skills into comp
 This project presents OpenAGI, an open-source AGI research platform, specifically designed to offer complex, multi-step tasks and accompanied by task-specific datasets, evaluation metrics, and a diverse range of extensible models. OpenAGI formulates complex tasks as natural language queries, serving as input to the LLM. The LLM subsequently selects, synthesizes, and executes models provided by OpenAGI to address the task. Furthermore, the project presents the Reinforcement Learning from Task Feedback (RLTF) mechanism, which uses the task-solving result as feedback to improve the LLM's task-solving ability. Thus, the LLM is responsible for synthesizing various external models for solving complex tasks, while RLTF provides feedback to improve its task-solving ability, enabling a feedback loop for self-improving AI. We believe that the paradigm of LLMs operating various expert models for complex task-solving is a promising approach towards AGI. To facilitate the community's long-term improvement and evaluation of AGI's ability, we open-source the code, benchmark, and evaluation methods of the OpenAGI project, and we appreciate any discussions, comments, suggestions or contributions from the community.
 
 ## Requirements:
-- Python 3.9.7
-- PyTorch 1.10.1
-- transformers 4.2.1
+- Python 3.9.16
+- PyTorch 1.12.1
+- transformers 4.27.0.dev0
+- diffusers 0.12.1
 - tqdm
 - numpy
 - sentencepiece
 - pyyaml
+- sentence-transformers 2.2.2  
+- openai 0.27.2 
+- pillow 9.4.0  
+- datasets 2.9.0 
 
 
 ## Usage
@@ -27,18 +32,18 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
     git clone https://github.com/agiresearch/OpenAGI.git
     ```
 
-1. Download preprocessed data from this [Google Drive link](https://drive.google.com/file/d/1qGxgmx7G_WB7JE4Cn_bEcZ_o_NAJLE3G/view?usp=sharing), then put them into the *data* folder. If you would like to preprocess your own data, please follow the jupyter notebooks in the *preprocess* folder. Raw data can be downloaded from this [Google Drive link](https://drive.google.com/file/d/1uE-_wpGmIiRLxaIy8wItMspOf5xRNF2O/view?usp=sharing), then put them into the *raw_data* folder.
+1. Download preprocessed data from this [Google Drive link](https://drive.google.com/file/d/1qGxgmx7G_WB7JE4Cn_bEcZ_o_NAJLE3G/view?usp=sharing), then put them into the *data* folder. If you would like to preprocess your own data, please follow the jupyter notebooks in the *preprocess* folder. Raw data can be downloaded using HuggingFace datasets library.
 
    
-2. Download pretrained checkpoints into *snap* folder. If you would like to train your own P5 models, *snap* folder will also be used to store P5 checkpoints.
+2. Download pretrained checkpoints into *finetune/* folder. 
 
 
-3. Pretrain with scripts in *scripts* folder, such as
+3. Pretrain with scripts in *finetune/* folder, such as
 
     ```
-    bash scripts/pretrain_P5_base_beauty.sh 4
+    python finetune/flan_t5_finetune.py
     ```
-   Here *4* means using 4 GPUs to conduct parallel pretraining.
+   
     
 4. Evaluate with example jupyter notebooks in the *notebooks* folder. Before testing, create a soft link of *data* folder to the *notebooks* folder by
    
