@@ -34,6 +34,9 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
 
 1. Download preprocessed data from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link), then put them into the *data* folder. If you would like to preprocess your own data, please follow the jupyter notebooks in the *preprocess* folder. Raw data can be downloaded using HuggingFace datasets library.
 
+
+![Teaser](image/data_sample.png)
+
    
 2. Download pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder. 
 
