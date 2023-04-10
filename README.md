@@ -24,7 +24,7 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
 0. Clone this repo
 
     ```
-    git clone https://github.com/jeykigung/P5.git
+    git clone https://github.com/agiresearch/OpenAGI.git
     ```
 
 1. Download preprocessed data from this [Google Drive link](https://drive.google.com/file/d/1qGxgmx7G_WB7JE4Cn_bEcZ_o_NAJLE3G/view?usp=sharing), then put them into the *data* folder. If you would like to preprocess your own data, please follow the jupyter notebooks in the *preprocess* folder. Raw data can be downloaded from this [Google Drive link](https://drive.google.com/file/d/1uE-_wpGmIiRLxaIy8wItMspOf5xRNF2O/view?usp=sharing), then put them into the *raw_data* folder.
