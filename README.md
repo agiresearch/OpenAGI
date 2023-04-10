@@ -54,7 +54,7 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
    cd notebooks
    ln -s ../data .
    ```
-<div>
+</div>
 
 
 
