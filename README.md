@@ -47,13 +47,14 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
     python finetune/flan_t5_finetune.py
     ```
    
-    
+<div style="display:none">  
 4. Evaluate with example jupyter notebooks in the *notebooks* folder. Before testing, create a soft link of *data* folder to the *notebooks* folder by
    
    ```
    cd notebooks
    ln -s ../data .
    ```
+<div>
 
 
 
