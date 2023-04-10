@@ -48,15 +48,9 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
    ```
 
 
-## Pretrained Checkpoints
-See [CHECKPOINTS.md](snap/CHECKPOINTS.md).
-
-You can also explore P5 in Hugging Face Hub (https://huggingface.co/makitanikaze/P5).
-
 
 ## Citation
 
-Please cite the following paper corresponding to the repository:
 ```
 @article{openagi,
   title={OpenAGI: When LLM Meets Domain Experts},
