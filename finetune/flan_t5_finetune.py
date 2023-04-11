@@ -164,8 +164,8 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--logging_dir", type=str, default="toy.log")
     parser.add_argument("--model_name", type=str, default="t5-large")
-    parser.add_argument("--prompt_dir", type=str, default="train_task_description.txt")
-    parser.add_argument("--answer_dir", type=str, default="train_model_sequence.txt")
+    parser.add_argument("--prompt_dir", type=str, default="../train_task_description.txt")
+    parser.add_argument("--answer_dir", type=str, default="../train_model_sequence.txt")
 
     parser.add_argument("--toy", action="store_true")
 
