@@ -16,16 +16,11 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
 ## Requirements:
 - Python 3.9.16
 - PyTorch 1.12.1
-- transformers 4.27.0.dev0
-- diffusers 0.12.1
-- tqdm
-- numpy
-- sentencepiece
-- pyyaml
-- sentence-transformers 2.2.2  
-- openai 0.27.2 
-- pillow 9.4.0  
-- datasets 2.9.0 
+
+```
+pip install -r requirements.txt
+```
+
 
 
 ## Usage
