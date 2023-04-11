@@ -42,9 +42,12 @@ wget http://images.cocodataset.org/zips/val2017.zip
 
 ![Teaser](image/data_sample.png)
 
-2. To evaluate Zero-shot and Few-shot LLMs, use jupyter notebook in *zero_shot/* folder or *few_shot/* folder. 
+2. To get a teaser of OpenAI, check out the demo.ipynb notebook.
+
+
+3. To evaluate Zero-shot and Few-shot LLMs, use jupyter notebook in *zero_shot/* folder or *few_shot/* folder. 
    
-3. To evaluate finetuned Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then run the notebook in that folder. Or pretrain with scripts in *finetune/* folder to get your own checkpoint, such as
+4. To evaluate finetuned Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then run the notebook in that folder. Or pretrain with scripts in *finetune/* folder to get your own checkpoint, such as
 
     ```
     python finetune/flan_t5_finetune.py
