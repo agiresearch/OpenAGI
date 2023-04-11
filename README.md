@@ -32,7 +32,7 @@ This project presents OpenAGI, an open-source AGI research platform, specificall
     git clone https://github.com/agiresearch/OpenAGI.git
     ```
 
-1. Download preprocessed data from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link), then put them into the *data* folder. If you would like to preprocess your own data, please run data_augmentation.py in the *data* folder. Raw data will be automatically downloaded using HuggingFace datasets library; for COCO, please download from [COCO](https://cocodataset.org/#download).
+1. Download preprocessed data from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link), put it into the *root/* folder, then unzip it. If you would like to preprocess your own data, please run data_augmentation.py in the *data* folder. Raw data will be automatically downloaded using HuggingFace datasets library; for COCO, please download from [COCO](https://cocodataset.org/#download).
 
 
 ![Teaser](image/data_sample.png)
