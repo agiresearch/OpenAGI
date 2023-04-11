@@ -33,19 +33,24 @@ pip install -r requirements.txt
     git clone https://github.com/agiresearch/OpenAGI.git
     ```
 
-1. Download preprocessed data from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link), put it into the *root/* folder, then unzip it. If you would like to preprocess your own data, please run data_augmentation.py in the *data* folder. Raw data will be automatically downloaded using HuggingFace datasets library; for COCO, please download from [COCO](https://cocodataset.org/#download).
+1. Download the preprocessed data from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link), put it into the *root/* folder, then unzip it. If you would like to preprocess your own data, please run data_augmentation.py in the *data* folder. Raw data will be automatically downloaded using HuggingFace datasets library; for COCO, please download from [COCO](https://cocodataset.org/#download).
+
+```
+wget http://images.cocodataset.org/zips/val2017.zip
+```
 
 
 ![Teaser](image/data_sample.png)
 
 2. To evaluate Zero-shot and Few-shot LLMs, use jupyter notebook in *zero_shot/* folder or *few_shot/* folder. 
    
-3. To evaluate Finetuned LLMs, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then run the notebook in that folder. Or pretrain with scripts in *finetune/* folder to get your own checkpoint, such as
+3. To evaluate Finetuned Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then run the notebook in that folder. Or pretrain with scripts in *finetune/* folder to get your own checkpoint, such as
 
     ```
     python finetune/flan_t5_finetune.py
     ```
-   
+ 
+ Under construction.
 <!--
 4. Evaluate with example jupyter notebooks in the *notebooks* folder. Before testing, create a soft link of *data* folder to the *notebooks* folder by
    
