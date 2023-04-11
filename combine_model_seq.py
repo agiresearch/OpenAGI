@@ -20,8 +20,8 @@ __version__ = "0.0.1"
 
 
 
-import colorization.colorizers as colorizers 
-from colorization.colorizers import *
+import github_models.colorization.colorizers as colorizers
+from github_models.colorization.colorizers import *
 from torchvision import transforms
 from transformers import (
     AutoTokenizer,
@@ -123,7 +123,7 @@ class SeqCombine:
         #load debluring and denoising models
         parameters = {'inp_channels':3, 'out_channels':3, 'dim':48, 'num_blocks':[4,6,6,8], 'num_refinement_blocks':4, 'heads':[1,2,4,8], 'ffn_expansion_factor':2.66, 'bias':False, 'LayerNorm_type':'WithBias', 'dual_pixel_task':False}
         weights = os.path.join('Restormer','Defocus_Deblurring', 'pretrained_models', 'single_image_defocus_deblurring.pth')
-        load_arch = run_path(os.path.join('Restormer','basicsr', 'models', 'archs', 'restormer_arch.py'))
+        load_arch = run_path(os.path.join('github_models','Restormer','basicsr', 'models', 'archs', 'restormer_arch.py'))
         self.image_deblurring_model = load_arch['Restormer'](**parameters)
         #device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
         #model.to(device)
@@ -134,7 +134,7 @@ class SeqCombine:
         parameters = {'inp_channels':3, 'out_channels':3, 'dim':48, 'num_blocks':[4,6,6,8], 'num_refinement_blocks':4, 'heads':[1,2,4,8], 'ffn_expansion_factor':2.66, 'bias':False, 'LayerNorm_type':'WithBias', 'dual_pixel_task':False}
         weights = os.path.join('Restormer','Denoising', 'pretrained_models', 'real_denoising.pth')
         parameters['LayerNorm_type'] =  'BiasFree'
-        load_arch = run_path(os.path.join('Restormer','basicsr', 'models', 'archs', 'restormer_arch.py'))
+        load_arch = run_path(os.path.join('github_models','Restormer','basicsr', 'models', 'archs', 'restormer_arch.py'))
         self.image_denoising_model = load_arch['Restormer'](**parameters)
         #device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
         #model.to(device)
