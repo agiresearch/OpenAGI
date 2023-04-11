@@ -90,8 +90,8 @@ class GeneralDataset(Dataset):
         
         #transform the images to embeddings
         transform_img = transforms.Compose([
+                                        transforms.Resize((256, 256)),
                                         transforms.CenterCrop(256),
-                                        transforms.Resize((256,256)),
                                         transforms.PILToTensor(),
                                          ])
         

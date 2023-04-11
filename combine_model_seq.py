@@ -122,7 +122,7 @@ class SeqCombine:
         
         #load debluring and denoising models
         parameters = {'inp_channels':3, 'out_channels':3, 'dim':48, 'num_blocks':[4,6,6,8], 'num_refinement_blocks':4, 'heads':[1,2,4,8], 'ffn_expansion_factor':2.66, 'bias':False, 'LayerNorm_type':'WithBias', 'dual_pixel_task':False}
-        weights = os.path.join('Restormer','Defocus_Deblurring', 'pretrained_models', 'single_image_defocus_deblurring.pth')
+        weights = os.path.join('github_models','Restormer','Defocus_Deblurring', 'pretrained_models', 'single_image_defocus_deblurring.pth')
         load_arch = run_path(os.path.join('github_models','Restormer','basicsr', 'models', 'archs', 'restormer_arch.py'))
         self.image_deblurring_model = load_arch['Restormer'](**parameters)
         #device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
@@ -132,7 +132,7 @@ class SeqCombine:
         self.image_deblurring_model.eval()
         
         parameters = {'inp_channels':3, 'out_channels':3, 'dim':48, 'num_blocks':[4,6,6,8], 'num_refinement_blocks':4, 'heads':[1,2,4,8], 'ffn_expansion_factor':2.66, 'bias':False, 'LayerNorm_type':'WithBias', 'dual_pixel_task':False}
-        weights = os.path.join('Restormer','Denoising', 'pretrained_models', 'real_denoising.pth')
+        weights = os.path.join('github_models','Restormer','Denoising', 'pretrained_models', 'real_denoising.pth')
         parameters['LayerNorm_type'] =  'BiasFree'
         load_arch = run_path(os.path.join('github_models','Restormer','basicsr', 'models', 'archs', 'restormer_arch.py'))
         self.image_denoising_model = load_arch['Restormer'](**parameters)
