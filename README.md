@@ -42,7 +42,7 @@ wget http://images.cocodataset.org/zips/val2017.zip
 
 ![Teaser](image/data_sample.png)
 
-2. To get a teaser of OpenAI, check out the demo.ipynb notebook.
+2. To get a teaser of OpenAGI platform, check out the demo.ipynb notebook.
 
 
 3. To evaluate Zero-shot and Few-shot LLMs, use jupyter notebook in *zero_shot/* folder or *few_shot/* folder. 
