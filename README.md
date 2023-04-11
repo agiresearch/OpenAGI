@@ -23,7 +23,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 pip install -r requirements.txt
 ```
 
-
+If you encounter any issues while installing llama, refer to [this repository](https://github.com/treadon/llama-7b-example) for assistance.
 
 ## Usage
 
@@ -51,6 +51,9 @@ wget http://images.cocodataset.org/zips/val2017.zip
     ```
  
  Under construction.
+ 
+ 
+ 
 <!--
 4. Evaluate with example jupyter notebooks in the *notebooks* folder. Before testing, create a soft link of *data* folder to the *notebooks* folder by
    
