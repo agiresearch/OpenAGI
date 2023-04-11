@@ -38,7 +38,7 @@ pip install -r requirements.txt
 
 2. To evaluate Zero-shot and Few-shot LLMs, use jupyter notebook in *zero_shot/* folder or *few_shot/* folder. 
    
-3. To evaluate Finetuned LLMs, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then try the notebook in that folder. Or pretrain with scripts in *finetune/* folder to get your own checkpoint, such as
+3. To evaluate Finetuned LLMs, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then run the notebook in that folder. Or pretrain with scripts in *finetune/* folder to get your own checkpoint, such as
 
     ```
     python finetune/flan_t5_finetune.py
