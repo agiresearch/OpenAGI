@@ -1,5 +1,5 @@
 """ 
-This code mainly used to fine-tune Flan-T5.
+This code mainly used to do constraint generation for Flan-T5.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
