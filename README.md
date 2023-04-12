@@ -23,7 +23,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 pip install -r requirements.txt
 ```
 
-If you encounter any issues while installing transformers==4.27.0.dev0, refer to [this repository](https://github.com/treadon/llama-7b-example) for assistance. If you do not plan to run LLaMA, you can install other stable version instead.
+If you encounter any issues while installing transformers==4.27.0.dev0, refer to [this repository](https://github.com/treadon/llama-7b-example) for assistance. If you do not plan to run LLaMA, you can install other stable versions instead.
 
 ## Usage
 
