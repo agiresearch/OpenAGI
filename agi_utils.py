@@ -24,7 +24,7 @@ import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer, util
 
-def txt_eval(predictions, references, bertscore, device="cuda:7"):
+def txt_eval(predictions, references, bertscore, device="cuda"):
     score = bertscore.compute(
                     predictions=predictions,
                     references=references,
