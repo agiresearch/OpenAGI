@@ -1,4 +1,4 @@
-![Teaser](image/logo.pdf)
+![Teaser](image/logo.png)
 
 # OpenAGI: When LLM Meets Domain Experts
 
