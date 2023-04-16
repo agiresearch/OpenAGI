@@ -3,6 +3,7 @@
 [Paper on arXiv](https://arxiv.org/pdf/2304.04370.pdf).
 
 ![Teaser](image/pipeline.png)
+>An introductory video is available at [here](https://youtu.be/7RaXPPXi0-Y), thanks and credits to @intheworldofai.
 
 ## Introduction
 Human intelligence has the remarkable ability to assemble basic skills into complex ones so as to solve complex tasks. This ability is equally important for Artificial Intelligence (AI), and thus, we assert that in addition to the development of large, comprehensive intelligent models, it is equally crucial to equip such models with the capability to harness various domain-specific expert models for complex task-solving in the pursuit of Artificial General Intelligence (AGI). Recent developments in Large Language Models (LLMs) have demonstrated remarkable learning and reasoning abilities, making them promising as a controller to select, synthesize, and execute external models to solve complex tasks. 
