@@ -49,19 +49,8 @@ wget http://images.cocodataset.org/zips/val2017.zip
     python finetune/flan_t5_finetune.py
     ```
  
- Under construction.
+ 5. To evaluate RLTF-based Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then run the notebook in *rltf/* folder.
  
- 
- 
-<!--
-4. Evaluate with example jupyter notebooks in the *notebooks* folder. Before testing, create a soft link of *data* folder to the *notebooks* folder by
-   
-   ```
-   cd notebooks
-   ln -s ../data .
-   ```
--->
-
 
 ## Citation
 
