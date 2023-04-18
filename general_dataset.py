@@ -40,7 +40,7 @@ class GeneralDataset(Dataset):
             file_names = os.listdir(path)
             file_len = len(file_names)
             for file in range(file_len):
-                temp = Image.open(path + str(file)+".jpg")
+                temp = Image.open(path + str(file)+".jpg").convert('RGB')
                 keep = temp.copy()
                 images.append(keep)
                 temp.close()
@@ -90,7 +90,7 @@ class GeneralDataset(Dataset):
         
         #transform the images to embeddings
         transform_img = transforms.Compose([
-                                        transforms.Resize((256, 256)),
+                                        transforms.Resize((256,256)),
                                         transforms.CenterCrop(256),
                                         transforms.PILToTensor(),
                                          ])
@@ -112,7 +112,7 @@ class GeneralDataset(Dataset):
             if isinstance(content,str):
                 output_files.append(content)
             else:
-                output_files.append(transform_img(content.convert('RGB')))
+                output_files.append(transform_img(content))
                 
                 
         return {'input':input_files, 'output':output_files}

@@ -47,20 +47,20 @@ def main(args):
     imagenet_label = imagenet_dataset['validation']['label']
     imagenet_label = [imagenet_int2str[i] for i in imagenet_label]
 
-    cnn_dailymail_dataset = datasets.load_dataset('cnn_dailymail','3.0.0', num_proc=6)
+    cnn_dailymail_dataset = datasets.load_dataset('cnn_dailymail','3.0.0', num_proc=1)
     cnn_summarization = cnn_dailymail_dataset['test']['highlights']
     cnn_article = cnn_dailymail_dataset['test']['article']
 
-    sst_dataset = datasets.load_dataset('sst2', num_proc=6)
+    sst_dataset = datasets.load_dataset('sst2', num_proc=1)
     sst_article = sst_dataset['validation']['sentence']
     sst_label = [sst_dataset['validation'].features['label']._int2str[i] for i in sst_dataset['validation']['label']]
 
-    textvqa_dataset = datasets.load_dataset('textvqa', num_proc=6)
+    textvqa_dataset = datasets.load_dataset('textvqa', num_proc=1)
     textvqa_q = textvqa_dataset['validation']['question']
     textvqa_a = [i[0] for i in textvqa_dataset['validation']['answers']]
     textvqa_imgs = textvqa_dataset['validation']['image']
 
-    squad_dataset = datasets.load_dataset('squad', num_proc=6)
+    squad_dataset = datasets.load_dataset('squad', num_proc=1)
     squad_context = squad_dataset['validation']['context']
     squad_q = squad_dataset['validation']['question']
     squad_a = [a['text'][0] for a in squad_dataset['validation']['answers']]
@@ -212,7 +212,7 @@ def main(args):
                         with open(input_path+'captions.txt', 'w') as fp:
                             for item in augmented_text:
                                 # write each item on a new line
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
                         print('Finish creating dataset for task '+str(task_id))
                         task_id += 1
 
@@ -262,7 +262,7 @@ def main(args):
                         with open(output_path+'labels.txt', 'w') as fp:
                             for item in augmented_text:
                                 # write each item on a new line
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
 
 
                         print('Finish creating dataset for task '+str(task_id))
@@ -321,7 +321,7 @@ def main(args):
                         with open(input_path+'text.txt', 'w') as fp:
                             for item in augmented_input_text:
                                 # write each item on a new line
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
 
 
                         augmented_output_text = text_augmentation(labels, txt_output_aug,translator)
@@ -329,7 +329,7 @@ def main(args):
                         with open(output_path+'labels.txt', 'w') as fp:
                             for item in augmented_output_text:
                                 # write each item on a new line
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
 
 
                         print('Finish creating dataset for task '+str(task_id))
@@ -377,7 +377,7 @@ def main(args):
 
                         with open(input_q_path+'questions.txt', 'w') as fp:
                             for item in augmented_input_text:
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
 
 
                         txt_output_aug = set(j.split(" "))
@@ -386,7 +386,7 @@ def main(args):
 
                         with open(output_a_path+'answers.txt', 'w') as fp:
                             for item in augmented_output_text:
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
 
                         print('Finish creating dataset for task '+str(task_id))
                         task_id += 1
@@ -427,14 +427,14 @@ def main(args):
 
                         with open(input_q_path+'questions.txt', 'w') as fp:
                             for item in augmented_input_q:
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
 
 
                         augmented_input_c = text_augmentation(input_context,input_c_aug,translator)
 
                         with open(input_c_path+'context.txt', 'w') as fp:
                             for item in augmented_input_c:
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
 
                         output_a_aug = set(j.split(" "))
 
@@ -442,7 +442,7 @@ def main(args):
 
                         with open(output_a_path+'answers.txt', 'w') as fp:
                             for item in augmented_output_a:
-                                fp.write("%s\n" % item)
+                                fp.write("%s\n" % item.strip())
 
                         print('Finish creating dataset for task '+str(task_id))
                         task_id += 1
@@ -464,10 +464,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--device", type=str, default="cuda:4")
-    parser.add_argument("--dir_path", type=str, default="./")
-    parser.add_argument("--cache_path", type=str, default="./")
-    parser.add_argument("--num_sample", type=int, default=1)
+    parser.add_argument("--device", type=str, default="cuda:3")
+    parser.add_argument("--dir_path", type=str, default="/common/users/yg334")
+    parser.add_argument("--cache_path", type=str, default="/common/users/yg334/LLAMA/huggingface/cache/")
+    parser.add_argument("--num_sample", type=int, default=10)
     
     args = parser.parse_args()
     main(args)

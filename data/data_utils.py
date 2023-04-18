@@ -60,7 +60,7 @@ def img_augmentation(im,img_aug,input_path):
         im_3.save(input_path+".jpg","JPEG",quality=30)
     else:
         im_3.convert('RGB')
-        im_3.save(input_path+".jpg")
+        im_3.save(input_path+".jpg","JPEG")
     return
 
 
