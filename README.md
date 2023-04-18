@@ -16,19 +16,25 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 ## Requirements:
 - Python 3.9.16
 - PyTorch 1.12.1
-
-    ```
-    pip install -r requirements.txt
-    ```
+- transformers==4.27.0.dev0
 
 If you encounter any issues while installing transformers==4.27.0.dev0, refer to [this repository](https://github.com/treadon/llama-7b-example) for assistance. If you do not plan to run LLaMA, you can install other stable versions instead.
 
 ## Usage
 
-0. Clone this repo
+0. Clone this repo and create a conda virtual environment
 
     ```
+    # create a conda virtual environment
+    conda create --name openagi python=3.9
+    # actiavte openagi conda environment
+    conda activate openagi
+    # clone github repo
     git clone https://github.com/agiresearch/OpenAGI.git
+    # change directory into project directory
+    cd OpenAGI/
+    # install required packages
+    pip install -r requirements.txt
     ```
 
 1. Download the preprocessed data from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link), put it into the *root/* folder, then unzip it. If you would like to preprocess your own data, please run data_augmentation.py in the *data* folder. Raw data will be automatically downloaded using Hugging Face datasets library; for COCO, please download from [COCO](https://cocodataset.org/#download).
