@@ -282,7 +282,6 @@ class SeqCombine:
         """
         max_length = 40
         num_beams = 4
-        gen_kwargs = {"max_length": max_length, "num_beams": num_beams}
 
         pixel_values = self.image_caption_feature_extractor(images=imgs, return_tensors="pt").pixel_values
         pixel_values = pixel_values.to(device)
