@@ -151,8 +151,8 @@ def t5_prefix_allowed_tokens_fn(candidates, tokenizer, module_length):
     ]
 
     def prefix_allowed_tokens(batch_id, sentence):
-        print('#####BATCH ID:'+str(batch_id))
-        print(len(all_candidates))
+        # print('#####BATCH ID:'+str(batch_id))
+        # print(len(all_candidates))
         
         sentence = sentence.tolist()
         # print(tokenizer.decode(sentence))

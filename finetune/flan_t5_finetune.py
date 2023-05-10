@@ -120,8 +120,8 @@ def train(args, logger):
                 model=model,
                 tokenizer=tokenizer,
                 candidates=candidates,
-                module_length=5,
-                num_beams=5,
+                module_length=args.module_len,
+                num_beams=args.num_beams,
                 num_return_sequences=args.num_seq,
             )
             question = (
@@ -173,6 +173,8 @@ if __name__ == "__main__":
     parser.add_argument("--logging_step", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--num_seq", type=int, default=1)
+    parser.add_argument("--num_beam", type=int, default=3)
+    parser.add_argument("--module_len", type=int, default=3)
     parser.add_argument("--learning_rate", type=float, default=1e-5)
     parser.add_argument("--weight_decay", type=float, default=1e-6)
     parser.add_argument("--accumulate_steps", type=int, default=1)
