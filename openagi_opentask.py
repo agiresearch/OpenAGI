@@ -57,8 +57,6 @@ Ensure the list is as short as possible, and tasks in it are relevant, effective
 Develop a detailed to-do list to achieve the objective: {objective}
 
 Provided tools:
-Text to Animation: useful when you need to input a description text and return a short animation video that matches the text description.
-Text to Music: useful when you need to input a description text and return a music that matches the text description.
 """
     
     temp = ""
