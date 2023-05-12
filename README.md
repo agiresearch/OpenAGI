@@ -51,7 +51,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
     pip install -r requirements.txt
     ```
 
-1. Download the preprocessed data from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link), put it into the *root/* folder, then unzip it. If you would like to preprocess your own data, please run data_augmentation.py in the *data* folder. Raw data will be automatically downloaded using Hugging Face datasets library; for COCO, please download from [COCO](https://cocodataset.org/#download).
+1. Download the preprocessed data from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link), put it into the *OpenAGI/benchmark_tasks/* folder, then unzip it. If you would like to preprocess your own data, please run data_augmentation.py in the *data* folder. Raw data will be automatically downloaded using Hugging Face datasets library; for COCO, please download from [COCO](https://cocodataset.org/#download).
 
     ```
     wget http://images.cocodataset.org/zips/val2017.zip
