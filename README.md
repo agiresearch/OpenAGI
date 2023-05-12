@@ -55,7 +55,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
     ```
 
 
-![Teaser](images/data_sample.png)
+<img src="images/data_sample.png" width="800" height="400">
 
 2. To get a teaser of OpenAGI platform, please start by entering the necessary content in the *run_openagi.sh* file.
 
