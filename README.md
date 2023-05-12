@@ -11,6 +11,7 @@
 
 ## News
 -**[2023.5.11]** We made the reconstructed code of openAGI publicly available, incorporating open tasks that utilize tools from Langchain.
+
 -**[2023.4.10]** We released the initial version of openAGI, containing the code, benchmark, and evaluation methods.
 
 ## Introduction
