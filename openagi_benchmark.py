@@ -15,6 +15,12 @@ Copyright 2023 Yingqiang Ge
 
 """
 
+__author__ = "Yingqiang Ge, Kai Mei"
+__copyright__ = "Copyright 2023, OpenAGI"
+__date__ = "2023/04/10"
+__license__ = "Apache 2.0"
+__version__ = "0.0.1"
+
 from benchmark_tasks.zero_shot.zero_shot_schema_gpt import run_zero_gpt
 from benchmark_tasks.few_shot.few_shot_schema_gpt import run_few_gpt
 from benchmark_tasks.few_shot.few_shot_schema_t5 import run_few_flan_t5
