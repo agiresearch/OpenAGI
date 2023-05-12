@@ -6,7 +6,7 @@
 <a href='https://arxiv.org/pdf/2304.04370.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a> 
 [![Code License](https://img.shields.io/badge/Code%20License-Apache_2.0-green.svg)](https://github.com/tatsu-lab/stanford_alpaca/blob/main/LICENSE)
 
-<img src="images/pipeline.png" width="800" height="400">
+<img src="images/pipeline.png" width="400" height="800">
 
 >An introductory video is available at [here](https://youtu.be/7RaXPPXi0-Y), thanks and credits to @intheworldofai.
 
