@@ -14,7 +14,7 @@
 >An introductory video is available at [here](https://youtu.be/7RaXPPXi0-Y), thanks and credits to @intheworldofai.
 
 ## News
--**[2023.5.11]** We release the restructured code of OpenAGI, including the support of open-ended tasks that utilize tools from LangChain, as well as a command line based UI that supports easy interaction with OpenAGI when solving complex open-ended tasks.
+-**[2023.5.11]** We release the restructured code of OpenAGI, including the support of both benchmark tasks for quantitative AGI evaluation and open-ended tasks that utilize tools from LangChain, as well as a command line UI that supports easy interaction with OpenAGI when solving complex open-ended tasks.
 
 -**[2023.4.10]** We release the initial version of OpenAGI, including the source code, benchmark, and evaluation methods.
 
