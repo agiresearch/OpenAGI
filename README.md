@@ -61,13 +61,21 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
     bash run_openagi.sh
     ```
    
-4. To evaluate finetuned Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *benchmark_tasks/finetune/* folder, then excute *bash run_openagi.sh* with TASK="finetune" and LLM_NAME="flan_t5". Or pretrain with scripts provided in *benchmark_tasks/finetune/* folder to get your own checkpoint, such as
+4. To evaluate finetuned Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *benchmark_tasks/finetune/* folder, then excute *run_openagi.sh* with TASK="finetune" and LLM_NAME="flan_t5". 
+    ```
+    bash run_openagi.sh
+    ```
+    
+    Or pretrain with scripts provided in *benchmark_tasks/finetune/* folder to get your own checkpoint, such as
 
     ```
     python benchmark_tasks/finetune/flan_t5_finetune.py
     ```
  
- 5. To evaluate RLTF-based Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *benchmark_tasks/finetune/* folder, then excute *bash run_openagi.sh*.
+ 5. To evaluate RLTF-based Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *benchmark_tasks/finetune/* folder, then
+    ```
+    bash run_openagi.sh
+    ```
  
 
 ## Citation
