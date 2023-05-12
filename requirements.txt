@@ -20,9 +20,8 @@ scikit_learn==1.2.2
 scipy==1.10.1
 sentence_transformers==2.2.2
 setuptools==65.6.3
-torch==1.12.1+cu116
-torchvision==0.13.1+cu116
 tqdm==4.64.1
-transformers==4.27.0.dev0
+transformers==4.28.0
 undecorated==0.3.0
 wandb==0.14.2
+langchain==0.0.153
