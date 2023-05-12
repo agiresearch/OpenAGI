@@ -7,6 +7,10 @@
 ![Teaser](image/pipeline.png)
 >An introductory video is available at [here](https://youtu.be/7RaXPPXi0-Y), thanks and credits to @intheworldofai.
 
+## News
+2023.5.11 We made the reconstructed code of openAGI publicly available, incorporating open tasks that utilize tools from Langchain.
+2023.4.10 We released the initial version of openAGI.
+
 ## Introduction
 Human intelligence has the remarkable ability to assemble basic skills into complex ones so as to solve complex tasks. This ability is equally important for Artificial Intelligence (AI), and thus, we assert that in addition to the development of large, comprehensive intelligent models, it is equally crucial to equip such models with the capability to harness various domain-specific expert models for complex task-solving in the pursuit of Artificial General Intelligence (AGI). Recent developments in Large Language Models (LLMs) have demonstrated remarkable learning and reasoning abilities, making them promising as a controller to select, synthesize, and execute external models to solve complex tasks. 
 
@@ -17,9 +21,9 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 ## Requirements:
 - Python 3.9.16
 - PyTorch 1.12.1
-- transformers==4.27.0.dev0
+- transformers==4.28.0
+- langchain==0.0.153
 
-If you encounter any issues while installing transformers==4.27.0.dev0, refer to [this repository](https://github.com/treadon/llama-7b-example) for assistance. If you do not plan to run LLaMA, you can install other stable versions instead.
 
 ## Usage
 
@@ -30,6 +34,8 @@ If you encounter any issues while installing transformers==4.27.0.dev0, refer to
     conda create --name openagi python=3.9
     # actiavte openagi conda environment
     conda activate openagi
+    #install torch
+    pip3 install torch torchvision torchaudio
     # clone github repo
     git clone https://github.com/agiresearch/OpenAGI.git
     # change directory into project directory
@@ -47,18 +53,21 @@ If you encounter any issues while installing transformers==4.27.0.dev0, refer to
 
 ![Teaser](image/data_sample.png)
 
-2. To get a teaser of OpenAGI platform, check out the demo.ipynb notebook.
+2. To get a teaser of OpenAGI platform, please start by entering the necessary content in the *run_openagi.sh* file.
 
 
-3. To evaluate Zero-shot and Few-shot LLMs, use jupyter notebook in *zero_shot/* folder or *few_shot/* folder. 
+3. To evaluate Zero-shot or few-show shemas, please change TASK="zero_shot" or TASK="few_shot"   
+    ```
+    bash run_openagi.sh
+    ```
    
-4. To evaluate finetuned Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then run the notebook in that folder. Or pretrain with scripts in *finetune/* folder to get your own checkpoint, such as
+4. To evaluate finetuned Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *benchmark_tasks/finetune/* folder, then excute *bash run_openagi.sh* with TASK="finetune" and LLM_NAME="flan_t5". Or pretrain with scripts provided in *benchmark_tasks/finetune/* folder to get your own checkpoint, such as
 
     ```
-    python finetune/flan_t5_finetune.py
+    python benchmark_tasks/finetune/flan_t5_finetune.py
     ```
  
- 5. To evaluate RLTF-based Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *finetune/* folder, then run the notebook in *rltf/* folder.
+ 5. To evaluate RLTF-based Flan-T5-Large, please first download the pretrained checkpoints from this [Google Drive link](https://drive.google.com/drive/folders/1AjT6y7qLIMxcmHhUBG5IE1_5SnCPR57e?usp=share_link) into *benchmark_tasks/finetune/* folder, then excute *bash run_openagi.sh*.
  
 
 ## Citation
