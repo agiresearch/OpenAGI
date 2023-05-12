@@ -50,6 +50,8 @@ def main():
     llm = OpenAI(temperature=0)
     tools = load_tools(["serpapi","llm-math"],llm=llm)
     
+    # use llm as the planner  
+    
     template="""\
 You are a planner who is an expert at coming up with a todo list for a given objective.
 For each task, utilize one of the provided tools only when needed. 
@@ -85,6 +87,8 @@ Provided tools:
     print("\n")
     print (colored("Please decide whether to execute the above plans by typing a number, 0: No, 1: Yes. ", 'red', attrs=['bold']))
     executed = input()
+    
+    # use llm as the executor
     
     if executed == '1':
         input_list = content.split("\n")[1:-1]
