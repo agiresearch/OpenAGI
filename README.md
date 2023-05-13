@@ -14,9 +14,9 @@
 >An introductory video is available at [here](https://youtu.be/7RaXPPXi0-Y), thanks and credits to @intheworldofai.
 
 ## News
--**[2023.5.11]** We made the reconstructed code of openAGI publicly available, incorporating open tasks that utilize tools from Langchain.
+-**[2023.5.11]** We release the restructured code of OpenAGI, including the support of both benchmark tasks for quantitative AGI evaluation and open-ended tasks that utilize tools from LangChain, as well as a command line UI that supports easy interaction with OpenAGI when solving complex open-ended tasks.
 
--**[2023.4.10]** We released the initial version of openAGI, containing the code, benchmark, and evaluation methods.
+-**[2023.4.10]** We release the initial version of OpenAGI, including the source code, benchmark, and evaluation methods.
 
 ## Introduction
 Human intelligence has the remarkable ability to assemble basic skills into complex ones so as to solve complex tasks. This ability is equally important for Artificial Intelligence (AI), and thus, we assert that in addition to the development of large, comprehensive intelligent models, it is equally crucial to equip such models with the capability to harness various domain-specific expert models for complex task-solving in the pursuit of Artificial General Intelligence (AGI). Recent developments in Large Language Models (LLMs) have demonstrated remarkable learning and reasoning abilities, making them promising as a controller to select, synthesize, and execute external models to solve complex tasks. 
