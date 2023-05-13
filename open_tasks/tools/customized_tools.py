@@ -22,6 +22,10 @@ from langchain.agents import AgentType
 from langchain.llms import OpenAI
 from langchain.tools import BaseTool
 
+os.environ["SERPAPI_API_KEY"] = "YOUR SEARCH API KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR OPENAI API KEY"
+os.environ['TRANSFORMERS_CACHE'] = "YOUR CACHE DIRECTORY TO STORE HUGGINGFACE TRANSFORMERS"
+
 # import github_models.colorization.colorizers as colorizers
 # from github_models.colorization.colorizers import *
 
@@ -81,8 +85,6 @@ try:
 except (ModuleNotFoundError, ImportError):
     LANGCHAIN_INSTALLED = False
 
-# cache_dir = "/common/users/yg334/LLAMA/AMA/huggingface/cache"
-    
 def get_new_image_name(org_img_name, func_name="update"):
     head_tail = os.path.split(org_img_name)
     head = head_tail[0]
