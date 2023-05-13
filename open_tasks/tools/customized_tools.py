@@ -16,9 +16,6 @@ Copyright 2023 Yingqiang Ge
 """
 
 import os
-# os.environ["SERPAPI_API_KEY"] = "803072090f9bec025b45d69a04b69b48e240e69523711511e3f195f97621af93"
-# os.environ["OPENAI_API_KEY"] = "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"
-# os.environ['TRANSFORMERS_CACHE'] = "/common/users/yg334/LLAMA/huggingface/cache"
 
 from langchain.agents import initialize_agent, Tool, load_tools
 from langchain.agents import AgentType
