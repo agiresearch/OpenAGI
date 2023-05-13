@@ -110,35 +110,135 @@ class Trie(object):
 def find_last_task(sentence):
     if sentence.count(29892) == 1:
         last_cand = sentence[1 : sentence.index(29892) + 1]
-        if 61 in last_cand:
-            last_cand.remove(61)
-        if 41 in last_cand:
-            last_cand.remove(41)
+        if 1723 in last_cand:
+            last_cand.remove(1723)
+        if 313 in last_cand:
+            last_cand.remove(313)
         return last_cand
     indices = [i for i, c in enumerate(sentence) if c == 29892]
     last_cand = sentence[indices[-2] + 1 : indices[-1] + 1 :]
-    if 61 in last_cand:
-        last_cand.remove(61)
-    if 41 in last_cand:
-        last_cand.remove(41)
+    if 1723 in last_cand:
+        last_cand.remove(1723)
+    if 313 in last_cand:
+        last_cand.remove(313)
     if 1 in last_cand:
         last_cand.remove(1)
+    if 0 in last_cand:
+        last_cand.remove(0)
     return last_cand
 
+def count_parallel_length(sentence):
+    if sentence.count(313) == 2 and sentence.count(1723) == 2:
+        left_parenthesis_position = [i for i, c in enumerate(sentence) if c == 313]
+        right_parenthesis_position = [i for i, c in enumerate(sentence) if c == 1723]
+        first_parallel_length = sentence[
+            left_parenthesis_position[0] : right_parenthesis_position[0]
+        ].count(29892)
+        second_parallel_length = sentence[
+            left_parenthesis_position[1] : right_parenthesis_position[1]
+        ].count(29892)
+        rest = sentence[right_parenthesis_position[1] :].count(29892)
+        if rest == 0:
+            return 0
+        return max(first_parallel_length, second_parallel_length) + rest
+    elif sentence.count(1723) == 0:
+        return sentence.count(29892)
+    else:
+        assert sentence.count(1723) == 1
+        second_parallel = sentence[sentence.index(1723) + 1 :]
+        return second_parallel.count(29892)
 
+    
 def find_second_task(sentence):
-    assert 61 in sentence
-    end_position = sentence.index(61)
-    start_positions = [1] + [i for i, c in enumerate(sentence[:end_position]) if c == 6]
+    assert 1723 in sentence
+    end_position = sentence.index(1723)
+    start_positions = [1] + [i for i, c in enumerate(sentence[:end_position]) if c == 29892]
     start_position = start_positions[-2]
     second_cand = sentence[start_position:end_position]
-    if 61 in second_cand:
-        second_cand.remove(61)
-    if 41 in second_cand:
-        second_cand.remove(41)
-    if second_cand[0] == 6:
+    if 1723 in second_cand:
+        second_cand.remove(1723)
+    if 313 in second_cand:
+        second_cand.remove(313)
+    if second_cand[0] == 29892:
         second_cand = second_cand[1:]
     return second_cand
+
+
+def check_two_input_types(sentence, tokenizer):
+    first_cand = find_last_task(sentence)
+    first_cand = tokenizer.decode(first_cand).strip()
+    first_input_type = [
+        candidate_list
+        for candidate_list in candidates
+        if first_cand in candidate_list["task_list"]
+    ][0]["output"]
+    second_cand = find_second_task(sentence)
+    second_cand = tokenizer.decode(second_cand).strip()
+    second_input_type = [
+        candidate_list
+        for candidate_list in candidates
+        if second_cand in candidate_list["task_list"]
+    ][0]["output"]
+    # find corresponding list
+    one_candidate_list = [
+        candidate
+        for candidate_list in [
+            candidate_list["task_list"]
+            for candidate_list in candidates
+            if second_input_type + "+" + first_input_type == candidate_list["input"]
+            or first_input_type + "+" + second_input_type == candidate_list["input"]
+        ]
+        for candidate in candidate_list
+    ]
+    # remove candidates that occurred
+    remove_repetition = [
+        candidate
+        for candidate in one_candidate_list
+        if candidate not in tokenizer.decode(sentence)
+    ]
+    one_candidate_trie = Trie(
+        [tokenizer.encode("{}".format(e)) for e in remove_repetition]
+    )
+    indices = [i for i, c in enumerate(sentence) if c == 1723]
+    sentence = sentence[indices[-1] + 1 :]
+    trie_out = one_candidate_trie.get([1] + sentence)
+    return trie_out
+
+
+def after_one_cand(tokenizer, sentence):
+    one_cand = find_last_task(sentence)
+    one_cand = tokenizer.decode(one_cand)
+    input_type = [
+        candidate_list
+        for candidate_list in candidates
+        if one_cand.strip() in candidate_list["task_list"]
+    ][0]["output"]
+    # find corresponding list
+    one_candidate_list = [
+        candidate
+        for candidate_list in [
+            candidate_list["task_list"]
+            for candidate_list in candidates
+            if candidate_list["input"] == input_type
+        ]
+        for candidate in candidate_list
+    ]
+    if sentence.count(1723) == 0 or sentence.count(1723) == 2:
+        remove_repetition = [
+            candidate
+            for candidate in one_candidate_list
+            if candidate not in tokenizer.decode(sentence)
+        ]
+    else:
+        assert sentence.count(1723) == 1
+        sentence = sentence[sentence.index(1723) + 1 :]
+        remove_repetition = [
+            candidate
+            for candidate in one_candidate_list
+            if candidate not in tokenizer.decode(sentence)
+        ]
+
+    return remove_repetition
 
 
 def pad_to_max_length(tokenizer, candidate_list):
@@ -273,11 +373,11 @@ def llama_prefix_allowed_tokens_fn(candidates, tokenizer, module_length, input_i
         # remove given prompts
         prompt_length = len(input_ids[batch_id])
         new_sentence_list = sentence[prompt_length:]
-
+        
         if len(new_sentence_list) <= 1:
             all_candidate_trie = Trie(
-                [tokenizer.encode("{}".format(e)) for e in all_candidates]
-                + [tokenizer.encode("{}".format(e)) for e in all_candidates]
+                [tokenizer.encode("({}".format(e)) for e in all_candidates]
+                + [tokenizer.encode("({}".format(e)) for e in all_candidates]
             )
             trie_out = all_candidate_trie.get(new_sentence_list)
 
@@ -289,9 +389,10 @@ def llama_prefix_allowed_tokens_fn(candidates, tokenizer, module_length, input_i
             else:
                 return without_parenthesis_prefix_allowed_tokens(batch_id, sentence)
 
+
     def without_parenthesis_prefix_allowed_tokens(batch_id, sentence):
         sentence = sentence.tolist()
-        if tokenizer.decode(sentence).count(",") == 0:
+        if tokenizer.decode(sentence).count(',') == 0:
             all_candidate_trie = Trie(
                 [tokenizer.encode("{}".format(e)) for e in all_candidates]
             )
@@ -355,76 +456,73 @@ def llama_prefix_allowed_tokens_fn(candidates, tokenizer, module_length, input_i
                 [tokenizer.encode("{}".format(e)) for e in remove_repetition]
             )
             indices = [i for i, c in enumerate(sentence) if c == 29892]
-            sentence = sentence[indices[-1] + 1 :]
+            sentence = sentence[indices[-1]+1:]
             # a = one_candidate_trie.get([0] + sentence)
             # for b in a:
             #    print(tokenizer.decode(b))
             # print("***")
             trie_out = one_candidate_trie.get(sentence)
         elif sentence.count(29892) == module_length:
-            candidate_trie = Trie([tokenizer.encode("{}".format(e)) for e in ["</s>"]])
+            candidate_trie = Trie(
+                [tokenizer.encode("{}".format(e)) for e in ["</s>"]]
+            )
             trie_out = candidate_trie.get([1])
 
         return trie_out
 
     def parenthesis_prefix_allowed_tokens(batch_id, sentence):
-        # print(tokenizer.decode(sentence))
-        # print("***")
+        #print(sentence)
+        #print(tokenizer.decode(sentence))
+        #print("***")
         sentence = sentence.tolist()
         # either begin of sentence, or finish one ()
         if sentence.count(29892) == 0 or (
-            sentence[-1] == 61  # )
-            and sentence.count(41) == 1  # has one ()
-            and sentence.count(61) == 1
+            sentence[-1] == 1723  # )
+            and sentence.count(313) == 1  # has one ()
+            and sentence.count(1723) == 1
         ):
             all_candidate_trie = Trie(
                 [tokenizer.encode("({}".format(e)) for e in all_candidates]
             )
-            if 61 not in sentence:
-                trie_out = all_candidate_trie.get(sentence)
+            if 313 not in sentence:
+                trie_out = all_candidate_trie.get([1] + sentence)
             else:
-                trie_out = all_candidate_trie.get([])
+                trie_out = all_candidate_trie.get(sentence)
         elif sentence[-1] != 29892 and count_parallel_length(sentence) < module_length:
-            if sentence[-1] == 61 and sentence.count(61) == 2:
+            if sentence[-1] == 1723 and sentence.count(1723) == 2:
                 # check two input types and generate without any () in the future
-                trie_out = check_two_input_types(tokenizer, sentence)
+                trie_out = check_two_input_types(sentence, tokenizer)
             else:
                 # keep generating the unfinished task, can generate ) or not, not necessary
-                if sentence.count(61) == 0:
+                if sentence.count(1723) == 0:
                     remove_repetition = after_one_cand(tokenizer, sentence)
-                    if sentence[-1] == 61:
-                        one_candidate_trie = Trie(
-                            [[0, 1]]
-                            + [
-                                tokenizer.encode("{}".format(e))
-                                for e in remove_repetition
-                            ]
-                        )
-                    else:
-                        one_candidate_trie = Trie(
+                    one_candidate_trie = Trie(
                             [
                                 tokenizer.encode("{}".format(e))
                                 for e in remove_repetition
                             ]
-                        )
-                    indices = [i for i, c in enumerate(sentence) if c == 1919]
+                    )
+                    indices = [i for i, c in enumerate(sentence) if c == 29892]
                     sentence = sentence[indices[-1] + 1 :]
-                    trie_out = one_candidate_trie.get([0] + sentence)
-                elif sentence.count(61) == 1:
+                    trie_out = one_candidate_trie.get([1]+sentence)
+                elif sentence.count(1723) == 1:
                     # the first task of the second parallel
-                    rebegin_sentence = sentence[sentence.index(61) + 1 :]
-                    if 1919 not in rebegin_sentence:
+                    rebegin_sentence = sentence[sentence.index(1723) + 1 :]
+                    if 29892 not in rebegin_sentence:
                         all_candidate_trie = Trie(
-                            [tokenizer.encode("({}".format(e)) for e in all_candidates]
+                            [
+                                tokenizer.encode("({}".format(e))
+                                for e in all_candidates
+                            ]
                         )
-                        sentence = sentence[sentence.index(61) + 1 :]
-                        trie_out = all_candidate_trie.get(rebegin_sentence)
+                        sentence = sentence[sentence.index(1723) + 2 :]
+                        trie_out = all_candidate_trie.get([1]+sentence)
                     else:
                         # the non-first task of the second parallel
                         remove_repetition = after_one_cand(tokenizer, sentence)
-                        if sentence[-1] == 61 and sentence.count(61) == 1:
+                        if sentence[-1] == 1723 and sentence.count(1723) == 1:
                             one_candidate_trie = Trie(
-                                [[0, 1]]
+                                [[1]]
                                 + [
                                     tokenizer.encode("{}".format(e))
                                     for e in remove_repetition
@@ -439,14 +537,14 @@ def llama_prefix_allowed_tokens_fn(candidates, tokenizer, module_length, input_i
                             )
                         indices = [i for i, c in enumerate(sentence) if c == 29892]
                         sentence = sentence[indices[-1] + 1 :]
-                        trie_out = one_candidate_trie.get([0] + sentence)
+                        trie_out = one_candidate_trie.get([1] + sentence)
                 else:
                     right_parentheses_position = [
-                        index for index, c in enumerate(sentence) if c == 61
+                        index for index, c in enumerate(sentence) if c == 1723
                     ]
                     if 29892 not in sentence[right_parentheses_position[-1] :]:
                         # generate the first task after ()()
-                        trie_out = check_two_input_types(tokenizer, sentence)
+                        trie_out = check_two_input_types(sentence, tokenizer)
                     else:  # find the last task and generate without any () in the future
                         remove_repetition = after_one_cand(tokenizer, sentence)
                         one_candidate_trie = Trie(
@@ -456,35 +554,38 @@ def llama_prefix_allowed_tokens_fn(candidates, tokenizer, module_length, input_i
                             ]
                         )
                         indices = [i for i, c in enumerate(sentence) if c == 29892]
-                        sentence = sentence[indices[-1] + 1 :]
-                        trie_out = one_candidate_trie.get(sentence)
+                        sentence = sentence[indices[-1] + 2 :]
+                        trie_out = one_candidate_trie.get([1]+sentence)
         elif sentence[-1] == 29892 and count_parallel_length(sentence) < module_length:
-            if sentence.count(41) - sentence.count(61) == 1:
+            if sentence.count(313) - sentence.count(1723) == 1:
                 # need to generate candidates with ), without ), or directly )
                 remove_repetition = after_one_cand(tokenizer, sentence)
                 if count_parallel_length(sentence) + 1 >= module_length:
-                    trie_out = [61]
+                    trie_out = [1, 1723]
                 else:
                     one_candidate_trie = Trie(
-                        [[0, 61]]
-                        + [tokenizer.encode("{}".format(e)) for e in remove_repetition]
+                        [[1, 1723]]
+                        + [
+                            tokenizer.encode("{}".format(e))
+                            for e in remove_repetition
+                        ]
                     )
                     indices = [i for i, c in enumerate(sentence) if c == 29892]
                     sentence = sentence[indices[-1] + 1 :]
-                    trie_out = one_candidate_trie.get([0] + sentence)
+                    trie_out = one_candidate_trie.get([1]+sentence)
             else:
                 # outside of (), find the last task and keep generating
                 remove_repetition = after_one_cand(tokenizer, sentence)
                 one_candidate_trie = Trie(
-                    [[0] + tokenizer.encode("{}".format(e)) for e in remove_repetition]
+                    [tokenizer.encode("{}".format(e)) for e in remove_repetition]
                 )
                 indices = [i for i, c in enumerate(sentence) if c == 29892]
                 sentence = sentence[indices[-1] + 1 :]
-                trie_out = one_candidate_trie.get(sentence)
+                trie_out = one_candidate_trie.get([1]+sentence)
         else:
             assert count_parallel_length(sentence) >= module_length
-            if sentence.count(41) - sentence.count(61) == 1:
-                trie_out = [61]
+            if sentence.count(313) - sentence.count(1723) == 1:
+                trie_out = [1, 1723]
             else:
                 trie_out = [1]
 
