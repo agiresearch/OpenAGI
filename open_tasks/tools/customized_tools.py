@@ -15,16 +15,10 @@ Copyright 2023 Yingqiang Ge
 
 """
 
-__author__ = "Yingqiang Ge, Kai Mei"
-__copyright__ = "Copyright 2023, OpenAGI"
-__date__ = "2023/04/10"
-__license__ = "Apache 2.0"
-__version__ = "0.0.1"
-
 import os
-os.environ["SERPAPI_API_KEY"] = "803072090f9bec025b45d69a04b69b48e240e69523711511e3f195f97621af93"
-os.environ["OPENAI_API_KEY"] = "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"
-os.environ['TRANSFORMERS_CACHE'] = "/common/users/yg334/LLAMA/huggingface/cache"
+# os.environ["SERPAPI_API_KEY"] = "803072090f9bec025b45d69a04b69b48e240e69523711511e3f195f97621af93"
+# os.environ["OPENAI_API_KEY"] = "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"
+# os.environ['TRANSFORMERS_CACHE'] = "/common/users/yg334/LLAMA/huggingface/cache"
 
 from langchain.agents import initialize_agent, Tool, load_tools
 from langchain.agents import AgentType
@@ -216,9 +210,9 @@ class ImageCaptioning(BaseModel):
         self.device = device
         self.torch_dtype = torch.float16 if 'cuda' in device else torch.float32
         self.model_name = model_name
-        self.processor = BlipProcessor.from_pretrained(self.model_path)
+        self.processor = BlipProcessor.from_pretrained(self.model_name)
         self.model = BlipForConditionalGeneration.from_pretrained(
-            self.model_path, torch_dtype=self.torch_dtype)
+            self.model_name, torch_dtype=self.torch_dtype)
 
     def run(self, image_path):
         self.model.to(self.device)
@@ -235,19 +229,21 @@ class ImageClassification(BaseModel):
     description="useful when you want to know the class of the image. It receives image_path as input. "\
              "The input to this tool should be a string, representing the image_path. "
             
-    def __init__(self, device, model_path='google/vit-base-patch16-224'):
+    def __init__(self, device, model_name='google/vit-base-patch16-224'):
         print(f"Initializing ImageClassification to {device}")
         self.device = device
         self.torch_dtype = torch.float16 if 'cuda' in device else torch.float32
-        self.model_path = model_path
+        self.model_name = model_name
         self.feature_extractor = ViTFeatureExtractor.from_pretrained(self.model_path, torch_type=self.torch_dtype)
         self.classifier = ViTForImageClassification.from_pretrained(self.model_path).to(self.device)
 
     def run(self, image_path):
+        self.classifier.to(self.device)
         inputs = self.feature_extractor(Image.open(image_path), return_tensors="pt").to(self.device, self.torch_dtype)
         logits = self.classifier(**inputs).logits
         predicted_class_idx = logits.argmax(1)[0].item()
         predicted_class = self.classifier.config.id2label[predicted_class_idx]
+        self.classifier.to('cpu')
         print(f"\nProcessed ImageClassification, Input Image: {image_path}, Output Text: {predicted_class}")
         return predicted_class
 
@@ -257,11 +253,11 @@ class ImageColorization(BaseModel):
     description="useful when you want to colorize a photo. It receives image_path as input. "\
              "The input to this tool should be a string, representing the image_path. "
             
-    def __init__(self, device, model_path=None):
+    def __init__(self, device, model_name=None):
         print(f"Initializing ImageColorization to {device}")
         self.device = device
         self.torch_dtype = torch.float16 if 'cuda' in device else torch.float32
-        self.model_path = model_path
+        self.model_name = model_name
         self.colorizer= colorizers.siggraph17()
         self.img_transform = transforms.Compose([
             transforms.PILToTensor(),
@@ -297,13 +293,13 @@ class ObjectDetection(BaseModel):
     description="useful when you want to detect the objects in a photo. It receives image_path as input. "\
              "The input to this tool should be a string, representing the image_path. "
             
-    def __init__(self, device, model_path="facebook/detr-resnet-101"):
+    def __init__(self, device, model_name="facebook/detr-resnet-101"):
         print(f"Initializing Object Detection to {device}")
         self.device = device
         self.torch_dtype = torch.float16 if 'cuda' in device else torch.float32
-        self.model_path = model_path
-        self.processor = DetrImageProcessor.from_pretrained(self.model_path)
-        self.detector = DetrForObjectDetection.from_pretrained(self.model_path)
+        self.model_name = model_name
+        self.processor = DetrImageProcessor.from_pretrained(self.model_name)
+        self.detector = DetrForObjectDetection.from_pretrained(self.model_name)
 
     def run(self, image_path):
         self.detector.to(self.device)
@@ -329,13 +325,13 @@ class ImageSuperResolution(BaseModel):
     description="useful when you want to create a high-resolution image from a low-resolution image. It receives image_path as input. "\
              "The input to this tool should be a string, representing the image_path. "
             
-    def __init__(self, device, model_path="caidas/swin2SR-classical-sr-x2-64"):
+    def __init__(self, device, model_name="caidas/swin2SR-classical-sr-x2-64"):
         print(f"Initializing ImageSuperResolution to {device}")
         self.device = device
         self.torch_dtype = torch.float16 if 'cuda' in device else torch.float32
-        self.model_path = model_path
-        self.processor = AutoImageProcessor.from_pretrained(self.model_path)
-        self.model = Swin2SRForImageSuperResolution.from_pretrained(self.model_path)
+        self.model_name = model_name
+        self.processor = AutoImageProcessor.from_pretrained(self.model_name)
+        self.model = Swin2SRForImageSuperResolution.from_pretrained(self.model_name)
         self.img_transform = transforms.Compose([
             transforms.Resize((8,8)),
             transforms.PILToTensor(),
@@ -366,7 +362,7 @@ class VisualQuestionAnswering(BaseModel):
     name="VisualQuestionAnswering"
     description=""
             
-    def __init__(self, device, model_path="caidas/swin2SR-classical-sr-x2-64"):
+    def __init__(self, device, model_name="caidas/swin2SR-classical-sr-x2-64"):
         pass
     
     def run(self, image_path):
@@ -378,12 +374,12 @@ class SentimentAnalysis(BaseModel):
     description="useful when you want to analyze the sentiment of a sentence. It receives sentence as input. "\
              "The input to this tool should be a sentence string. "
             
-    def __init__(self, device, model_path="distilbert-base-uncased-finetuned-sst-2-english"):
+    def __init__(self, device, model_name="distilbert-base-uncased-finetuned-sst-2-english"):
         print(f"Initializing SentimentAnalysis to {device}")
         self.device = device
-        self.model_path = model_path
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_path)
+        self.model_name = model_name
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
 
     def run(self, sentence):
         self.model.to(self.device)
@@ -412,7 +408,7 @@ class QuestionAnswering(BaseModel):
     name="QuestionAnswering"
     description=""
             
-    def __init__(self, device, model_path="distilbert-base-cased-distilled-squad"):
+    def __init__(self, device, model_name="distilbert-base-cased-distilled-squad"):
         pass
 
     def run(self, sentence):
@@ -425,20 +421,20 @@ class TextSummarization(BaseModel):
     description="useful when you want to summarize a sentence or a paragraph. It receives text as input. "\
              "The input to this tool should be a string. "
             
-    def __init__(self, device, model_path="facebook/bart-large-cnn"):
+    def __init__(self, device, model_name="facebook/bart-large-cnn"):
         print(f"Initializing TextSummarization to {device}")
         self.device = device
-        self.model_path = model_path
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_path)
+        self.model_name = model_name
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
 
     def run(self, sentence):
         self.model.to(self.device)
-        inputs = self.tokenizer(sentence, return_tensors="pt", padding=True).to(device)
+        inputs = self.tokenizer(sentence, return_tensors="pt", padding=True).to(self.device)
 
         # Get the outputs from the model
-        outputs = self.summarizer.generate(**inputs)
-        summary_text = self.summarization_tokenizer.decode(summary_ids[0]).strip("</s>")
+        summary_ids = self.model.generate(**inputs)
+        summary_text = self.tokenizer.decode(summary_ids[0]).strip("</s>")
         
         self.model.to('cpu')
         return summary_text
@@ -449,13 +445,13 @@ class TextGeneration(BaseModel):
     description="useful when you want to generate a sentence. It receives text as input. "\
              "The input to this tool should be a string. "
             
-    def __init__(self, device, model_path="bigscience/bloom-560m"):
+    def __init__(self, device, model_name="bigscience/bloom-560m"):
         print(f"Initializing TextGeneration to {device}")
         self.device = device
-        self.model_path = model_path
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
+        self.model_name = model_name
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-        self.generator = AutoModelForCausalLM.from_pretrained(self.model_path)
+        self.generator = AutoModelForCausalLM.from_pretrained(self.model_name)
 
     def run(self, sentence):
         self.generator.to(self.device)
@@ -475,18 +471,18 @@ class TextGeneration(BaseModel):
 
 class MachineTranslation(BaseModel):
     name="MachineTranslation"
-    description="useful when you want to generate a sentence. It receives text as input. "\
+    description="useful when you want to translate a sentence. It receives text as input. "\
              "The input to this tool should be a string. "
             
-    def __init__(self, device, model_path="t5-base"):
+    def __init__(self, device, model_name="t5-base"):
         print(f"Initializing MachineTranslation to {device}")
         self.device = device
-        self.model_path = model_path
-        self.translation_tokenizer = AutoTokenizer.from_pretrained(self.model_path)
-        self.translator = AutoModelForSeq2SeqLM.from_pretrained(self.model_path)
+        self.model_name = model_name
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.translator = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
 
     def run(self, sentence):
-        self.model.to(self.device)
+        self.translator.to(self.device)
         
         text = "Translate English to German: " + sentence
 
@@ -494,12 +490,12 @@ class MachineTranslation(BaseModel):
         inputs = self.tokenizer(text, return_tensors="pt", padding=True).to(self.device)
 
         # Get the outputs from the model
-        outputs = self.translator.generate(**inputs, min_length=5, max_length=1000)
+        translated_ids = self.translator.generate(**inputs, min_length=5, max_length=1000)
 
         # Decode the outputs to get the translated text
         translated_text = self.tokenizer.decode(translated_ids[0]).strip("<pad></s>")
         
-        self.model.to('cpu')
+        self.translator.to('cpu')
         
         return translated_text
     
@@ -509,19 +505,19 @@ class FillMask(BaseModel):
     description="useful when you want to fill the sentence at the masked position. It receives text as input. "\
              "The input to this tool should be a string. "
             
-    def __init__(self, device, model_path="distilbert-base-uncased"):
+    def __init__(self, device, model_name="distilbert-base-uncased"):
         print(f"Initializing FillMask to {device}")
         self.device = device
-        self.model_path = model_path
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
-        self.unmasker = AutoModelForMaskedLM.from_pretrained(self.model_path)
+        self.model_name = model_name
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForMaskedLM.from_pretrained(self.model_name)
 
     def run(self, sentence):
         self.model.to(self.device)
         
-        inputs = self.tokenizer(sentence, return_tensors="pt", padding=True).to(device)
+        inputs = self.tokenizer(sentence, return_tensors="pt", padding=True).to(self.device)
 
-        outputs = self.unmasker(**inputs)
+        outputs = self.model(**inputs)
 
         # Get the logits from the outputs
         logits = outputs.logits
@@ -535,7 +531,7 @@ class FillMask(BaseModel):
 
         # Decode the tokens to get the words
         word = self.tokenizer.convert_ids_to_tokens(top_tokens.indices)
-        completed_text = sentence.replace(self.unmask_tokenizer.mask_token, word[0])
+        completed_text = sentence.replace(self.tokenizer.mask_token, word[0])
         
         self.model.to('cpu')
         
