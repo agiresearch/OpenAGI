@@ -15,6 +15,12 @@ Copyright 2023 Yingqiang Ge
 
 """
 
+__author__ = "Yingqiang Ge, Kai Mei"
+__copyright__ = "Copyright 2023, OpenAGI"
+__date__ = "2023/04/10"
+__license__ = "Apache 2.0"
+__version__ = "0.0.1"
+
 import os
 
 from langchain.agents import initialize_agent, Tool, load_tools
