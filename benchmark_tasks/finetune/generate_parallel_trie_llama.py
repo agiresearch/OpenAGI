@@ -287,47 +287,6 @@ def pad_to_max_length(tokenizer, candidate_list):
     return padd_candidate_list
 
 
-def check_two_input_types(sentence, tokenizer):
-    first_cand = find_last_task(sentence)
-    first_cand = tokenizer.decode(first_cand).strip()
-    first_input_type = [
-        candidate_list
-        for candidate_list in candidates
-        if first_cand in candidate_list["task_list"]
-    ][0]["output"]
-    second_cand = find_second_task(sentence)
-    second_cand = tokenizer.decode(second_cand).strip()
-    second_input_type = [
-        candidate_list
-        for candidate_list in candidates
-        if second_cand in candidate_list["task_list"]
-    ][0]["output"]
-    # find corresponding list
-    one_candidate_list = [
-        candidate
-        for candidate_list in [
-            candidate_list["task_list"]
-            for candidate_list in candidates
-            if second_input_type + "+" + first_input_type == candidate_list["input"]
-            or first_input_type + "+" + second_input_type == candidate_list["input"]
-        ]
-        for candidate in candidate_list
-    ]
-    # remove candidates that occurred
-    remove_repetition = [
-        candidate
-        for candidate in one_candidate_list
-        if candidate not in tokenizer.decode(sentence)
-    ]
-    one_candidate_trie = Trie(
-        [[0] + tokenizer.encode("{}".format(e)) for e in remove_repetition]
-    )
-    indices = [i for i, c in enumerate(sentence) if c == 61]
-    sentence = sentence[indices[-1] + 1 :]
-    trie_out = one_candidate_trie.get([0] + sentence)
-    return trie_out
-
-
 def count_parallel_length(sentence):
     if sentence.count(41) == 2 and sentence.count(61) == 2:
         left_parenthesis_position = [i for i, c in enumerate(sentence) if c == 41]
@@ -350,40 +309,6 @@ def count_parallel_length(sentence):
         return second_parallel.count(6)
 
 
-def after_one_cand(sentence, tokenizer):
-    one_cand = find_last_task(sentence)
-    one_cand = tokenizer.decode(one_cand)
-    input_type = [
-        candidate_list
-        for candidate_list in candidates
-        if one_cand in candidate_list["task_list"]
-    ][0]["output"]
-    # find corresponding list
-    one_candidate_list = [
-        candidate
-        for candidate_list in [
-            candidate_list["task_list"]
-            for candidate_list in candidates
-            if candidate_list["input"] == input_type
-        ]
-        for candidate in candidate_list
-    ]
-    if sentence.count(61) == 0 or sentence.count(61) == 2:
-        remove_repetition = [
-            candidate
-            for candidate in one_candidate_list
-            if candidate not in tokenizer.decode(sentence)
-        ]
-    else:
-        assert sentence.count(61) == 1
-        sentence = sentence[sentence.index(61) + 1 :]
-        remove_repetition = [
-            candidate
-            for candidate in one_candidate_list
-            if candidate not in tokenizer.decode(sentence)
-        ]
-
-    return remove_repetition
 
 
 def llama_prefix_allowed_tokens_fn(candidates, tokenizer, module_length, input_ids):
@@ -921,13 +846,13 @@ if __name__ == "__main__":
     import os
 
     max_memory_mapping = {
-        0: "0GB",
-        1: "10GB",
+        0: "10GB",
+        1: "24GB",
         2: "24GB",
         3: "0GB",
         4: "0GB",
         5: "0GB",
-        6: "24GB",
+        6: "0GB",
         7: "0GB",
     }
 
@@ -935,6 +860,7 @@ if __name__ == "__main__":
         "eachadea/vicuna-7b-1.1",
         cache_dir="/common/users/yg334/LLAMA/huggingface/cache",
     )
+    tokenizer.add_special_tokens({'pad_token': '<pad>'})
     model = AutoModelForCausalLM.from_pretrained(
         "eachadea/vicuna-7b-1.1",
         cache_dir="/common/users/yg334/LLAMA/huggingface/cache",
@@ -961,19 +887,44 @@ if __name__ == "__main__":
     prefix_allowed_tokens = llama_prefix_allowed_tokens_fn(
         candidates, tokenizer, 10, input_ids
     )
+    
+    candidates = [
+    i2i_tasks,
+    i2t_tasks,
+    t2t_tasks,
+    t2i_tasks,
+    tt2t_tasks,
+    # i2it_tasks,
+    # it2i_tasks,
+    it2t_tasks
+    ]
 
+    
+#     output_sequence, loss = generate_sequence(
+#         input_ids, model, tokenizer, candidates, module_length, num_beams, num_return_sequences,
+#     )
+    
+#     print(output_sequence)
+#     print(loss)
+    
     output = model.generate(
         input_ids,
         max_length=70,
         min_length=1,
         prefix_allowed_tokens_fn=prefix_allowed_tokens,
-        # num_beams=2,
-        # num_return_sequences=1,
+        num_beams=2,
+        num_return_sequences=2,
         return_dict_in_generate=True,
         output_scores=True,
         output_hidden_states=True,
     )
-
+    
+    output_ids = output["sequences"][0][1:]
+    output_sequence = (
+        tokenizer.decode(output_ids).replace("<pad>", "").replace("</s>", "")
+    )
+    print(output_sequence)
+    
     """
     output = model.generate(
         input_ids,
@@ -988,4 +939,4 @@ if __name__ == "__main__":
     )
     """
 
-    print(output)
+    # print(output)
