@@ -24,12 +24,12 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 
 >An introductory video is available at [here](https://youtu.be/7RaXPPXi0-Y), thanks and credits to @intheworldofai.
 
-### Benchmark Task Example
+### Benchmark Task Examples
 <p align="center">
 <img src="images/pipeline.png" width="800" height="400">
 </p>
 
-### Open-ended Task Example
+### Open-ended Task Examples
 <p align="center">
 <img src="images/artwork.png" width="800" height="800">
 </p>
