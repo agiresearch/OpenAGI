@@ -11,7 +11,7 @@
 </p> -->
 
 <p align="center">
-<img src="images/illustration.pdf" width="800" height="400">
+<img src="images/illustration.png" width="800" height="400">
 </p>
 
 
