@@ -36,6 +36,8 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 <img src="images/artwork.png" width="800" height="800">
 </p>
 
+2. Instruct OpenAGI to create a travel report for a trip to China, including recommendations for sights, activities, and local cuisine, as well as practical information for travelers, such as how to stay safe and healthy and how to navigate the country.
+
 <p align="center">
 <img src="images/travel_plan.png" width="800" height="800">
 </p>
