@@ -6,10 +6,12 @@
 <a href='https://arxiv.org/pdf/2304.04370.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a> 
 [![Code License](https://img.shields.io/badge/Code%20License-Apache_2.0-green.svg)](https://github.com/tatsu-lab/stanford_alpaca/blob/main/LICENSE)
 
-<!-- <p align="center">
+### Benchmark Task
+<p align="center">
 <img src="images/pipeline.png" width="800" height="400">
-</p> -->
+</p>
 
+### OpenAGI Framework
 <p align="center">
 <img src="images/illustration.png" width="800" height="400">
 </p>
