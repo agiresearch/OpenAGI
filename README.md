@@ -35,7 +35,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 </p>
 
 
-## Requirements:
+## Requirements
 - Python 3.9.16
 - PyTorch 1.12.1
 - transformers==4.28.0
