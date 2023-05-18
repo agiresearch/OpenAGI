@@ -5,6 +5,11 @@
 <a href='https://arxiv.org/pdf/2304.04370.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a> 
 [![Code License](https://img.shields.io/badge/Code%20License-Apache_2.0-green.svg)](https://github.com/tatsu-lab/stanford_alpaca/blob/main/LICENSE)
 
+### OpenAGI Framework
+<p align="center">
+<img src="images/illustration.png" width="800" height="400">
+</p>
+
 ## Introduction
 Human intelligence has the remarkable ability to assemble basic skills into complex ones so as to solve complex tasks. This ability is equally important for Artificial Intelligence (AI), and thus, we assert that in addition to the development of large, comprehensive intelligent models, it is equally crucial to equip such models with the capability to harness various domain-specific expert models for complex task-solving in the pursuit of Artificial General Intelligence (AGI). Recent developments in Large Language Models (LLMs) have demonstrated remarkable learning and reasoning abilities, making them promising as a controller to select, synthesize, and execute external models to solve complex tasks. 
 
@@ -19,11 +24,6 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 
 -**[2023.4.10]** We release the initial version of OpenAGI, including the source code, benchmark, and evaluation methods.
 
-
-### OpenAGI Framework
-<p align="center">
-<img src="images/illustration.png" width="800" height="400">
-</p>
 
 ### Benchmark Task Example
 <p align="center">
