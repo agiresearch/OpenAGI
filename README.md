@@ -34,6 +34,10 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 <img src="images/artwork.png" width="800" height="800">
 </p>
 
+<p align="center">
+<img src="images/travel_plan.png" width="800" height="800">
+</p>
+
 
 ## Requirements
 - Python 3.9.16
