@@ -13,7 +13,7 @@
 
 ### An Example of Open Task
 <p align="center">
-<img src="images/artwork.png" width="800" height="400">
+<img src="images/artwork.png" width="800" height="800">
 </p>
 
 ### An Example of Benchmark Task
