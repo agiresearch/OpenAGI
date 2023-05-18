@@ -11,7 +11,12 @@
 <img src="images/illustration.png" width="800" height="400">
 </p>
 
-### Benchmark Task
+### An Example of Open Task
+<p align="center">
+<img src="images/artwork.png" width="800" height="400">
+</p>
+
+### An Example of Benchmark Task
 <p align="center">
 <img src="images/pipeline.png" width="800" height="400">
 </p>
