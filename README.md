@@ -26,7 +26,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 
 ### Benchmark Task Examples
 <p align="center">
-<img src="images/pipeline.png">
+<img src="images/pipeline.png" width="500">
 </p>
 
 ### Open-ended Task Examples
