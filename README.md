@@ -26,20 +26,20 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 
 ### Benchmark Task Examples
 <p align="center">
-<img src="images/pipeline.png" width="800" height="400">
+<img src="images/pipeline.png">
 </p>
 
 ### Open-ended Task Examples
 1. Instruct OpenAGI to create a traditional Chinese painting using "Gao Shan Liu Shui" (High Moutain and Flowing Water, 高山流水) as the theme, accompanied by a piece of generated ancient Chinese peom and a piece of music that are consistent with the painting. OpenAGI first searched online to "understand" the ancient story of "Gao Shan Liu Shui", and then generated the painting, poem and music step by step based on the collaboration between large language models and domain expert models. The created painting, poem and music are consistent with the ancient story.
 
 <p align="center">
-<img src="images/artwork.png" width="800" height="800">
+<img src="images/artwork.png">
 </p>
 
 2. Instruct OpenAGI to create a travel report for a trip to China, including recommendations for sights, activities, and local cuisine, as well as practical information for travelers, such as how to stay safe and healthy and how to navigate the country.
 
 <p align="center">
-<img src="images/travel_plan.png" width="800" height="800">
+<img src="images/travel_plan.png">
 </p>
 
 
@@ -77,7 +77,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 
 
 <p align="center">
-<img src="images/data_sample.png" width="600" height="600">
+<img src="images/data_sample.png">
 </p>
 
 
