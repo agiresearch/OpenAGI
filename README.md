@@ -7,7 +7,7 @@
 
 ## OpenAGI Framework
 <p align="center">
-<img src="images/illustration.png" width="800" height="400">
+<img src="images/illustration.png" width="500" height="500">
 </p>
 
 ## News
