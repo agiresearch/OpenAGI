@@ -77,7 +77,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 
 
 <p align="center">
-<img src="images/data_sample.png" width="500" height="500">
+<img src="images/data_sample.png" width="600" height="600">
 </p>
 
 
