@@ -11,7 +11,7 @@
 </p>
 
 ## News
--**[2023.5.11]** We release the restructured code of OpenAGI, including the support of both benchmark tasks for quantitative AGI evaluation and open-ended tasks that utilize tools from LangChain, as well as a command line UI that supports easy interaction with OpenAGI when solving complex open-ended tasks.
+-**[2023.5.11]** We release the restructured code of OpenAGI, including the support of both benchmark tasks for quantitative AGI evaluation and open tasks that utilize tools from LangChain, as well as a command line UI that supports easy interaction with OpenAGI when solving complex open tasks.
 
 -**[2023.4.10]** We release the initial version of OpenAGI, including the source code, benchmark, and evaluation methods.
 
@@ -29,7 +29,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 <img src="images/pipeline.png" width="700">
 </p>
 
-### Open-ended Task Examples
+### Open Task Examples
 1. Instruct OpenAGI to create a traditional Chinese painting using "Gao Shan Liu Shui" (High Moutain and Flowing Water, 高山流水) as the theme, accompanied by a piece of generated ancient Chinese peom and a piece of music that are consistent with the painting. OpenAGI first searched online to "understand" the ancient story of "Gao Shan Liu Shui", and then generated the painting, poem and music step by step based on the collaboration between large language models and domain expert models. The created painting, poem and music are consistent with the ancient story.
 
 <p align="center">
