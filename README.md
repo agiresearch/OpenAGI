@@ -10,7 +10,7 @@
 <img src="images/illustration.png">
 </p>
 
-- **A demo of using OpenAGI Platform.**
+### A demo of using OpenAGI Platform
 https://github.com/agiresearch/OpenAGI/assets/23147604/b8699858-9086-423b-b75c-7a53032f9a30
 
 
