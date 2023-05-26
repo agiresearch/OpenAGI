@@ -12,7 +12,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
-__author__ = "Wenyue Hua, Yingqiang Ge"
+__author__ = "Yingqiang Ge, Wenyue Hua"
 __copyright__ = "Copyright 2023, OpenAGI"
 __date__ = "2023/04/09"
 __license__ = "GPLv3"
