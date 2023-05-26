@@ -743,9 +743,7 @@ def generate_sequence(
     num_beams,
     num_return_sequences,
 ):
-    prefix_allowed_tokens = llama_prefix_allowed_tokens_fn(
-        candidates, tokenizer, module_length, input_ids
-    )
+    llama_prefix_allowed_tokens_fn(candidates, tokenizer, module_length, input_ids)
     output = model.generate_with_grad(
         input_ids,
         max_length=80,
@@ -758,16 +756,18 @@ def generate_sequence(
         output_hidden_states=True,
     )
     output_ids = output["sequences"][:, 1:]
+    print(output_ids)
     output_sequence = [
         s.replace("<pad>", "").replace("</s>", "")
         for s in tokenizer.batch_decode(output_ids)
     ]
+    print(output_sequence)
     # B * length tuple of (num_beams * vocab_size) tensor
     scores = output["scores"]
     if num_beams > 1:
         if num_return_sequences == 1:
-            length = output_ids.size(-1)
-            number_of_output_ids = output_ids[0].tolist().count(6)
+            length = len(scores)
+            number_of_output_ids = output_ids[0].tolist().count(29892)
             logprob = 0
             # B * num_beams * length
             beam_indices = output["beam_indices"][0]
@@ -792,13 +792,8 @@ def generate_sequence(
         else:
             loss = []
             for i in range(num_return_sequences):
-                if 0 in output_ids[i]:
-                    one_length = output_ids[i][
-                        : (output_ids[i] == 0).nonzero(as_tuple=True)[0].tolist()[0]
-                    ].size(-1)
-                else:
-                    one_length = output_ids[i].size(-1)
-                number_of_output_ids = output_ids[i].tolist().count(6)
+                one_length = len(scores)
+                number_of_output_ids = output_ids[i].tolist().count(29892)
                 if number_of_output_ids == 0:
                     number_of_output_ids += 1
                 logprob = 0
@@ -825,8 +820,9 @@ def generate_sequence(
                 loss.append(logprob / number_of_output_ids)
     else:
         logprob = 0
-        number_of_output_ids = output_ids[0].tolist().count(6)
-        length = output_ids.size(-1)
+        number_of_output_ids = output_ids[0].tolist().count(29892)
+        length = len(scores)
+        print(length)
         for l in range(length):
             exponential_score = torch.exp(scores[l][0]) + 1e-10  # unnormalized prob
             normalized_score = exponential_score / (
