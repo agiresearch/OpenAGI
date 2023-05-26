@@ -10,14 +10,9 @@
 <img src="images/illustration.png">
 </p>
 
-### A demo of using OpenAGI Platform
-https://github.com/agiresearch/OpenAGI/assets/23147604/032646fe-ad50-4494-a52e-1a9594724db4
-
-
-
-
-
 ## News
+-**[2023.5.25]** A demo video of using the OpenAGI platform is added.
+
 -**[2023.5.11]** We release the restructured code of OpenAGI, including the support of both benchmark tasks for quantitative AGI evaluation and open tasks that utilize tools from LangChain, as well as a command line UI that supports easy interaction with OpenAGI when solving complex open tasks.
 
 -**[2023.4.10]** We release the initial version of OpenAGI, including the source code, benchmark, and evaluation methods.
@@ -48,6 +43,9 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 <p align="center">
 <img src="images/travel_plan.png">
 </p>
+
+### A Demo of using the OpenAGI Platform
+https://github.com/agiresearch/OpenAGI/assets/23147604/032646fe-ad50-4494-a52e-1a9594724db4
 
 
 ## Requirements
