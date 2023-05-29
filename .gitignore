@@ -1,3 +1,9 @@
 *.ipynb
 
 api_key.py
+
+generated_images/
+
+generated_poems/
+
+generated_music/
