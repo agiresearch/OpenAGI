@@ -182,7 +182,7 @@ class Text2Image(BaseModel):
         self.device = device
         self.torch_dtype = torch.float16 if 'cuda' in device else torch.float32
         self.model_name = model_name
-        self.pipe = StableDiffusionPipeline.from_pretrained(self.model_name, torch_dtype=self.torch_dtype)
+        # self.pipe = StableDiffusionPipeline.from_pretrained(self.model_name, torch_dtype=self.torch_dtype)
         self.a_prompt = 'best quality, extremely detailed'
         self.n_prompt = 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, ' \
                         'fewer digits, cropped, worst quality, low quality'
@@ -193,12 +193,19 @@ class Text2Image(BaseModel):
                          "The input to this tool should be a string, representing the text used to generate image. "
     
     def run(self, text):
-        self.pipe.to(self.device)
-        image_filename = os.path.join('image', f"{str(uuid.uuid4())[:8]}.png")
-        prompt = text + ', ' + self.a_prompt
-        image = self.pipe(prompt, negative_prompt=self.n_prompt).images[0]
+        # self.pipe.to(self.device)
+        torch.manual_seed(123)
+        if not os.path.exists("generated_images"):
+            os.makedirs("generated_images")
+        image_filename = os.path.join('generated_images', f"{str(uuid.uuid4())[:8]}.png")
+        # prompt = text + ', ' + self.a_prompt
+        prompt = text
+        inference = InferenceApi(repo_id=self.model_name, token=hf_token)
+        image = inference(inputs=prompt)
+        image = image.resize((512,768))
+        # image = self.pipe(prompt, negative_prompt=self.n_prompt).images[0]
         image.save(image_filename)
-        self.pipe.to('cpu')
+        # self.pipe.to('cpu')
         print(
             f"\nProcessed Text2Image, Input Text: {text}, Output Image: {image_filename}")
         return image_filename
@@ -360,7 +367,7 @@ class ImageSuperResolution(BaseModel):
         reformed_img.save(reformed_img_path)
         self.model.to('cpu')
         print(
-            f"\nProcessed ImageColorization, Input Text: {image_path}, Output Image: {colored_img_path}")
+            f"\nProcessed ImageSuperResolution, Input Text: {image_path}, Output Image: {reformed_img_path}")
         return reformed_img_path
 
     
@@ -413,7 +420,7 @@ class SentimentAnalysis(BaseModel):
 # TODO: input requires two text sequences
 class QuestionAnswering(BaseModel):
     name="QuestionAnswering"
-    description=""
+    description="useful when you need to answer a question related to a given context. It receives a question and a context as input."
             
     def __init__(self, device, model_name="distilbert-base-cased-distilled-squad"):
         pass
@@ -522,9 +529,9 @@ class FillMask(BaseModel):
     def run(self, sentence):
         self.model.to(self.device)
         
-        inputs = self.tokenizer(sentence, return_tensors="pt", padding=True).to(self.device)
+        inputs = self.tokenizer(sentence, return_tensors="pt", padding=True).to(device)
 
-        outputs = self.model(**inputs)
+        outputs = self.unmasker(**inputs)
 
         # Get the logits from the outputs
         logits = outputs.logits
@@ -544,30 +551,60 @@ class FillMask(BaseModel):
         
         return completed_text
 
+
+class Text2Poem(BaseModel):
+    name="Text To Poem"
+    description="useful when you want to generate a poem from a given text. It receives text as input."\
+             "The input to this tool should be a string. "
+            
+    def __init__(self, device, model_name=None):
+        print(f"Initializing Text2Poem to {device}")
+        self.device = device
+        
+    def run(self, sentence):
+        prompt = "You are a poem composer who is an expert at composing ."
+        completion = openai.ChatCompletion.create(
+          model="gpt-3.5-turbo",
+          messages=[
+            {"role": "user", "content": sentence}
+          ]
+        )
+
+        content = completion.choices[0].message["content"]
+        if not os.path.exists("generated_poems"):
+            os.makedirs("generated_poems")
+        
+        poem_filename = os.path.join('generated_poems', f"{str(uuid.uuid4())[:8]}.txt")
+        with open(poem_filename, "w") as w:
+            w.write(content)
+
+        print(
+            f"\nProcessed Text2Poem, Input Text: {sentence}, Output Music: {content}")
+        return poem_filename
+    
+    
+class Text2Music(BaseModel):
+    name="Text To Music"
+    description="useful when you want to generate a piece of music from a given text. It receives text as input."\
+             "The input to this tool should be a string. "
+            
+    def __init__(self, device, model_name="sander-wood/text-to-music"):
+        print(f"Initializing Text2Music to {device}")
+        self.model_name = model_name
+        self.device = device
+        
+    def run(self, text):
+        torch.manual_seed(1234)
+        prompt = text
+        inference = InferenceApi(repo_id=self.model_name, token=hf_token)
+        music = inference(inputs=prompt)
+        # self.pipe.to('cpu')
+        music_filename = os.path.join('generated_music', f"{str(uuid.uuid4())[:8]}.txt")
+        with open(music_filename, "w") as w:
+            w.write(music)
+        print(
+            f"\nProcessed Text2Music, Input Text: {text}, Output Music: {music}")
+        return music
+
 if __name__ == "__main__":
-    from langchain.memory import ConversationBufferMemory
-
-    from gradio_tools.tools import (StableDiffusionTool, ImageCaptioningTool, StableDiffusionPromptGeneratorTool,
-                                    TextToVideoTool)
-
-    llm = OpenAI(temperature=0)
-    memory = ConversationBufferMemory(memory_key="chat_history")
-
-    # tools = [Text2Image("cuda:0").langchain, ImageCaptioning("cuda:1").langchain]
-
-    # Image classification
-    # tools = [ImageClassification("cuda:0").langchain]
-
-    # Image Colorization
-    # tools = [ImageColorization("cuda:7").langchain]
-
-    # Object Detection
-    tools = [MachineTranslation("cuda:4").langchain]
-
-    agent = initialize_agent(tools, llm, memory=memory, agent="conversational-react-description", verbose=True)
-
-    # output = agent.run(input=("Please tell me the class of the photo whose path is image/3a2e1da9.png")) # image classification
-    # output = agent.run(input=("Please help me colorize image whose path is image/3a2e1da9.png")) # image colorization
-    # output = agent.run(input=("Please help me detect objects in the image whose path is image/3a2e1da9.png")) # object detection
-    # output = agent.run(input=("Please help me convert the low-resolution image whose path is image/2.jpg to a high-resolution image")) # image super resolution
-    output = agent.run(input=("Please help me translate this sentence: you are my son")) # object detection
+    pass
