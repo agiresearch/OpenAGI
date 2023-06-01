@@ -32,7 +32,7 @@ To facilitate the community's long-term improvement and evaluation of AGI's abil
 </p>
 
 ### Open Task Examples
-1. Instruct OpenAGI to create a traditional Chinese painting using "Gao Shan Liu Shui" (High Moutain and Flowing Water, 高山流水) as the theme, accompanied by a piece of generated ancient Chinese peom and a piece of music that are consistent with the painting. OpenAGI first searched online to "understand" the ancient story of "Gao Shan Liu Shui", and then generated the painting, poem and music step by step based on the collaboration between large language models and domain expert models. The created painting, poem and music are consistent with the ancient story.
+1. Instruct OpenAGI to create a traditional Chinese painting using "Gao Shan Liu Shui" (High Mountain and Flowing Water, 高山流水) as the theme, accompanied by a piece of generated ancient Chinese poem and a piece of music that are consistent with the painting. OpenAGI first searched online to "understand" the ancient story of "Gao Shan Liu Shui", and then generated the painting, poem and music step by step based on the collaboration between large language models and domain expert models. The created painting, poem and music are consistent with the ancient story.
 
 <p align="center">
 <img src="images/artwork.png">
