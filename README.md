@@ -110,7 +110,13 @@ https://github.com/agiresearch/OpenAGI/assets/23147604/032646fe-ad50-4494-a52e-1
     ```
     bash run_openagi.sh
     ```
- 
+    
+## License
+The intended purpose and licensing of OpenAGI is solely for research use.
+
+The source code is licensed under Apache 2.0.
+
+The datasets are licensed under CC BY NC 4.0, which permits only non-commercial usage. It is advised that any models trained using the dataset should not be utilized for anything other than research purposes.
 
 ## Citation
 
