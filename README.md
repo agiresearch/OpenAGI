@@ -116,7 +116,7 @@ The intended purpose and licensing of OpenAGI is solely for research use.
 
 The source code is licensed under Apache 2.0.
 
-The datasets are licensed under CC BY NC 4.0, which permits only non-commercial usage. It is advised that any models trained using the dataset should not be utilized for anything other than research purposes.
+The datasets are licensed under CC BY NC 4.0, which permits only non-commercial usage. See the CC-BY-NC-SA-4.0.txt file for details. For the datasets in this benchmark, you should follow their license. It is advised that any models trained using the dataset should not be utilized for anything other than research purposes.
 
 ## Citation
 
