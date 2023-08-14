@@ -123,7 +123,7 @@ https://github.com/agiresearch/OpenAGI/assets/23147604/032646fe-ad50-4494-a52e-1
 ```
 @article{openagi,
   title={OpenAGI: When LLM Meets Domain Experts},
-  author={Ge, Yingqiang and Hua, Wenyue and Ji, Jianchao and Tan, Juntao and Xu, Shuyuan and Zhang, Yongfeng},
+  author={Ge, Yingqiang and Hua, Wenyue and Mei, Kai and Ji, Jianchao and Tan, Juntao and Xu, Shuyuan and Li, Zelong and Zhang, Yongfeng},
   journal={arXiv},
   year={2023}
 }
