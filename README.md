@@ -118,6 +118,8 @@ https://github.com/agiresearch/OpenAGI/assets/23147604/032646fe-ad50-4494-a52e-1
 
 3. The datasets are licensed under CC BY NC 4.0, which permits only non-commercial usage. See the CC-BY-NC-SA-4.0.txt file for details. For the datasets in this benchmark, you should follow their license. It is advised that any models trained using the dataset should not be utilized for anything other than research purposes.
 
+4. The source code of Restormer is under its original ACADEMIC PUBLIC LICENSE, see Restormer License.md file for details.
+
 ## Citation
 
 ```
