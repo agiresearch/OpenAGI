@@ -112,13 +112,13 @@ https://github.com/agiresearch/OpenAGI/assets/23147604/032646fe-ad50-4494-a52e-1
     ```
     
 ## License
-1. The intended purpose and licensing of OpenAGI is solely for research use.
+1. The source code of OpenAGI is licensed under Apache 2.0. The intended purpose is solely for research use.
 
-2. The source code is licensed under Apache 2.0.
+2. The datasets are licensed under CC BY NC 4.0, which permits only non-commercial usage. See the CC-BY-NC-SA-4.0.txt file for details. For the datasets in this benchmark, you should follow their license. It is advised that any models trained using the dataset should not be utilized for anything other than research purposes.
 
-3. The datasets are licensed under CC BY NC 4.0, which permits only non-commercial usage. See the CC-BY-NC-SA-4.0.txt file for details. For the datasets in this benchmark, you should follow their license. It is advised that any models trained using the dataset should not be utilized for anything other than research purposes.
+3. The source code of Restormer is under its original ACADEMIC PUBLIC LICENSE, see Restormer License.md file for details.
 
-4. The source code of Restormer is under its original ACADEMIC PUBLIC LICENSE, see Restormer License.md file for details.
+4. The source code of Colorization is under its original BSD-2-Clause license, see Colorization License.md file for details.
 
 ## Citation
 
