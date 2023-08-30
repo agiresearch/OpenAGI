@@ -11,6 +11,8 @@
 </p>
 
 ## News
+-**[2023.8.30]** OpenAGI now supports Claude-2, GPT-4 and Llama-2 as the backbone LLM.
+
 -**[2023.5.25]** A demo video of using the OpenAGI platform is added.
 
 -**[2023.5.11]** We release the restructured code of OpenAGI, including the support of both benchmark tasks for quantitative AGI evaluation and open tasks that utilize tools from LangChain, as well as a command line UI that supports easy interaction with OpenAGI when solving complex open tasks.
