@@ -11,7 +11,7 @@
 </p>
 
 ## News
--**[2023.8.30]** OpenAGI now supports Claude-2, GPT-4 and Llama-2 as the backbone LLM.
+-**[2023.8.30]** OpenAGI now supports Claude-2, GPT-4 and Llama-2 as the backbone LLM, plus GPT-3.5, Vicuna, and Flan-T5.
 
 -**[2023.5.25]** A demo video of using the OpenAGI platform is added.
 
