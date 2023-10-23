@@ -417,8 +417,8 @@ class SeqCombine:
         results = []
         for i in range(batch_size):
             answer_ids = inputs["input_ids"][i][start_index:end_index+1]
-            answer_tokens = tokenizer.convert_ids_to_tokens(answer_ids)
-            answer_text = tokenizer.convert_tokens_to_string(answer_tokens)
+            answer_tokens = self.question_answering_tokenizer.convert_ids_to_tokens(answer_ids)
+            answer_text = self.question_answering_tokenizer.convert_tokens_to_string(answer_tokens)
 
             # Print the answer
             results.append(answer_text)
