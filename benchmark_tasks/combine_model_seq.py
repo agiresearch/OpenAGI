@@ -433,7 +433,7 @@ class SeqCombine:
         output:
             summary_text: list of strings
         """
-        inputs = self.summarization_tokenizer(text, return_tensors="pt", padding=True).to(device)
+        inputs = self.summarization_tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(device)
 
         # Get the outputs from the model
         with torch.no_grad():
@@ -446,14 +446,14 @@ class SeqCombine:
     def machine_translation(self, sentences, device):
         """
         input:
-            sentences: list of Englisth strings
+            sentences: list of English strings
         output:
             translated_text: list of German strings
         """
         text = ["translate English to German: " + s for s in sentences]
 
         # Encode the input with the tokenizer
-        inputs = self.translation_tokenizer(text, return_tensors="pt", padding=True).to(device)
+        inputs = self.translation_tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(device)
 
         # Get the outputs from the model
         with torch.no_grad():

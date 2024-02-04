@@ -338,7 +338,7 @@ class SeqGen:
         def prefix_allowed_tokens(batch_id, sentence):
             sentence = sentence.tolist()
             # remove given prompts
-            prompt_length = len(input_ids[batch_id])
+            prompt_length = input_ids.shape[-1] # len(input_ids[batch_id])
             new_sentence_list = sentence[prompt_length:]
 
             if len(new_sentence_list) <= 1:
@@ -567,6 +567,7 @@ class SeqGen:
         module_length,
         num_beams,
         num_return_sequences,
+        **kwargs,
     ):
         prefix_allowed_tokens = self.llama_prefix_allowed_tokens_fn(module_length, input_ids)
         output = self.model.generate_with_grad(
@@ -580,7 +581,8 @@ class SeqGen:
             output_scores=True,
             output_hidden_states=True,
         )
-        output_ids = output["sequences"][:, 1:]
+        input_length = input_ids.shape[-1]
+        output_ids = output["sequences"]
         # print(output_ids)
         output_sequence = [
             s.replace("<pad>", "").replace("</s>", "")
@@ -610,10 +612,10 @@ class SeqGen:
                     )  # normalized prob
                     # print(normalized_score[output_ids[0][l]])
                     prob_score = torch.log(normalized_score)  # normalized log prob
-                    if self.tokenizer.decode(output_ids[0][l]) == "</s>":
+                    if self.tokenizer.decode(output_ids[0][l + input_length]) == "</s>":
                         continue
                     else:
-                        logprob += prob_score[output_ids[0][l]]
+                        logprob += prob_score[output_ids[0][l + input_length]]
                 loss = logprob / number_of_output_ids
             else:
                 loss = []
@@ -626,6 +628,8 @@ class SeqGen:
                     # B * num_return_sequences * length
                     beam_indices = output["beam_indices"][i]
                     for l in range(one_length):
+                        if l + input_length >= len(output_ids[i]):
+                            break
                         # print(tokenizer.decode(output_ids[i][l]))
                         beam_index = beam_indices[l]
                         # print(scores[l][beam_index])
@@ -639,10 +643,10 @@ class SeqGen:
                         # print(normalized_score)
                         prob_score = torch.log(exponential_score)  # normalized log prob
                         # print(prob_score)
-                        if self.tokenizer.decode(output_ids[i][l]) == "</s>":
+                        if self.tokenizer.decode(output_ids[i][l + input_length]) == "</s>":
                             continue
                         else:
-                            logprob += prob_score[output_ids[i][l]]
+                            logprob += prob_score[output_ids[i][l + input_length]]
                     loss.append(logprob / number_of_output_ids)
         else:
             logprob = 0
@@ -655,10 +659,10 @@ class SeqGen:
                     exponential_score.sum()
                 )  # normalized prob
                 prob_score = torch.log(normalized_score)  # normalized log prob
-                if self.tokenizer.decode(output_ids[0][l]) == "</s>":
+                if self.tokenizer.decode(output_ids[0][l + input_length]) == "</s>":
                     continue
                 else:
-                    logprob += prob_score[output_ids[0][l]]
+                    logprob += prob_score[output_ids[0][l + input_length]]
             loss = logprob / number_of_output_ids
 
         return output_sequence, loss
