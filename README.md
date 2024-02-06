@@ -11,6 +11,9 @@
 </p>
 
 ## News
+
+-**[2024.2.2]** We developed methods to control the behavior of LLM Agents based on formal language, more details are available on [this repository](https://github.com/agiresearch/Formal-LLM) and the functionality is being integrated to this main repository too.
+
 -**[2023.8.30]** OpenAGI now supports Llama-2, Claude-2, and GPT-4 as the backbone LLM, plus the already supported GPT-3.5, Vicuna, and Flan-T5 backbone LLMs.
 
 -**[2023.5.25]** A demo video of using the OpenAGI platform is added.
