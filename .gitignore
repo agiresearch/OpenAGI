@@ -1,3 +1,18 @@
+.idea/
+
+.DS_Store
+
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+
+# Ignore Mac system files
+.DS_Store
+
+# Ignore package info
+*.egg-info/
+
+
 *.ipynb
 
 api_key.py
