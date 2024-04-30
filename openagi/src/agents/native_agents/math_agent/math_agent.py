@@ -14,9 +14,9 @@ from concurrent.futures import as_completed
 
 import numpy as np
 
-from src.tools.online.currency_converter import CurrencyConverterAPI
+from openagi.src.tools.online.currency_converter import CurrencyConverterAPI
 
-from src.tools.online.wolfram_alpha import WolframAlpha
+from openagi.src.tools.online.wolfram_alpha import WolframAlpha
 
 import re
 class MathAgent(BaseAgent):
