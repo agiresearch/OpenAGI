@@ -2,7 +2,7 @@ import os
 
 import json
 
-from openagi.src.agents.agent_process import (
+from .agent_process import (
     AgentProcess,
     # AgentProcessQueue
 )
@@ -19,9 +19,7 @@ from datetime import datetime
 
 import numpy as np
 
-from openagi.src.utils.logger import AgentLogger
-
-
+from ..utils.logger import AgentLogger
 class CustomizedThread(Thread):
     def __init__(self, target, args=()):
         super().__init__()
@@ -72,7 +70,7 @@ class BaseAgent:
         self.logger.log(f"Initialized. \n", level="info")
 
         self.set_status("active")
-        self.set_created_time(time)
+        self.set_created_time(time.time())
 
     def run(self):
         '''Execute each step to finish the task.'''
@@ -83,9 +81,7 @@ class BaseAgent:
         return logger
 
     def load_config(self):
-        script_path = os.path.abspath(__file__)
-        script_dir = os.path.dirname(script_path)
-        config_file = os.path.join(script_dir, "agent_config/{}.json".format(self.agent_name))
+        config_file = os.path.join(os.getcwd(), "src", "agents", "agent_config/{}.json".format(self.agent_name))
         with open(config_file, "r") as f:
             config = json.load(f)
             return config
@@ -119,8 +115,6 @@ class BaseAgent:
 
             thread.start()
             thread.join()
-            # process.start()
-            # process.join()
 
             completed_response = agent_process.get_response()
             if agent_process.get_status() != "done":
@@ -188,6 +182,12 @@ class BaseAgent:
 
     def get_created_time(self):
         return self.created_time
+
+    def set_end_time(self, time):
+        self.end_time = time
+
+    def get_end_time(self):
+        return self.end_time
 
     def parse_result(self, prompt):
         pass
