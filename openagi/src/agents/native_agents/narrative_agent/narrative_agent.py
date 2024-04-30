@@ -69,15 +69,10 @@ class NarrativeAgent(BaseAgent):
         final_result, waiting_time, turnaround_time = self.get_response(prompt)
         waiting_times.append(waiting_time)
         turnaround_times.append(turnaround_time)
-        # return res
-        # print(f"Average waiting time: {np.mean(np.array(waiting_times))}")
+
         avg_waiting_time = np.mean(np.array(waiting_times))
         avg_turnaround_time = np.mean(np.array(turnaround_times))
-        # self.logger.log(
-        #     f"Done. Average waiting time: {np.mean(np.array(waiting_times))} seconds. Average turnaround time: {np.mean(np.array(turnaround_times))} seconds\n",
-        #     level="done"
-        # )
-        # time.sleep(10)
+
         self.set_status("done")
         self.set_end_time(time=time.time())
 

@@ -59,16 +59,10 @@ class RecAgent(BaseAgent):
         prompt += f"Given the interaction history: '{prompt}', give a final recommendation list and explanations, don't be verbose!"
 
         final_result, waiting_time, turnaround_time = self.get_response(prompt)
-        # time.sleep(10)
         self.set_status("done")
 
         self.set_end_time(time=time.time())
 
-        # print(f"Average waiting time: {np.mean(np.array(waiting_times))}")
-        # self.logger.log(
-        #     f"Done. Average waiting time: {np.mean(np.array(waiting_times))} seconds. Average turnaround time: {np.mean(np.array(turnaround_times))} seconds\n",
-        #     level="done"
-        # )
         avg_waiting_time = np.mean(np.array(waiting_times))
         avg_turnaround_time = np.mean(np.array(turnaround_times))
 

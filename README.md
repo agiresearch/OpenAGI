@@ -15,7 +15,7 @@ pytest -s tests
 ```
 
 ## Research
-Please check out our [implementation](../research) for our research paper [OpenAGI: When LLM Meets Domain Experts](https://arxiv.org/abs/2304.04370).
+Please check out our [implementation](./research) for our research paper [OpenAGI: When LLM Meets Domain Experts](https://arxiv.org/abs/2304.04370).
 
 
 ## Star History

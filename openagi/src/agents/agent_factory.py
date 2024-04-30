@@ -29,21 +29,17 @@ class AgentFactory:
             "MathAgent": MathAgent,
             "NarrativeAgent": NarrativeAgent,
             "RecAgent": RecAgent,
-            # "TravelAgent": TravelAgent
         }
 
         self.current_agents = {}
 
         self.current_agents_lock = Lock()
 
-        # self.thread = Thread(target=self.deactivate_agent)
-
         self.terminate_signal = Event()
 
         self.agent_log_mode = agent_log_mode
 
     def activate_agent(self, agent_name, task_input):
-        # print(task_input)
         agent = self.agent_table[agent_name](
             agent_name = agent_name,
             task_input = task_input,
@@ -55,10 +51,7 @@ class AgentFactory:
         aid = heapq.heappop(self.aid_pool)
 
         agent.set_aid(aid)
-        # time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # agent.set_status("active")
-        # agent.set_created_time(time)
+        
         if not self.terminate_signal.is_set():
             with self.current_agents_lock:
                 self.current_agents[aid] = agent
