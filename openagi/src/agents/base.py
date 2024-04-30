@@ -7,8 +7,6 @@ from .agent_process import (
     # AgentProcessQueue
 )
 
-# from multiprocessing import Process
-
 import logging
 
 import time
@@ -33,20 +31,6 @@ class CustomizedThread(Thread):
     def join(self):
         super().join()
         return self.result
-
-# class CustomizedProcess(Process):
-#     def __init__(self, target, args=()):
-#         super().__init__()
-#         self.target = target
-#         self.args = args
-#         self.result = None
-
-#     def run(self):
-#         self.result = self.target(*self.args)
-
-#     def join(self):
-#         super().join()
-#         return self.result
 
 class BaseAgent:
     def __init__(self,
@@ -81,7 +65,9 @@ class BaseAgent:
         return logger
 
     def load_config(self):
-        config_file = os.path.join(os.getcwd(), "src", "agents", "agent_config/{}.json".format(self.agent_name))
+        script_path = os.path.abspath(__file__)
+        script_dir = os.path.dirname(script_path)
+        config_file = os.path.join(script_dir, "agent_config/{}.json".format(self.agent_name))
         with open(config_file, "r") as f:
             config = json.load(f)
             return config
@@ -90,22 +76,14 @@ class BaseAgent:
         thread = CustomizedThread(target=self.query_loop, args=(prompt, ))
         thread.start()
         return thread.join()
-        # process = CustomizedProcess(target=self.query_loop, args=(prompt, ))
-        # process.start()
-        # return process.join()
-        # return self.query_loop(prompt)
 
     def query_loop(self, prompt):
         agent_process = self.create_agent_request(prompt)
 
-        # print(f"Loop Prompt: {prompt}")
         completed_response, waiting_times, turnaround_times = "", [], []
 
-        # print("Already put into the queue")
         while agent_process.get_status() != "done":
-            # print(agent_process.get_status())
             thread = Thread(target=self.listen, args=(agent_process, ))
-            # process = Process(target=self.listen, args=(agent_process, ))
             current_time = time.time()
 
             # reinitialize agent status
