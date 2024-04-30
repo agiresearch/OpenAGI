@@ -2,7 +2,7 @@ import os
 
 import json
 
-from src.agents.agent_process import (
+from openagi.src.agents.agent_process import (
     AgentProcess,
     # AgentProcessQueue
 )
@@ -19,7 +19,9 @@ from datetime import datetime
 
 import numpy as np
 
-from src.utils.logger import AgentLogger
+from openagi.src.utils.logger import AgentLogger
+
+
 class CustomizedThread(Thread):
     def __init__(self, target, args=()):
         super().__init__()
@@ -81,7 +83,9 @@ class BaseAgent:
         return logger
 
     def load_config(self):
-        config_file = os.path.join(os.getcwd(), "src", "agents", "agent_config/{}.json".format(self.agent_name))
+        script_path = os.path.abspath(__file__)
+        script_dir = os.path.dirname(script_path)
+        config_file = os.path.join(script_dir, "agent_config/{}.json".format(self.agent_name))
         with open(config_file, "r") as f:
             config = json.load(f)
             return config
