@@ -83,7 +83,7 @@ class RecAgent(BaseAgent):
             "result": final_result,
             "rounds": rounds,
             "agent_waiting_time": self.start_time - self.created_time,
-            "agent_execution_time": self.end_time - self.created_time,
+            "agent_turnaround_time": self.end_time - self.created_time,
             "request_waiting_times": request_waiting_times,
             "request_turnaround_times": request_turnaround_times,
         }
