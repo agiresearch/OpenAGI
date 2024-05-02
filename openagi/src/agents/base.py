@@ -85,7 +85,6 @@ class BaseAgent:
         while agent_process.get_status() != "done":
             thread = Thread(target=self.listen, args=(agent_process, ))
             current_time = time.time()
-
             # reinitialize agent status
             agent_process.set_created_time(current_time)
             agent_process.set_response(None)
