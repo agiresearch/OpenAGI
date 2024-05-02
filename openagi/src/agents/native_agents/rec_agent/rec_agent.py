@@ -31,8 +31,9 @@ class RecAgent(BaseAgent):
         task_input = "The task you need to solve is: " + task_input
         self.logger.log(f"{task_input}\n", level="info")
         prompt += task_input
-        waiting_times = []
-        turnaround_times = []
+        request_waiting_times = []
+        request_turnaround_times = []
+
         steps = [
             "give a general recommendation direction for users.",
             "based on the above recommendation direction, give a recommendation list."
@@ -45,12 +46,15 @@ class RecAgent(BaseAgent):
 
             self.logger.log(f"Step {i+1}: {step}\n", level="info")
 
-            response, waiting_time, turnaround_time = self.get_response(prompt)
+            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+
+            if rounds == 0:
+                self.set_start_time(start_times[0])
 
             rounds += 1
 
-            waiting_times.append(waiting_time)
-            turnaround_times.append(turnaround_time)
+            request_waiting_times.extend(waiting_times)
+            request_turnaround_times.extend(turnaround_times)
 
             prompt += f"The solution to step {i+1} is: {response}\n"
 
@@ -58,13 +62,16 @@ class RecAgent(BaseAgent):
 
         prompt += f"Given the interaction history: '{prompt}', give a final recommendation list and explanations, don't be verbose!"
 
-        final_result, waiting_time, turnaround_time = self.get_response(prompt)
+        final_result, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+        request_waiting_times.extend(waiting_times)
+        request_turnaround_times.extend(turnaround_times)
+
         self.set_status("done")
 
         self.set_end_time(time=time.time())
 
-        avg_waiting_time = np.mean(np.array(waiting_times))
-        avg_turnaround_time = np.mean(np.array(turnaround_times))
+        request_waiting_times.extend(waiting_times)
+        request_turnaround_times.extend(turnaround_times)
 
         self.logger.log(
             f"{task_input} Final result is: {final_result}\n",
@@ -75,9 +82,10 @@ class RecAgent(BaseAgent):
             "agent_name": self.agent_name,
             "result": final_result,
             "rounds": rounds,
-            "execution_time": self.end_time - self.created_time,
-            "avg_waiting_time": avg_waiting_time,
-            "avg_turnaround_time": avg_turnaround_time,
+            "agent_waiting_time": self.start_time - self.created_time,
+            "agent_execution_time": self.end_time - self.created_time,
+            "request_waiting_times": request_waiting_times,
+            "request_turnaround_times": request_turnaround_times,
         }
 
     def parse_result(self, prompt):

@@ -80,7 +80,7 @@ class BaseAgent:
     def query_loop(self, prompt):
         agent_process = self.create_agent_request(prompt)
 
-        completed_response, waiting_times, turnaround_times = "", [], []
+        completed_response, start_times, end_times, waiting_times, turnaround_times = "", [], [], [], []
 
         while agent_process.get_status() != "done":
             thread = Thread(target=self.listen, args=(agent_process, ))
@@ -100,10 +100,13 @@ class BaseAgent:
                     f"Suspended due to the reach of time limit ({agent_process.get_time_limit()}s). Current result is: {completed_response}\n",
                     level="suspending"
                 )
+            start_time = agent_process.get_start_time()
+            end_time = agent_process.get_end_time()
+            waiting_time = start_time - agent_process.get_created_time()
+            turnaround_time = end_time - agent_process.get_created_time()
 
-            waiting_time = agent_process.get_start_time() - current_time
-            turnaround_time = agent_process.get_end_time() - current_time
-
+            start_times.append(start_time)
+            end_times.append(end_time)
             waiting_times.append(waiting_time)
             turnaround_times.append(turnaround_time)
             # Re-start the thread if not done
@@ -111,7 +114,7 @@ class BaseAgent:
         self.agent_process_factory.deactivate_agent_process(agent_process.get_pid())
 
         completed_response = completed_response.replace("\n", "")
-        return completed_response, np.mean(np.array(waiting_times)), np.mean(np.array(turnaround_times))
+        return completed_response, start_times, end_times, waiting_times, turnaround_times
 
     def create_agent_request(self, prompt):
         agent_process = self.agent_process_factory.activate_agent_process(
@@ -133,7 +136,7 @@ class BaseAgent:
         """
         while agent_process.get_response() is None:
             time.sleep(0.2)
-
+        
         return agent_process.get_response()
 
     def set_aid(self, aid):
@@ -160,6 +163,12 @@ class BaseAgent:
 
     def get_created_time(self):
         return self.created_time
+    
+    def set_start_time(self, time):
+        self.start_time = time
+
+    def get_start_time(self):
+        return self.start_time
 
     def set_end_time(self, time):
         self.end_time = time

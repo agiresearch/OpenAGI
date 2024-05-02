@@ -74,7 +74,6 @@ class AgentProcess:
     def set_response(self, response):
         self.response = response
 
-
     def get_time_limit(self):
         return self.time_limit
 
