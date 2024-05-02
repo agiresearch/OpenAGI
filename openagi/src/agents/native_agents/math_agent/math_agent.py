@@ -48,8 +48,8 @@ class MathAgent(BaseAgent):
         prefix = self.prefix
         task_input = self.task_input
         prompt += prefix
-        waiting_times = []
-        turnaround_times = []
+        request_waiting_times = []
+        request_turnaround_times = []
         task_input = "The task you need to solve is: " + task_input
         prompt += task_input
 
@@ -64,29 +64,28 @@ class MathAgent(BaseAgent):
         ]
         for i, step in enumerate(steps):
             prompt += f"\nIn step {i+1}, you need to {step}. Output should focus on current step and don't be verbose!"
-            # print(f"current prompt: {prompt}")
 
             self.logger.log(f"Step {i+1}: {step}\n", level="info")
-            response, waiting_time, turnaround_time = self.get_response(prompt)
+            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+
+            if rounds == 0:
+                self.set_start_time(start_times[0])
+
             rounds += 1
 
-            # print(f"Current step: {i+1}")
-            waiting_times.append(waiting_time)
-            turnaround_times.append(turnaround_time)
+            request_waiting_times.extend(waiting_times)
+            request_turnaround_times.extend(turnaround_times)
             prompt += f"The solution to step {i+1} is: {response}\n"
             self.logger.log(f"The solution to step {i+1}: {response}\n", level="info")
 
         prompt += f"Given the interaction history: '{prompt}', integrate solutions in all steps to give a final answer, don't be verbose!"
 
-        final_result, waiting_time, turnaround_time = self.get_response(prompt)
-        waiting_times.append(waiting_time)
-        turnaround_times.append(turnaround_time)
+        final_result, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+        request_waiting_times.extend(waiting_times)
+        request_turnaround_times.extend(turnaround_times)
 
         self.set_status("done")
         self.set_end_time(time=time.time())
-
-        avg_waiting_time = np.mean(np.array(waiting_times))
-        avg_turnaround_time = np.mean(np.array(turnaround_times))
 
         self.logger.log(
             f"{task_input} Final result is: {final_result}\n",
@@ -97,9 +96,10 @@ class MathAgent(BaseAgent):
             "agent_name": self.agent_name,
             "result": final_result,
             "rounds": rounds,
-            "execution_time": self.end_time - self.created_time,
-            "avg_waiting_time": avg_waiting_time,
-            "avg_turnaround_time": avg_turnaround_time,
+            "agent_waiting_time": self.start_time - self.created_time,
+            "agent_execution_time": self.end_time - self.created_time,
+            "request_waiting_times": request_waiting_times,
+            "request_turnaround_times": request_turnaround_times,
         }
 
 

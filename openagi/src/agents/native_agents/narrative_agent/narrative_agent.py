@@ -26,8 +26,8 @@ class NarrativeAgent(BaseAgent):
         # print(self.log_mode)
 
     def run(self):
-        waiting_times = []
-        turnaround_times = []
+        request_waiting_times = []
+        request_turnaround_times = []
         prompt = ""
         prefix = self.prefix
         prompt += prefix
@@ -51,12 +51,15 @@ class NarrativeAgent(BaseAgent):
 
             self.logger.log(f"Step {i+1}: {step}\n", level="info")
 
-            response, waiting_time, turnaround_time = self.get_response(prompt)
+            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+
+            if rounds == 0:
+                self.set_start_time(start_times[0])
 
             rounds += 1
 
-            waiting_times.append(waiting_time)
-            turnaround_times.append(turnaround_time)
+            request_waiting_times.extend(waiting_times)
+            request_turnaround_times.extend(turnaround_times)
 
             prompt += f"The solution to step {i+1} is: {response}\n"
 
@@ -66,12 +69,9 @@ class NarrativeAgent(BaseAgent):
 
         prompt += f"Given the interaction history: '{prompt}', integrate content in each step to give a full story, don't be verbose!"
 
-        final_result, waiting_time, turnaround_time = self.get_response(prompt)
-        waiting_times.append(waiting_time)
-        turnaround_times.append(turnaround_time)
-
-        avg_waiting_time = np.mean(np.array(waiting_times))
-        avg_turnaround_time = np.mean(np.array(turnaround_times))
+        final_result, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+        request_waiting_times.extend(waiting_times)
+        request_turnaround_times.extend(turnaround_times)
 
         self.set_status("done")
         self.set_end_time(time=time.time())
@@ -82,9 +82,10 @@ class NarrativeAgent(BaseAgent):
             "agent_name": self.agent_name,
             "result": final_result,
             "rounds": rounds,
-            "execution_time": self.end_time - self.created_time,
-            "avg_waiting_time": avg_waiting_time,
-            "avg_turnaround_time": avg_turnaround_time,
+            "agent_waiting_time": self.start_time - self.created_time,
+            "agent_execution_time": self.end_time - self.created_time,
+            "request_waiting_times": request_waiting_times,
+            "request_turnaround_times": request_turnaround_times,
         }
 
 if __name__ == "__main__":
