@@ -17,13 +17,13 @@ from threading import Thread, Lock, Event
 from pympler import asizeof
 
 class AgentFactory:
-    def __init__(self, llm, agent_process_queue, agent_process_factory, agent_log_mode):
+    def __init__(self, llm, agent_process_queue, llm_request_responses, agent_log_mode):
         self.max_aid = 256
         self.llm = llm
         self.aid_pool = [i for i in range(self.max_aid)]
         heapq.heapify(self.aid_pool)
         self.agent_process_queue = agent_process_queue
-        self.agent_process_factory = agent_process_factory
+        self.llm_request_responses = llm_request_responses
 
         self.agent_table = {
             "MathAgent": MathAgent,
@@ -45,7 +45,7 @@ class AgentFactory:
             task_input = task_input,
             llm = self.llm,
             agent_process_queue = self.agent_process_queue,
-            agent_process_factory = self.agent_process_factory,
+            llm_request_responses = self.llm_request_responses,
             log_mode = self.agent_log_mode
         )
         aid = heapq.heappop(self.aid_pool)
@@ -63,10 +63,10 @@ class AgentFactory:
             agent_name=agent_name,
             task_input=task_input
         )
-        # print(task_input)
-        output = agent.run()
+        agent.start()
+        agent.join()
         self.deactivate_agent(agent.get_aid())
-        return output
+        # return output
 
     def print_agent(self):
         headers = ["Agent ID", "Agent Name", "Created Time", "Status", "Memory Usage"]
@@ -104,10 +104,3 @@ class AgentFactory:
     def deactivate_agent(self, aid):
         self.current_agents.pop(aid)
         heapq.heappush(self.aid_pool, aid)
-
-    def start(self):
-        """start the factory to check inactive agent"""
-        self.thread.start()
-
-    def stop(self):
-        self.thread.join()
