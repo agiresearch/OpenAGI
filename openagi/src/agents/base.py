@@ -4,7 +4,6 @@ import json
 
 from .agent_process import (
     AgentProcess,
-    # AgentProcessQueue
 )
 
 import logging
@@ -13,41 +12,35 @@ import time
 
 from threading import Thread
 
+import multiprocessing
+
 from datetime import datetime
 
 import numpy as np
 
 from ..utils.logger import AgentLogger
-class CustomizedThread(Thread):
-    def __init__(self, target, args=()):
-        super().__init__()
-        self.target = target
-        self.args = args
-        self.result = None
 
-    def run(self):
-        self.result = self.target(*self.args)
+import threading
 
-    def join(self):
-        super().join()
-        return self.result
-
-class BaseAgent:
+class BaseAgent(multiprocessing.Process):
     def __init__(self,
                  agent_name,
                  task_input,
                  llm,
                  agent_process_queue,
-                 agent_process_factory,
+                #  agent_process_factory,
+                 llm_request_responses,
                  log_mode: str
         ):
+        super().__init__()
         self.agent_name = agent_name
         self.config = self.load_config()
         self.prefix = " ".join(self.config["description"])
         self.task_input = task_input
         self.llm = llm
         self.agent_process_queue = agent_process_queue
-        self.agent_process_factory = agent_process_factory
+        self.llm_request_responses = llm_request_responses
+        # self.agent_process_factory = agent_process_factory
 
         self.log_mode = log_mode
         self.logger = self.setup_logger()
@@ -72,71 +65,22 @@ class BaseAgent:
             config = json.load(f)
             return config
 
-    def get_response(self, prompt, temperature=0.0):
-        thread = CustomizedThread(target=self.query_loop, args=(prompt, ))
-        thread.start()
-        return thread.join()
-
-    def query_loop(self, prompt):
-        agent_process = self.create_agent_request(prompt)
-
-        completed_response, start_times, end_times, waiting_times, turnaround_times = "", [], [], [], []
-
-        while agent_process.get_status() != "done":
-            thread = Thread(target=self.listen, args=(agent_process, ))
-            current_time = time.time()
-            # reinitialize agent status
-            agent_process.set_created_time(current_time)
-            agent_process.set_response(None)
-            self.agent_process_queue.put(agent_process)
-
-            thread.start()
-            thread.join()
-
-            completed_response = agent_process.get_response()
-            if agent_process.get_status() != "done":
-                self.logger.log(
-                    f"Suspended due to the reach of time limit ({agent_process.get_time_limit()}s). Current result is: {completed_response}\n",
-                    level="suspending"
-                )
-            start_time = agent_process.get_start_time()
-            end_time = agent_process.get_end_time()
-            waiting_time = start_time - agent_process.get_created_time()
-            turnaround_time = end_time - agent_process.get_created_time()
-
-            start_times.append(start_time)
-            end_times.append(end_time)
-            waiting_times.append(waiting_time)
-            turnaround_times.append(turnaround_time)
-            # Re-start the thread if not done
-
-        self.agent_process_factory.deactivate_agent_process(agent_process.get_pid())
-
-        completed_response = completed_response.replace("\n", "")
-        return completed_response, start_times, end_times, waiting_times, turnaround_times
-
-    def create_agent_request(self, prompt):
-        agent_process = self.agent_process_factory.activate_agent_process(
-            agent_name = self.agent_name,
-            prompt = prompt
+    def get_response(self, prompt, step, temperature=0.0):
+        agent_process = AgentProcess(
+            agent_name=self.get_agent_name(),
+            agent_id=self.get_aid(),
+            step=step,
+            prompt=prompt,
+            agent_process_queue=self.agent_process_queue,
+            llm_request_responses=self.llm_request_responses
         )
-        agent_process.set_created_time(time.time())
-        # print("Already put into the queue")
-        return agent_process
+        agent_process.start()
+        agent_process.join()
 
-    def listen(self, agent_process):
-        """Response Listener for agent
+        task_key = (self.get_aid(), step)
+        output = self.llm_request_responses.pop(task_key)
 
-        Args:
-            agent_process (AgentProcess): Listened AgentProcess
-
-        Returns:
-            str: LLM response of Agent Process
-        """
-        while agent_process.get_response() is None:
-            time.sleep(0.2)
-        
-        return agent_process.get_response()
+        return output
 
     def set_aid(self, aid):
         self.aid = aid

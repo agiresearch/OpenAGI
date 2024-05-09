@@ -26,11 +26,12 @@ class MathAgent(BaseAgent):
     def __init__(self,
                  agent_name,
                  task_input,
-                 llm, agent_process_queue,
-                 agent_process_factory,
+                 llm, 
+                 agent_process_queue,
+                 llm_request_responses,
                  log_mode: str
         ):
-        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, agent_process_factory, log_mode)
+        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, llm_request_responses, log_mode)
         self.tool_list = {
             # "wolfram_alpha": WolframAlpha(),
             # "currenct_converter": CurrencyConverterAPI()
@@ -57,34 +58,71 @@ class MathAgent(BaseAgent):
 
         rounds = 0
         # predefined steps
-        steps = [
+        procedures = [
             "identify and outline the sub-problems that need to be solved as stepping stones toward the solution. ",
             "solve each sub-problem. ",
             "integrate the solutions to these sub-problems in the previous step to get the final solution. "
         ]
-        for i, step in enumerate(steps):
-            prompt += f"\nIn step {i+1}, you need to {step}. Output should focus on current step and don't be verbose!"
+        for i, p in enumerate(procedures):
+            prompt += f"\nIn step {rounds+1}, you need to {p}. Output should focus on current step and don't be verbose!"
 
-            self.logger.log(f"Step {i+1}: {step}\n", level="info")
-            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+            self.logger.log(f"Step {i+1}: {p}\n", level="info")
+
+            output = self.get_response(
+                prompt = prompt,
+                step = rounds
+            )
+
+            response = output["response"]
+
+            request_created_times = output["created_times"]
+
+            request_start_times = output["start_times"]
+
+            request_end_times = output["end_times"]
+
+            request_waiting_time = [(s - c) for s,c in zip(request_start_times, request_created_times)]
+
+            request_turnaround_time = [(e - c) for e,c in zip(request_end_times, request_created_times)]
+
+            request_waiting_times.extend(request_waiting_time)
+
+            request_turnaround_times.extend(request_turnaround_time)
 
             if rounds == 0:
-                self.set_start_time(start_times[0])
+                self.set_start_time(output["start_times"][0])
+            
+            self.logger.log(
+                f"Solution for current step {rounds+1} is: {response}\n",
+                level="info"
+            )
 
             rounds += 1
 
-            request_waiting_times.extend(waiting_times)
-            request_turnaround_times.extend(turnaround_times)
-            prompt += f"The solution to step {i+1} is: {response}\n"
-            self.logger.log(f"The solution to step {i+1}: {response}\n", level="info")
-
         prompt += f"Given the interaction history: '{prompt}', integrate solutions in all steps to give a final answer, don't be verbose!"
 
-        final_result, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
-        request_waiting_times.extend(waiting_times)
-        request_turnaround_times.extend(turnaround_times)
+        output = self.get_response(
+            prompt = prompt,
+            step = rounds
+        )
+        final_result = output["response"]
+
+        request_created_times = output["created_times"]
+
+        request_start_times = output["start_times"]
+
+        request_end_times = output["end_times"]
+        
+        request_waiting_time = [(s - c) for s,c in zip(request_start_times, request_created_times)]
+
+        request_turnaround_time = [(e - c) for e,c in zip(request_end_times, request_created_times)]
+
+        request_waiting_times.extend(request_waiting_time)
+
+        request_turnaround_times.extend(request_turnaround_time)
 
         self.set_status("done")
+
         self.set_end_time(time=time.time())
 
         self.logger.log(
@@ -92,7 +130,7 @@ class MathAgent(BaseAgent):
             level="info"
         )
         
-        return {
+        output = {
             "agent_name": self.agent_name,
             "result": final_result,
             "rounds": rounds,
@@ -100,7 +138,8 @@ class MathAgent(BaseAgent):
             "agent_turnaround_time": self.end_time - self.created_time,
             "request_waiting_times": request_waiting_times,
             "request_turnaround_times": request_turnaround_times,
-        }
+        } 
+        print(output)
 
 
 if __name__ == "__main__":
