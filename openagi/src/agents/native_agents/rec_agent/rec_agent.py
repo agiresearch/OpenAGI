@@ -16,12 +16,19 @@ class RecAgent(BaseAgent):
     def __init__(self,
                  agent_name,
                  task_input,
-                 llm,
+                 llm, 
                  agent_process_queue,
-                 agent_process_factory,
-                 log_mode
+                 llm_request_responses,
+                 log_mode: str
         ):
-        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, agent_process_factory, log_mode)
+        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, llm_request_responses, log_mode)
+        self.tool_list = {
+            
+        }
+        self.tool_check_max_fail_times = 10
+        self.tool_select_max_fail_times = 10
+        self.tool_calling_max_fail_times = 10
+        self.tool_info = "".join(self.config["tool_info"])
 
     def run(self):
         prompt = ""
@@ -34,51 +41,81 @@ class RecAgent(BaseAgent):
         request_waiting_times = []
         request_turnaround_times = []
 
-        steps = [
+        procedures = [
             "give a general recommendation direction for users.",
             "based on the above recommendation direction, give a recommendation list."
         ]
 
         rounds = 0
 
-        for i, step in enumerate(steps):
-            prompt += f"\nIn step {i+1}, you need to {step}. Output should focus on current step and don't be verbose!"
+        for i, p in enumerate(procedures):
+            prompt += f"\nIn step {rounds+1}, you need to {p}. Output should focus on current step and don't be verbose!"
 
-            self.logger.log(f"Step {i+1}: {step}\n", level="info")
+            self.logger.log(f"Step {i+1}: {p}\n", level="info")
 
-            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+            output = self.get_response(
+                prompt = prompt,
+                step = rounds
+            )
+
+            response = output["response"]
+
+            request_created_times = output["created_times"]
+
+            request_start_times = output["start_times"]
+
+            request_end_times = output["end_times"]
+
+            request_waiting_time = [(s - c) for s,c in zip(request_start_times, request_created_times)]
+
+            request_turnaround_time = [(e - c) for e,c in zip(request_end_times, request_created_times)]
+
+            request_waiting_times.extend(request_waiting_time)
+
+            request_turnaround_times.extend(request_turnaround_time)
 
             if rounds == 0:
-                self.set_start_time(start_times[0])
+                self.set_start_time(output["start_times"][0])
+            
+            self.logger.log(
+                f"Solution for current step {rounds+1} is: {response}\n",
+                level="info"
+            )
 
             rounds += 1
 
-            request_waiting_times.extend(waiting_times)
-            request_turnaround_times.extend(turnaround_times)
-
-            prompt += f"The solution to step {i+1} is: {response}\n"
-
-            self.logger.log(f"The solution to step {i+1}: {response}\n", level="info")
-
         prompt += f"Given the interaction history: '{prompt}', give a final recommendation list and explanations, don't be verbose!"
 
-        final_result, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
-        request_waiting_times.extend(waiting_times)
-        request_turnaround_times.extend(turnaround_times)
+        output = self.get_response(
+            prompt = prompt,
+            step = rounds
+        )
+        final_result = output["response"]
+
+        request_created_times = output["created_times"]
+
+        request_start_times = output["start_times"]
+
+        request_end_times = output["end_times"]
+        
+        request_waiting_time = [(s - c) for s,c in zip(request_start_times, request_created_times)]
+
+        request_turnaround_time = [(e - c) for e,c in zip(request_end_times, request_created_times)]
+
+        request_waiting_times.extend(request_waiting_time)
+
+        request_turnaround_times.extend(request_turnaround_time)
 
         self.set_status("done")
 
         self.set_end_time(time=time.time())
 
-        request_waiting_times.extend(waiting_times)
-        request_turnaround_times.extend(turnaround_times)
-
         self.logger.log(
             f"{task_input} Final result is: {final_result}\n",
             level="info"
         )
-
-        return {
+        
+        output = {
             "agent_name": self.agent_name,
             "result": final_result,
             "rounds": rounds,
@@ -86,7 +123,8 @@ class RecAgent(BaseAgent):
             "agent_turnaround_time": self.end_time - self.created_time,
             "request_waiting_times": request_waiting_times,
             "request_turnaround_times": request_turnaround_times,
-        }
+        } 
+        self.llm_request_responses[self.get_aid()] = output
 
     def parse_result(self, prompt):
         return prompt

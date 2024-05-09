@@ -12,8 +12,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from threading import Thread, Lock, Event
 
-# from multiprocessing import Process, Lock, Event
-
 from pympler import asizeof
 
 class AgentFactory:

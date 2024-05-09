@@ -139,7 +139,7 @@ class MathAgent(BaseAgent):
             "request_waiting_times": request_waiting_times,
             "request_turnaround_times": request_turnaround_times,
         } 
-        print(output)
+        self.llm_request_responses[self.get_aid()] = output
 
 
 if __name__ == "__main__":
