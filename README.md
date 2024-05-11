@@ -4,8 +4,9 @@
 <a href='https://discord.gg/B2HFxEgTJX'><img src='https://img.shields.io/badge/Community-Discord-8A2BE2'></a>
 
 
-## 1. Installation
-### 1.1 use OpenAGI in AIOS
+## ✈️ 1. Getting Started
+### 1.1 Installation
+#### (1) use OpenAGI in AIOS
 1. follow [AIOS](https://github.com/agiresearch/AIOS) instruction to install the virtual environment
 
 2. Allow your code to be able to see 'openagi'
@@ -13,7 +14,7 @@
 $ pip install -e .
 ```
 
-### 1.2 use OpenAGI alone
+#### (2) use OpenAGI alone
 1. set up virtual environment and install the required packages using pip
 ```bash
 conda create -n OpenAGI python=3.11
@@ -24,6 +25,18 @@ pip install -r requirements.txt
 2. Allow your code to be able to see 'openagi'
 ```
 $ pip install -e .
+```
+
+### 1.2 Usage
+If you use external tool APIs in your agents, you need to set up your API keys as follows:
+```bash
+export RAPID_API_KEY=""
+export WOLFRAM_ALPHA_APPID=""
+```
+You can also create .env file from the .env.example file, and then use dotenv to load the environment variables using .env file into your application's environment at runtime.
+
+```bash
+cp .env.example .env
 ```
 
 ## 2. Contributing
