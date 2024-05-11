@@ -80,6 +80,7 @@ class MathAgent(BaseAgent):
                 tool_calls = response.tool_calls
 
                 if tool_calls:
+                    self.logger.log(f"***** It starts to call external tools *****\n", level="info")
 
                     request_waiting_times.extend(waiting_times)
                     request_turnaround_times.extend(turnaround_times)
@@ -95,7 +96,7 @@ class MathAgent(BaseAgent):
                             function_responses += function_response
                             prompt += function_response
 
-                    self.logger.log(f"The solution to step {rounds+1}: {function_responses}\n", level="info")
+                        self.logger.log(f"The solution to step {rounds+1}: It will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
                 
                 else:
                     self.logger.log(f"The solution to step {rounds+1}: {response_message}\n", level="info")
