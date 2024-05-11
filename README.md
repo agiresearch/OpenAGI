@@ -28,11 +28,8 @@ $ pip install -e .
 ```
 
 ### 1.2 Usage
-If you use external tool APIs in your agents, you need to set up your API keys as follows:
-```bash
-export RAPID_API_KEY=""
-export WOLFRAM_ALPHA_APPID=""
-```
+If you use external tool APIs in your agents, you can follow instructions of setting up tools in [How to setup external tools](./tools.md). 
+
 You can also create .env file from the .env.example file, and then use dotenv to load the environment variables using .env file into your application's environment at runtime.
 
 ```bash
