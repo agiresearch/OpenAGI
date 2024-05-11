@@ -26,12 +26,12 @@ class CurrencyConverterAPI(BaseRapidAPITool):
             self.query_string = {
                 "from": params["from"],
                 "to": params["to"],
-                "amount": params["amount"]
+                "amount": params["amount"] if "amount" in params else "1.0"
             }
         except ValueError:
             raise KeyError(
                 "The keys in params do not match the excepted keys in params for currency converter api. "
-                "Please make sure it contains two keys: 'from' and 'to' and 'amount"
+                "Please make sure it contains two keys: 'from' and 'to'"
             )
 
         # print(self.query_string)

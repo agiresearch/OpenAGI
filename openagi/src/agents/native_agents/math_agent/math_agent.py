@@ -19,7 +19,11 @@ from ....tools.online.currency_converter import CurrencyConverterAPI
 
 from ....tools.online.wolfram_alpha import WolframAlpha
 
+from ....utils.message import Message
+
 import time
+
+import json
 
 import re
 class MathAgent(BaseAgent):
@@ -32,13 +36,11 @@ class MathAgent(BaseAgent):
         ):
         BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, agent_process_factory, log_mode)
         self.tool_list = {
-            # "wolfram_alpha": WolframAlpha(),
-            # "currenct_converter": CurrencyConverterAPI()
+            "wolfram_alpha": WolframAlpha(),
+            "currency_converter": CurrencyConverterAPI()
         }
-        self.tool_check_max_fail_times = 10
-        self.tool_select_max_fail_times = 10
-        self.tool_calling_max_fail_times = 10
-        self.tool_info = "".join(self.config["tool_info"])
+        self.workflow = self.config["workflow"]
+        self.tools = self.config["tools"]
 
     def load_flow(self):
         return
@@ -56,42 +58,69 @@ class MathAgent(BaseAgent):
         self.logger.log(f"{task_input}\n", level="info")
 
         rounds = 0
+
         # predefined steps
-        steps = [
-            "identify and outline the sub-problems that need to be solved as stepping stones toward the solution. ",
-            "solve each sub-problem. ",
-            "integrate the solutions to these sub-problems in the previous step to get the final solution. "
-        ]
-        for i, step in enumerate(steps):
-            prompt += f"\nIn step {i+1}, you need to {step}. Output should focus on current step and don't be verbose!"
+        # TODO replace fixed steps with dynamic steps
+        # Step 1 "use a currency converter tool to get the currency information. ",
+        # Step 2 "perform mathematical operations using the converted currency amount, which could involve addition, subtraction, multiplication, or division with other numeric values to solve the problem."
 
-            self.logger.log(f"Step {i+1}: {step}\n", level="info")
-            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+        for i, step in enumerate(self.workflow):
+            prompt += f"\nIn step {rounds + 1}, you need to {step}. Output should focus on current step and don't be verbose!"
+            if i == 0:
+                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                    message = Message(
+                        prompt = prompt,
+                        tools = self.tools
+                    )
+                )
+                response_message = response.response_message
 
-            if rounds == 0:
                 self.set_start_time(start_times[0])
 
-            rounds += 1
+                tool_calls = response.tool_calls
 
-            request_waiting_times.extend(waiting_times)
-            request_turnaround_times.extend(turnaround_times)
-            prompt += f"The solution to step {i+1} is: {response}\n"
-            self.logger.log(f"The solution to step {i+1}: {response}\n", level="info")
+                if tool_calls:
 
-        prompt += f"Given the interaction history: '{prompt}', integrate solutions in all steps to give a final answer, don't be verbose!"
+                    request_waiting_times.extend(waiting_times)
+                    request_turnaround_times.extend(turnaround_times)
 
-        final_result, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
-        request_waiting_times.extend(waiting_times)
-        request_turnaround_times.extend(turnaround_times)
+                    function_responses = ""
+                    if tool_calls:
+                        for tool_call in tool_calls:
+                            function_name = tool_call.function.name
+                            function_to_call = self.tool_list[function_name]
+                            function_args = json.loads(tool_call.function.arguments)
+
+                            function_response = function_to_call.run(function_args)
+                            function_responses += function_response
+                            prompt += function_response
+
+                    self.logger.log(f"The solution to step {rounds+1}: {function_responses}\n", level="info")
+                
+                else:
+                    self.logger.log(f"The solution to step {rounds+1}: {response_message}\n", level="info")
+
+                rounds += 1
+
+            else:
+                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                    message = Message(
+                        prompt = prompt,
+                        tools = None
+                    )
+                )
+                response_message = response.response_message
+
+                if i == len(self.workflow) - 1:
+                    self.logger.log(f"Final result is: {response_message}\n", level="info")
+                    final_result = response_message
+
+                else:
+                    self.logger.log(f"The solution to step {rounds+1}: {response_message}\n", level="info")
 
         self.set_status("done")
         self.set_end_time(time=time.time())
 
-        self.logger.log(
-            f"{task_input} Final result is: {final_result}\n",
-            level="info"
-        )
-        
         return {
             "agent_name": self.agent_name,
             "result": final_result,

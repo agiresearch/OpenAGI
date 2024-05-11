@@ -14,10 +14,15 @@ from threading import Thread, Lock, Event
 
 from pympler import asizeof
 
+from ..utils.message import Message
+
 class AgentProcess:
-    def __init__(self, agent_name, prompt):
+    def __init__(self, 
+            agent_name,
+            message
+        ):
         self.agent_name = agent_name
-        self.prompt = prompt
+        self.message = message
         self.pid: int = None
         self.status = None
         self.response = None
@@ -62,12 +67,6 @@ class AgentProcess:
     def get_pid(self):
         return self.pid
 
-    def set_prompt(self, prompt):
-        self.prompt = prompt
-
-    def get_prompt(self):
-        return self.prompt
-
     def get_response(self):
         return self.response
 
@@ -96,12 +95,12 @@ class AgentProcessFactory:
 
         self.agent_process_log_mode = agent_process_log_mode
 
-    def activate_agent_process(self, agent_name, prompt):
+    def activate_agent_process(self, agent_name, message):
         if not self.terminate_signal.is_set():
             with self.current_agent_processes_lock:
                 agent_process = AgentProcess(
                     agent_name = agent_name,
-                    prompt = prompt,
+                    message = message
                 )
                 pid = heapq.heappop(self.pid_pool)
                 agent_process.set_pid(pid)
@@ -143,19 +142,6 @@ class AgentProcessFactory:
         return row_str
 
     def deactivate_agent_process(self, pid):
-        # import time
-        # while not self.terminate_signal.is_set():
-        #     with self.current_agent_processes_lock:
-        #         invalid_pids = []
-        #         items = self.current_agent_processes.items()
-        #         for pid, agent_process in items:
-        #             if agent_process.get_status() == "done":
-        #                 # agent.set_status("inactive")
-        #                 time.sleep(5)
-        #                 invalid_pids.append(pid)
-        #         for pid in invalid_pids:
-        #             self.current_agent_processes.pop(pid)
-        #             heapq.heappush(self.pid_pool, pid)
         self.current_agent_processes.pop(pid)
         heapq.heappush(self.pid_pool, pid)
 

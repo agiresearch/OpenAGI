@@ -18,6 +18,8 @@ from datetime import datetime
 import numpy as np
 
 from ..utils.logger import AgentLogger
+
+from ..utils.message import Message
 class CustomizedThread(Thread):
     def __init__(self, target, args=()):
         super().__init__()
@@ -72,13 +74,16 @@ class BaseAgent:
             config = json.load(f)
             return config
 
-    def get_response(self, prompt, temperature=0.0):
-        thread = CustomizedThread(target=self.query_loop, args=(prompt, ))
+    def get_response(self, 
+            message,
+            temperature=0.0
+        ):
+        thread = CustomizedThread(target=self.query_loop, args=(message, ))
         thread.start()
         return thread.join()
 
-    def query_loop(self, prompt):
-        agent_process = self.create_agent_request(prompt)
+    def query_loop(self, message):
+        agent_process = self.create_agent_request(message)
 
         completed_response, start_times, end_times, waiting_times, turnaround_times = "", [], [], [], []
 
@@ -96,7 +101,7 @@ class BaseAgent:
             completed_response = agent_process.get_response()
             if agent_process.get_status() != "done":
                 self.logger.log(
-                    f"Suspended due to the reach of time limit ({agent_process.get_time_limit()}s). Current result is: {completed_response}\n",
+                    f"Suspended due to the reach of time limit ({agent_process.get_time_limit()}s). Current result is: {completed_response.response_message}\n",
                     level="suspending"
                 )
             start_time = agent_process.get_start_time()
@@ -112,13 +117,12 @@ class BaseAgent:
 
         self.agent_process_factory.deactivate_agent_process(agent_process.get_pid())
 
-        completed_response = completed_response.replace("\n", "")
         return completed_response, start_times, end_times, waiting_times, turnaround_times
 
-    def create_agent_request(self, prompt):
+    def create_agent_request(self, message):
         agent_process = self.agent_process_factory.activate_agent_process(
             agent_name = self.agent_name,
-            prompt = prompt
+            message = message
         )
         agent_process.set_created_time(time.time())
         # print("Already put into the queue")

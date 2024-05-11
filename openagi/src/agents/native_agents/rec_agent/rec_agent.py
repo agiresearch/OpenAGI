@@ -7,6 +7,8 @@ from ...agent_process import (
     AgentProcess
 )
 
+from ....utils.message import Message
+
 import argparse
 
 from concurrent.futures import as_completed
@@ -46,9 +48,14 @@ class RecAgent(BaseAgent):
 
             self.logger.log(f"Step {i+1}: {step}\n", level="info")
 
-            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                message = Message(
+                    prompt = prompt,
+                    tools = None
+                )
+            )
 
-            if rounds == 0:
+            if i == 0:
                 self.set_start_time(start_times[0])
 
             rounds += 1
@@ -56,27 +63,20 @@ class RecAgent(BaseAgent):
             request_waiting_times.extend(waiting_times)
             request_turnaround_times.extend(turnaround_times)
 
-            prompt += f"The solution to step {i+1} is: {response}\n"
+            response_message = response.response_message
 
-            self.logger.log(f"The solution to step {i+1}: {response}\n", level="info")
+            if i == len(steps) - 1:
+                self.logger.log(f"Final result is: {response_message}\n", level="info")
+                final_result = response_message
 
-        prompt += f"Given the interaction history: '{prompt}', give a final recommendation list and explanations, don't be verbose!"
+            else:
+                self.logger.log(f"The solution to step {i+1}: {response_message}\n", level="info")
 
-        final_result, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
-        request_waiting_times.extend(waiting_times)
-        request_turnaround_times.extend(turnaround_times)
+            prompt += response_message
 
         self.set_status("done")
 
         self.set_end_time(time=time.time())
-
-        request_waiting_times.extend(waiting_times)
-        request_turnaround_times.extend(turnaround_times)
-
-        self.logger.log(
-            f"{task_input} Final result is: {final_result}\n",
-            level="info"
-        )
 
         return {
             "agent_name": self.agent_name,
