@@ -13,6 +13,8 @@ import argparse
 
 from concurrent.futures import as_completed
 
+from ....utils.message import Message
+
 class NarrativeAgent(BaseAgent):
     def __init__(self,
                  agent_name,
@@ -34,7 +36,6 @@ class NarrativeAgent(BaseAgent):
         task_input = self.task_input
         task_input = "The task you need to solve is: " + task_input
         self.logger.log(f"{task_input}\n", level="info")
-        # print(f"[{self.agent_name}] {task_input}\n")
 
         prompt += task_input
 
@@ -51,9 +52,14 @@ class NarrativeAgent(BaseAgent):
 
             self.logger.log(f"Step {i+1}: {step}\n", level="info")
 
-            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
+            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                message = Message(
+                    prompt = prompt,
+                    tools = None
+                )
+            )
 
-            if rounds == 0:
+            if i == 0:
                 self.set_start_time(start_times[0])
 
             rounds += 1
@@ -61,22 +67,19 @@ class NarrativeAgent(BaseAgent):
             request_waiting_times.extend(waiting_times)
             request_turnaround_times.extend(turnaround_times)
 
-            prompt += f"The solution to step {i+1} is: {response}\n"
+            response_message = response.response_message
 
-            self.logger.log(f"The solution to step {i+1}: {response}\n", level="info")
+            if i == len(steps) - 1:
+                self.logger.log(f"Final result is: {response.response_message}\n", level="info")
+                final_result = response_message
 
-            prompt += response
+            else:
+                self.logger.log(f"The solution to step {i+1}: {response_message}\n", level="info")
 
-        prompt += f"Given the interaction history: '{prompt}', integrate content in each step to give a full story, don't be verbose!"
-
-        final_result, start_times, end_times, waiting_times, turnaround_times = self.get_response(prompt)
-        request_waiting_times.extend(waiting_times)
-        request_turnaround_times.extend(turnaround_times)
+            prompt += response_message
 
         self.set_status("done")
         self.set_end_time(time=time.time())
-
-        self.logger.log(f"{task_input} Final result is: {final_result}\n", level="info")
 
         return {
             "agent_name": self.agent_name,
@@ -87,6 +90,7 @@ class NarrativeAgent(BaseAgent):
             "request_waiting_times": request_waiting_times,
             "request_turnaround_times": request_turnaround_times,
         }
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run NarrativeAgent')

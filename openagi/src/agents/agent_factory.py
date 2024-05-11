@@ -12,8 +12,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from threading import Thread, Lock, Event
 
-# from multiprocessing import Process, Lock, Event
-
 from pympler import asizeof
 
 class AgentFactory:
@@ -104,10 +102,3 @@ class AgentFactory:
     def deactivate_agent(self, aid):
         self.current_agents.pop(aid)
         heapq.heappush(self.aid_pool, aid)
-
-    def start(self):
-        """start the factory to check inactive agent"""
-        self.thread.start()
-
-    def stop(self):
-        self.thread.join()
