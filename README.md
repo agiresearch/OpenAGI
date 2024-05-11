@@ -4,7 +4,8 @@
 <a href='https://discord.gg/B2HFxEgTJX'><img src='https://img.shields.io/badge/Community-Discord-8A2BE2'></a>
 
 
-## Installation
+## 1. Installation
+### 1.1 use OpenAGI in AIOS
 1. follow [AIOS](https://github.com/agiresearch/AIOS) instruction to install the virtual environment
 
 2. Allow your code to be able to see 'openagi'
@@ -12,13 +13,39 @@
 $ pip install -e .
 ```
 
-## Contributing
-Run tests: Add your test code into the tests/ directory if any, then run test via pytest
+### 1.2 use OpenAGI alone
+1. set up virtual environment and install the required packages using pip
+```bash
+conda create -n OpenAGI python=3.11
+source activate OpenAGI
+cd OpenAGI
+pip install -r requirements.txt
 ```
-pytest -s tests
+2. Allow your code to be able to see 'openagi'
+```
+$ pip install -e .
 ```
 
-## 🖋️ Research
+## 2. Contributing
+Run tests: Add your test code into the tests/ directory if any, then run test via pytest
+```
+cd openagi
+pytest -v tests
+```
+sample output
+```
+============================================================================================================================= test session starts ==============================================================================================================================
+platform darwin -- Python 3.11.9, pytest-8.1.1, pluggy-1.5.0 -- ""
+cachedir: .pytest_cache
+rootdir: ""
+plugins: anyio-4.3.0
+collected 2 items                                                                                                                                                                                                                                                              
+
+tests/test_agent_creation.py::test_agent_creation PASSED                                                                                                                                                                                                                 [ 50%]
+tests/test_tools.py::test_currency_converter_api PASSED 
+```
+
+## 🖋️ 3. Research
 Please check out our [implementation](./research) for our research paper [OpenAGI: When LLM Meets Domain Experts](https://arxiv.org/abs/2304.04370).
 
 ```
@@ -30,11 +57,11 @@ Please check out our [implementation](./research) for our research paper [OpenAG
 }
 ```
 
-## 🌍 OpenAGI Contributors
+## 🌍 4. OpenAGI Contributors
 [![OpenAGI contributors](https://contrib.rocks/image?repo=agiresearch/OpenAGI&max=300)](https://github.com/agiresearch/OpenAGI/graphs/contributors)
 
 
 
-## Star History
+## 5. Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=agiresearch/OpenAGI&type=Date)](https://star-history.com/#agiresearch/OpenAGI&Date)
