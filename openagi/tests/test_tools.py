@@ -36,7 +36,7 @@ def test_wolfram_alpha():
     else:
         wolfram_alpha = WolframAlpha()
 
-        query = "Who is the prime minister of India?"
+        query = "What is the square root of 1764?"
         result = wolfram_alpha.run(query)
         print(result)
         assert isinstance(result, str)
