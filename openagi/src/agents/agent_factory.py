@@ -2,6 +2,8 @@ from datetime import datetime
 
 import heapq
 
+from .native_agents.travel_agent.travel_agent import TravelAgent
+
 from .native_agents.math_agent.math_agent import MathAgent
 
 from .native_agents.narrative_agent.narrative_agent import NarrativeAgent
@@ -27,6 +29,7 @@ class AgentFactory:
             "MathAgent": MathAgent,
             "NarrativeAgent": NarrativeAgent,
             "RecAgent": RecAgent,
+            "TravelAgent": TravelAgent
         }
 
         self.current_agents = {}
