@@ -35,18 +35,24 @@ class AirportSearch(BaseRapidAPITool):
         # print(self.query_string)
 
         response = requests.get(self.url, headers=headers, params=self.query_string).json()
-        return json.dumps(response)
+        return self.parse_result(response)
 
-        # result = self.parse_result(response)
-        # return result
+    def parse_result(self, response) -> str:
+        limited_results = response['data'][:2]
+        
+        simplified_results = []
+        for result in limited_results:
+            simplified_result = {
+                'name': result['name'],
+                'airportCode': result['airportCode'],
+                'coords': result['coords']
+            }
+            simplified_results.append(simplified_result)
+        
+        return json.dumps(simplified_results)
 
-    # def parse_result(self, response) -> str:
-    #     airports = []
-    #     for d in response["data"]:
-    #         print(d)
-    #         airports.append(f"{d["name"]}, airport code is {d["airportCode"]}")
+        
 
-    #     return "Available airports are " + ";".join(airports)
 
 class FlightSearch(BaseRapidAPITool):
     def __init__(self):
@@ -68,22 +74,51 @@ class FlightSearch(BaseRapidAPITool):
                 "destinationAirportCode": params["destinationAirportCode"],
                 "itineraryType": params["itineraryType"],
                 "sortOrder": params["sortOrder"],
-                "classOfService": params["classOfService"]
+                "classOfService": params["classOfService"],
+                "returnDate": params["returnDate"]
             }
         except ValueError:
             raise KeyError(
                 "The keys in params do not match the excepted keys in params for tripadvisor search flight api. "
                 "Please make sure it contains following required keys: "
                 "sourceAirportCode",
-                "destinationAirport",
+                "destinationAirportCode",
                 "itineraryType",
                 "sortOrder",
-                "classOfServices"
+                "classOfService",
+                "returnDate",
+                "date"
             )
 
         response = requests.get(self.url, headers=headers, params=self.query_string).json()
-        return json.dumps(response)
-
+        return self.parse_result(response)
 
     def parse_result(self, response) -> str:
-        raise NotImplementedError
+        # Accessing the 'flights' data from within the 'data' key
+        if 'data' in response and 'flights' in response['data']:
+            flights_data = response['data']['flights']
+            simplified_results = []
+            flight_count = 0
+            for flight in flights_data:
+                if flight_count >= 2:
+                    break
+                for segment in flight['segments']:
+                    for leg in segment['legs']:
+                        simplified_result = {
+                            'originStationCode': leg['originStationCode'],
+                            'destinationStationCode': leg['destinationStationCode'],
+                            'departureDateTime': leg['departureDateTime'],
+                            'arrivalDateTime': leg['arrivalDateTime'],
+                            'classOfService': leg['classOfService'],
+                            'marketingCarrierCode': leg['marketingCarrierCode'],
+                            'operatingCarrierCode': leg['operatingCarrierCode'],
+                            'flightNumber': leg['flightNumber'],
+                            'numStops': leg['numStops'],
+                            'distanceInKM': leg['distanceInKM'],
+                            'isInternational': leg['isInternational']
+                        }
+                        simplified_results.append(simplified_result)
+                flight_count += 1
+            return json.dumps(simplified_results)
+        else:
+            return json.dumps([])

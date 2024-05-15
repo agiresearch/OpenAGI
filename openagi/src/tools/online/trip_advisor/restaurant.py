@@ -35,11 +35,22 @@ class RestaurantLocationSearch(BaseRapidAPITool):
         # print(self.query_string)
 
         response = requests.get(self.url, headers=headers, params=self.query_string).json()
-
-        return json.dumps(response)
+        return self.parse_result(response)
 
     def parse_result(self, response) -> str:
-        raise NotImplementedError
+        limited_results = response['data'][:2]
+        
+        simplified_results = []
+        for result in limited_results:
+            simplified_result = {
+                'locationId': result['locationId'],
+                'localizedName': result['localizedName'],
+                'latitude': result['latitude'],
+                'longitude': result['longitude']
+            }
+            simplified_results.append(simplified_result)
+        
+        return json.dumps(simplified_results)
 
 
 class RestaurantSearch(BaseRapidAPITool):
@@ -57,7 +68,7 @@ class RestaurantSearch(BaseRapidAPITool):
 
         try:
             self.query_string = {
-                "locationId": params["locationID"]
+                "locationId": params["locationId"]
             }
         except ValueError:
             raise KeyError(
@@ -67,11 +78,24 @@ class RestaurantSearch(BaseRapidAPITool):
             )
 
         response = requests.get(self.url, headers=headers, params=self.query_string).json()
-        return json.dumps(response)
-
-
+        return self.parse_result(response)
+        
     def parse_result(self, response) -> str:
-        raise NotImplementedError
+        limited_results = response['data']['data'][:2]
+        
+        simplified_results = []
+        for result in limited_results:
+            simplified_result = {
+                'restaurantsId': result['restaurantsId'],
+                'name': result['name'],
+                'averageRating': result['averageRating'],
+                'userReviewCount': result['userReviewCount'],
+                'priceTag': result['priceTag'],
+                'establishmentTypeAndCuisineTags': result['establishmentTypeAndCuisineTags']
+            }
+            simplified_results.append(simplified_result)
+        
+        return json.dumps(simplified_results)
 
 
 class GetRestaurantDetails(BaseRapidAPITool):
@@ -89,7 +113,7 @@ class GetRestaurantDetails(BaseRapidAPITool):
 
         try:
             self.query_string = {
-                "restaurantsID": params["restaurantsID"],
+                "restaurantsId": params["restaurantsId"],
             }
         except ValueError:
             raise KeyError(
@@ -98,8 +122,24 @@ class GetRestaurantDetails(BaseRapidAPITool):
             )
 
         response = requests.get(self.url, headers=headers, params=self.query_string).json()
-        return json.dumps(response)
+        return self.parse_result(response)
 
 
     def parse_result(self, response) -> str:
-        raise NotImplementedError
+        location = response["data"]["location"]
+        
+        useful_info = {
+            "name": location.get("name"),
+            "latitude": location.get("latitude"),
+            "longitude": location.get("longitude"),
+            "num_reviews": location.get("num_reviews"),
+            "rating": location.get("rating"),
+            "price_level": location.get("price_level"),
+            "address": location.get("address"),
+            "phone": location.get("phone"),
+            "website": location.get("website"),
+            "cuisine": [cuisine["name"] for cuisine in location.get("cuisine", [])],
+            "hours": location.get("hours", {}).get("week_ranges", [])
+            }
+        return json.dumps(useful_info)
+           

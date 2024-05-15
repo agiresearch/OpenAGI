@@ -35,11 +35,12 @@ class Wikipedia(BaseTool):
             )
         return wikipedia
 
-    def run(self, query: str) -> str:
+    def run(self, query: Dict[str, str]) -> str:
         """Run Wikipedia search and get page summaries."""
-        page_titles = self.wiki_client.search(
-            query[:self.WIKIPEDIA_MAX_QUERY_LENGTH], results=self.top_k_results
-        )
+        if not isinstance(query, dict) or 'query' not in query:
+            raise TypeError("Query must be a dictionary with a 'query' key")
+        query_str = query['query'][:self.WIKIPEDIA_MAX_QUERY_LENGTH]  # Extract and slice the query string
+        page_titles = self.wiki_client.search(query_str, results=self.top_k_results)
         summaries = []
         for page_title in page_titles[: self.top_k_results]:
             if wiki_page := self._fetch_page(page_title):
