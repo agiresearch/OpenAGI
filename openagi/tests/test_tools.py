@@ -61,7 +61,7 @@ def test_wolfram_alpha():
     else:
         wolfram_alpha = WolframAlpha()
 
-        query = "What is the square root of 1764?"
+        query = "What is the square root of 144?"
         result = wolfram_alpha.run(query)
         print(result)
         assert isinstance(result, str)
