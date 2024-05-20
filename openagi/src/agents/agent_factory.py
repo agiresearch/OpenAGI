@@ -3,6 +3,7 @@ from datetime import datetime
 import heapq
 
 from .native_agents.travel_agent.travel_agent import TravelAgent
+from openagi.src.agents.native_agents.rag_agent.rag_agent import RAGAgent
 
 from .native_agents.math_agent.math_agent import MathAgent
 
@@ -29,7 +30,8 @@ class AgentFactory:
             "MathAgent": MathAgent,
             "NarrativeAgent": NarrativeAgent,
             "RecAgent": RecAgent,
-            "TravelAgent": TravelAgent
+            "TravelAgent": TravelAgent,
+            "RAGAgent": RAGAgent,
         }
 
         self.current_agents = {}
