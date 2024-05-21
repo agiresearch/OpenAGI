@@ -7,38 +7,39 @@ from ...agent_process import (
     AgentProcess
 )
 
-from ....utils.message import Message
-
-from ....tools.online.imdb.top_movie import ImdbTopMovieAPI
-
-from ....tools.online.imdb.top_series import ImdbTopSeriesAPI
+import numpy as np
 
 import argparse
 
 from concurrent.futures import as_completed
 
+from ....utils.message import Message
+
+from ....tools.online.arxiv import Arxiv
+
+from ....tools.online.wikipedia import Wikipedia
+
 import json
 
-import numpy as np
-class RecAgent(BaseAgent):
+class AcademicAgent(BaseAgent):
     def __init__(self,
                  agent_name,
                  task_input,
                  llm,
                  agent_process_queue,
                  agent_process_factory,
-                 log_mode
+                 log_mode: str
         ):
         BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, agent_process_factory, log_mode)
-
         self.tool_list = {
-            "imdb_top_movies": ImdbTopMovieAPI(),
-            "imdb_top_series": ImdbTopSeriesAPI()
+            "arxiv": Arxiv()
         }
         self.workflow = self.config["workflow"]
         self.tools = self.config["tools"]
 
     def run(self):
+        request_waiting_times = []
+        request_turnaround_times = []
         prompt = ""
         prefix = self.prefix
         prompt += prefix
@@ -62,12 +63,12 @@ class RecAgent(BaseAgent):
                 )
                 response_message = response.response_message
 
-                request_waiting_times.extend(waiting_times)
-                request_turnaround_times.extend(turnaround_times)
-
                 self.set_start_time(start_times[0])
 
                 tool_calls = response.tool_calls
+
+                request_waiting_times.extend(waiting_times)
+                request_turnaround_times.extend(turnaround_times)
 
                 if tool_calls:
                     self.logger.log(f"***** It starts to call external tools *****\n", level="info")
@@ -100,6 +101,7 @@ class RecAgent(BaseAgent):
                         tools = None
                     )
                 )
+
                 request_waiting_times.extend(waiting_times)
                 request_turnaround_times.extend(turnaround_times)
                 
@@ -124,15 +126,3 @@ class RecAgent(BaseAgent):
             "request_waiting_times": request_waiting_times,
             "request_turnaround_times": request_turnaround_times,
         }
-
-    def parse_result(self, prompt):
-        return prompt
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run NarrativeAgent')
-    parser.add_argument("--agent_name")
-    parser.add_argument("--task_input")
-
-    args = parser.parse_args()
-    agent = RecAgent(args.agent_name, args.task_input)
-    agent.run()

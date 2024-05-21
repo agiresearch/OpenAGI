@@ -27,3 +27,10 @@ class BaseRapidAPITool(BaseTool):
 
     def parse_result(self, response: json):
         pass
+
+class BaseHuggingfaceTool(BaseTool):
+    def __init__(self):
+        pass
+
+    def run(self):
+        pass
