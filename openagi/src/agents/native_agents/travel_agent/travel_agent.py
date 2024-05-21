@@ -17,11 +17,13 @@ class TravelAgent(BaseAgent):
     def __init__(self,
                  agent_name,
                  task_input,
-                 llm, agent_process_queue,
-                 agent_process_factory,
+                 llm, 
+                 agent_process_queue,
+                 llm_request_responses,
                  log_mode: str
         ):
-        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, agent_process_factory, log_mode)
+        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, llm_request_responses, log_mode)
+
         self.tool_list = {
             "hotel_location_search": HotelLocationSearch(),
             "hotel_search": HotelSearch(),
@@ -33,9 +35,7 @@ class TravelAgent(BaseAgent):
             "get_restaurant_details": GetRestaurantDetails(),
             "wikipedia": Wikipedia(),
         }
-        self.tool_check_max_fail_times = 10
-        self.tool_select_max_fail_times = 10
-        self.tool_calling_max_fail_times = 10
+    
         self.tools = self.config["tools"]
         self.workflow = self.config["workflow"]
 
@@ -64,24 +64,34 @@ class TravelAgent(BaseAgent):
             # Avoid calling tools in the last step
             tools_to_use = self.tools if i < len(self.workflow) - 1 else None
         
-            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+            output = self.get_response(
                 message = Message(
                     prompt = prompt,
                     tools = tools_to_use
-                )
+                ),
+                step=rounds
             )
+            response = output["response"]
+            request_created_times = output["created_times"]
+            request_start_times = output["start_times"]
+            request_end_times = output["end_times"]
+            request_waiting_time = [(s - c) for s,c in zip(request_start_times, request_created_times)]
+            request_turnaround_time = [(e - c) for e,c in zip(request_end_times, request_created_times)]
+            request_waiting_times.extend(request_waiting_time)
+            request_turnaround_times.extend(request_turnaround_time)
+
+            response_message = response.response_message
+
+            self.set_start_time(request_start_times[0])
             
             response_message = response.response_message
             if i == 0:
-                self.set_start_time(start_times[0])
+                self.set_start_time(request_start_times[0])
 
             tool_calls = response.tool_calls
 
             if tool_calls:
                 self.logger.log(f"***** It starts to call external tools *****\n", level="info")
-
-                request_waiting_times.extend(waiting_times)
-                request_turnaround_times.extend(turnaround_times)
 
                 function_responses = ""
                 for tool_call in tool_calls:
@@ -109,7 +119,7 @@ class TravelAgent(BaseAgent):
         self.set_status("done")
         self.set_end_time(time=time.time())
             
-        return {
+        output = {
             "agent_name": self.agent_name,
             "result": final_result,
             "rounds": rounds,
@@ -117,7 +127,8 @@ class TravelAgent(BaseAgent):
             "agent_turnaround_time": self.end_time - self.created_time,
             "request_waiting_times": request_waiting_times,
             "request_turnaround_times": request_turnaround_times,
-        }
+        } 
+        self.llm_request_responses[self.get_aid()] = output
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run TravelAgent')

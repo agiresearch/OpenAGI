@@ -25,12 +25,12 @@ class AcademicAgent(BaseAgent):
     def __init__(self,
                  agent_name,
                  task_input,
-                 llm,
+                 llm, 
                  agent_process_queue,
-                 agent_process_factory,
+                 llm_request_responses,
                  log_mode: str
         ):
-        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, agent_process_factory, log_mode)
+        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, llm_request_responses, log_mode)
         self.tool_list = {
             "arxiv": Arxiv()
         }
@@ -55,23 +55,30 @@ class AcademicAgent(BaseAgent):
         for i, step in enumerate(self.workflow):
             prompt += f"\nIn step {rounds + 1}, you need to {step}. Output should focus on current step and don't be verbose!"
             if i == 0:
-                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                output = self.get_response(
                     message = Message(
                         prompt = prompt,
                         tools = self.tools
-                    )
+                    ),
+                    step=rounds
                 )
+                response = output["response"]
+                request_created_times = output["created_times"]
+                request_start_times = output["start_times"]
+                request_end_times = output["end_times"]
+                request_waiting_time = [(s - c) for s,c in zip(request_start_times, request_created_times)]
+                request_turnaround_time = [(e - c) for e,c in zip(request_end_times, request_created_times)]
+                request_waiting_times.extend(request_waiting_time)
+                request_turnaround_times.extend(request_turnaround_time)
+
                 response_message = response.response_message
 
-                self.set_start_time(start_times[0])
+                self.set_start_time(request_start_times[0])
 
                 tool_calls = response.tool_calls
 
                 if tool_calls:
                     self.logger.log(f"***** It starts to call external tools *****\n", level="info")
-
-                    request_waiting_times.extend(waiting_times)
-                    request_turnaround_times.extend(turnaround_times)
 
                     function_responses = ""
                     if tool_calls:
@@ -95,12 +102,22 @@ class AcademicAgent(BaseAgent):
                 rounds += 1
 
             else:
-                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                output = self.get_response(
                     message = Message(
                         prompt = prompt,
                         tools = None
-                    )
+                    ),
+                    step=rounds
                 )
+                response = output["response"]
+                request_created_times = output["created_times"]
+                request_start_times = output["start_times"]
+                request_end_times = output["end_times"]
+                request_waiting_time = [(s - c) for s,c in zip(request_start_times, request_created_times)]
+                request_turnaround_time = [(e - c) for e,c in zip(request_end_times, request_created_times)]
+                request_waiting_times.extend(request_waiting_time)
+                request_turnaround_times.extend(request_turnaround_time)
+
                 response_message = response.response_message
 
                 if i == len(self.workflow) - 1:
@@ -113,7 +130,7 @@ class AcademicAgent(BaseAgent):
         self.set_status("done")
         self.set_end_time(time=time.time())
 
-        return {
+        output = {
             "agent_name": self.agent_name,
             "result": final_result,
             "rounds": rounds,
@@ -121,4 +138,5 @@ class AcademicAgent(BaseAgent):
             "agent_turnaround_time": self.end_time - self.created_time,
             "request_waiting_times": request_waiting_times,
             "request_turnaround_times": request_turnaround_times,
-        }
+        } 
+        self.llm_request_responses[self.get_aid()] = output

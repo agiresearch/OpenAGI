@@ -26,8 +26,9 @@ class LLMRequest:
             message
         ) -> None:
         self.agent_name = agent_name
-        self.prompt = prompt
-        self.pid: int = None
+        self.message = message
+        self.agent_id = agent_id
+        self.step = step
         self.status = None
         self.response = None
         self.time_limit = None
@@ -65,12 +66,6 @@ class LLMRequest:
     def get_status(self):
         return self.status
 
-    def set_prompt(self, prompt):
-        self.prompt = prompt
-
-    def get_prompt(self):
-        return self.prompt
-
     def get_response(self):
         return self.response
 
@@ -85,11 +80,11 @@ class LLMRequest:
 
 
 class AgentProcess(multiprocessing.Process):
-    def __init__(self, agent_name, agent_id, step, prompt, agent_process_queue, llm_request_responses):
+    def __init__(self, agent_name, agent_id, step, message, agent_process_queue, llm_request_responses):
         super().__init__()
         self.agent_name = agent_name
         self.agent_id = agent_id
-        self.prompt = prompt
+        self.message = message
         self.step = step
         self.agent_process_queue = agent_process_queue
         self.llm_request_responses = llm_request_responses
@@ -104,12 +99,12 @@ class AgentProcess(multiprocessing.Process):
     def run(self):
         task_key = (self.agent_id, self.step)
 
-        self.agent_process_queue.put(LLMRequest(self.agent_name, self.agent_id, self.step, self.prompt))
+        self.agent_process_queue.put(LLMRequest(self.agent_name, self.agent_id, self.step, self.message))
         
         while True:
             if task_key in self.llm_request_responses:
                 status = self.llm_request_responses.get(task_key)["status"]
                 if status != "done":
-                    self.agent_process_queue.put(LLMRequest(self.agent_name, self.agent_id, self.step, self.prompt))
+                    self.agent_process_queue.put(LLMRequest(self.agent_name, self.agent_id, self.step, self.message))
                 else:
                     break

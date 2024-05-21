@@ -63,12 +63,12 @@ class BaseAgent(multiprocessing.Process):
             config = json.load(f)
             return config
 
-    def get_response(self, prompt, step, temperature=0.0):
+    def get_response(self, message, step, temperature=0.0):
         agent_process = AgentProcess(
             agent_name=self.get_agent_name(),
             agent_id=self.get_aid(),
             step=step,
-            prompt=prompt,
+            message = message,
             agent_process_queue=self.agent_process_queue,
             llm_request_responses=self.llm_request_responses
         )
