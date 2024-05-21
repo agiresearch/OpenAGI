@@ -7,9 +7,17 @@ from ...agent_process import (
     AgentProcess
 )
 
+from ....utils.message import Message
+
+from ....tools.online.imdb.top_movie import ImdbTopMovieAPI
+
+from ....tools.online.imdb.top_series import ImdbTopSeriesAPI
+
 import argparse
 
 from concurrent.futures import as_completed
+
+import json
 
 import numpy as np
 class RecAgent(BaseAgent):
@@ -30,6 +38,13 @@ class RecAgent(BaseAgent):
         self.tool_calling_max_fail_times = 10
         self.tool_info = "".join(self.config["tool_info"])
 
+        self.tool_list = {
+            "imdb_top_movies": ImdbTopMovieAPI(),
+            "imdb_top_series": ImdbTopSeriesAPI()
+        }
+        self.workflow = self.config["workflow"]
+        self.tools = self.config["tools"]
+
     def run(self):
         prompt = ""
         prefix = self.prefix
@@ -41,48 +56,25 @@ class RecAgent(BaseAgent):
         request_waiting_times = []
         request_turnaround_times = []
 
-        procedures = [
-            "give a general recommendation direction for users.",
-            "based on the above recommendation direction, give a recommendation list."
-        ]
-
         rounds = 0
 
-        for i, p in enumerate(procedures):
-            prompt += f"\nIn step {rounds+1}, you need to {p}. Output should focus on current step and don't be verbose!"
+        for i, step in enumerate(self.workflow):
+            prompt += f"\nIn step {rounds + 1}, you need to {step}. Output should focus on current step and don't be verbose!"
+            if i == 0:
+                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                    message = Message(
+                        prompt = prompt,
+                        tools = self.tools
+                    )
+                )
+                response_message = response.response_message
 
-            self.logger.log(f"Step {i+1}: {p}\n", level="info")
+                self.set_start_time(start_times[0])
 
-            output = self.get_response(
-                prompt = prompt,
-                step = rounds
-            )
+                tool_calls = response.tool_calls
 
-            response = output["response"]
-
-            request_created_times = output["created_times"]
-
-            request_start_times = output["start_times"]
-
-            request_end_times = output["end_times"]
-
-            request_waiting_time = [(s - c) for s,c in zip(request_start_times, request_created_times)]
-
-            request_turnaround_time = [(e - c) for e,c in zip(request_end_times, request_created_times)]
-
-            request_waiting_times.extend(request_waiting_time)
-
-            request_turnaround_times.extend(request_turnaround_time)
-
-            if rounds == 0:
-                self.set_start_time(output["start_times"][0])
-            
-            self.logger.log(
-                f"Solution for current step {rounds+1} is: {response}\n",
-                level="info"
-            )
-
-            rounds += 1
+                if tool_calls:
+                    self.logger.log(f"***** It starts to call external tools *****\n", level="info")
 
         prompt += f"Given the interaction history: '{prompt}', give a final recommendation list and explanations, don't be verbose!"
 
@@ -107,15 +99,17 @@ class RecAgent(BaseAgent):
         request_turnaround_times.extend(request_turnaround_time)
 
         self.set_status("done")
-
         self.set_end_time(time=time.time())
+
+        request_waiting_times.extend(waiting_times)
+        request_turnaround_times.extend(turnaround_times)
 
         self.logger.log(
             f"{task_input} Final result is: {final_result}\n",
             level="info"
         )
-        
-        output = {
+
+        return {
             "agent_name": self.agent_name,
             "result": final_result,
             "rounds": rounds,

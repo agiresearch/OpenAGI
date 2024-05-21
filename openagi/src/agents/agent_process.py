@@ -16,15 +16,18 @@ import threading
 
 from pympler import asizeof
 
+from ..utils.message import Message
+
 import multiprocessing
 
 class LLMRequest:
-    def __init__(self, agent_name, agent_id, step, prompt) -> None:
+    def __init__(self, 
+            agent_name, agent_id, step,
+            message
+        ) -> None:
         self.agent_name = agent_name
-        self.agent_id = agent_id
-        self.step = step
         self.prompt = prompt
-
+        self.pid: int = None
         self.status = None
         self.response = None
         self.time_limit = None

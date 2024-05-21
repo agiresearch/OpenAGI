@@ -1,13 +1,60 @@
 {
     "name": "MathAgent",
     "description": [
-        "You are an expert who is good at solving mathematical problems. ",
-        "Given a mathematical problem, if the problem is complex, you need to break down this problem into smaller sub-problems and solve."
+        "You are an expert who is good at solving mathematical problems. "
     ],
-    "flow": [
-
+    "workflow": [
+        "identify the tool that you need to call and call the tool to do pre-calculation. ",
+        "perform mathematical operations using the pre-calculated currency amount, which could involve addition, subtraction, multiplication, or division with other numeric values to solve the problem."
     ],
-    "tool_info": [
-
+    "tools": [
+        {
+            "type": "function",
+            "function": {
+                "name": "currency_converter",
+                "description": "Provides currency exchange rates convert base currency to desired currency with the given amount",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "from": {
+                            "type": "string",
+                            "description": "Base currency code, e.g., AUD, CAD, EUR, GBP..."
+                        },
+                        "to": {
+                            "type": "string", 
+                            "description": "Desired currency code, e.g., AUD, CAD, EUR, GBP..."
+                        },
+                        "amount": {
+                            "type": "string", 
+                            "default": "1.0",
+                            "description": "The amount to be converted"
+                        }
+                    },
+                    "required": [
+                        "from",
+                        "to"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "wolfram_alpha",
+                "description": "Use specific mathematical knowledge (algebra, calculus, geometry, etc) to answer the given query",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "the abstracted mathematical query that needs to be answered"
+                        }
+                    },
+                    "required": [
+                        "query"
+                    ]
+                }
+            }
+        }
     ]
 }
