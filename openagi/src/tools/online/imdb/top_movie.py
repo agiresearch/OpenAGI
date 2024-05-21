@@ -1,4 +1,4 @@
-from openagi.src.tools.base import BaseRapidAPITool
+from ...base import BaseRapidAPITool
 
 from typing import Any, Dict, List, Optional
 
@@ -8,7 +8,7 @@ from openagi.src.utils.utils import get_from_env
 
 import requests
 
-class TopMovieAPI(BaseRapidAPITool):
+class ImdbTopMovieAPI(BaseRapidAPITool):
     def __init__(self):
         super().__init__()
         self.url = "https://imdb-top-100-movies.p.rapidapi.com/"
@@ -16,19 +16,23 @@ class TopMovieAPI(BaseRapidAPITool):
 
         self.api_key = get_from_env("RAPID_API_KEY")
 
-    def run(self, k):
+    def run(self, params):
+        start = int(params["start"]) if "start" in params else 1
+        end = int(params["end"])
         headers = {
             "X-RapidAPI-Key": self.api_key,
             "X-RapidAPI-Host": self.host_name
         }
-        response = requests.get(self.url, headers=headers)
-        result = self.parse_result(response, k)
+        response = requests.get(self.url, headers=headers).json()
+        result = self.parse_result(response, start, end)
         return result
 
 
-    def parse_result(self, response, k) -> str:
+    def parse_result(self, response, start, end) -> str:
         result = []
-        for i in range(k):
-            result.append(response[str(i)]["title"])
+        # print(response)
+        for i in range(start, end):
+            item = response[i]
+            result.append(f'{item["title"]}, {item["genre"]}, {item["rating"]}, published in {item["year"]}')
 
-        return f"Top {k} movies ranked by IMDB are: " + ",".join(result)
+        return f"Top {start}-{end} series ranked by IMDB are: " + ";".join(result)

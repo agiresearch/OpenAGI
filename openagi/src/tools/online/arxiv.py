@@ -3,11 +3,9 @@ import os
 import re
 from typing import Any, Dict, Iterator, List, Optional
 
-from openagi.src.tools.base import BaseTool
+from ..base import BaseTool
 
-from pydantic import root_validator
-
-from langchain_core.documents import Document
+import arxiv
 
 class Arxiv(BaseTool):
     """Arxiv Tool, refactored from Langchain.
@@ -36,13 +34,14 @@ class Arxiv(BaseTool):
             content
     """
 
-    arxiv_search: Any  #: :meta private:
-    arxiv_exceptions: Any  # :meta private:
-    top_k_results: int = 3
-    ARXIV_MAX_QUERY_LENGTH: int = 300
-    load_max_docs: int = 100
-    load_all_available_meta: bool = False
-    doc_content_chars_max: Optional[int] = 4000
+    def __init__(self):
+        super().__init__()
+        self.top_k_results: int = 3
+        self.ARXIV_MAX_QUERY_LENGTH: int = 300
+        self.load_max_docs: int = 100
+        self.load_all_available_meta: bool = False
+        self.doc_content_chars_max: Optional[int] = 4000
+        self.build_client()
 
     def is_arxiv_identifier(self, query: str) -> bool:
         """Check if a query is an arxiv identifier."""
@@ -56,27 +55,12 @@ class Arxiv(BaseTool):
                 return False
         return True
 
-    @root_validator(pre=True)
-    def validate_environment(cls, values: Dict) -> Dict:
+    def build_client(self):
         """Validate that the python package exists in environment."""
-        try:
-            import tools.online.arxiv as arxiv
+        self.arxiv_search = arxiv.Search
+        self.arxiv_exceptions = arxiv.ArxivError
 
-            values["arxiv_search"] = arxiv.Search
-            values["arxiv_exceptions"] = (
-                arxiv.ArxivError,
-                arxiv.UnexpectedEmptyPageError,
-                arxiv.HTTPError,
-            )
-            values["arxiv_result"] = arxiv.Result
-        except ImportError:
-            raise ImportError(
-                "Could not import arxiv python package. "
-                "Please install it with `pip install arxiv`."
-            )
-        return values
-
-    def run(self, query: str) -> str:
+    def run(self, params) -> str:
         """
         Performs an arxiv search and A single string
         with the publish date, title, authors, and summary
@@ -89,6 +73,7 @@ class Arxiv(BaseTool):
         Args:
             query: a plaintext search query
         """  # noqa: E501
+        query = params["query"]
         try:
             if self.is_arxiv_identifier(query):
                 results = self.arxiv_search(

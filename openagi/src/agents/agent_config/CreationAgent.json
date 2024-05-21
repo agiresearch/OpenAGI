@@ -1,0 +1,31 @@
+{
+    "name": "CreationAgent",
+    "description": [
+        "You are an expert who is good at content creation. "
+    ],
+    "workflow": [
+        "convert the vague description of the content requirements into concrete objects and fill in more details ",
+        "identify the tool to call the tool to create content based on the filled details"
+    ],
+    "tools": [
+        {
+            "type": "function",
+            "function": {
+                "name": "sdxl-turbo",
+                "description": "generate images by calling SDXL-turbo model",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "prompt": {
+                            "type": "string",
+                            "description": "prompt description of the image to be generated"
+                        }
+                    },
+                    "required": [
+                        "prompt"
+                    ]
+                }
+            }
+        }
+    ]
+}
