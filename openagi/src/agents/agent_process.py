@@ -29,6 +29,7 @@ class LLMRequest:
         self.message = message
         self.agent_id = agent_id
         self.step = step
+
         self.status = None
         self.response = None
         self.time_limit = None
@@ -85,6 +86,7 @@ class AgentProcess(multiprocessing.Process):
         self.agent_name = agent_name
         self.agent_id = agent_id
         self.message = message
+
         self.step = step
         self.agent_process_queue = agent_process_queue
         self.llm_request_responses = llm_request_responses
@@ -100,7 +102,7 @@ class AgentProcess(multiprocessing.Process):
         task_key = (self.agent_id, self.step)
 
         self.agent_process_queue.put(LLMRequest(self.agent_name, self.agent_id, self.step, self.message))
-        
+
         while True:
             if task_key in self.llm_request_responses:
                 status = self.llm_request_responses.get(task_key)["status"]
