@@ -22,8 +22,15 @@ class BaseRapidAPITool(BaseTool):
         self.api_key: str = None
 
 
-    def run(self, prompt):
+    def run(self, params):
         pass
 
     def parse_result(self, response: json):
+        pass
+
+class BaseHuggingfaceTool(BaseTool):
+    def __init__(self):
+        pass
+
+    def run(self):
         pass

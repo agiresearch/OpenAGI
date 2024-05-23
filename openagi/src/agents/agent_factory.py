@@ -2,17 +2,21 @@ from datetime import datetime
 
 import heapq
 
+from .native_agents.travel_agent.travel_agent import TravelAgent
+
+from .native_agents.rag_agent.rag_agent import RAGAgent
+
 from .native_agents.math_agent.math_agent import MathAgent
 
-from .native_agents.narrative_agent.narrative_agent import NarrativeAgent
+from .native_agents.academic_agent.academic_agent import AcademicAgent
 
 from .native_agents.rec_agent.rec_agent import RecAgent
+
+from .native_agents.creation_agent.creation_agent import CreationAgent
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from threading import Thread, Lock, Event
-
-# from multiprocessing import Process, Lock, Event
 
 from pympler import asizeof
 
@@ -27,8 +31,11 @@ class AgentFactory:
 
         self.agent_table = {
             "MathAgent": MathAgent,
-            "NarrativeAgent": NarrativeAgent,
+            "AcademicAgent": AcademicAgent,
             "RecAgent": RecAgent,
+            "TravelAgent": TravelAgent,
+            "RAGAgent": RAGAgent,
+            "CreationAgent": CreationAgent
         }
 
         self.current_agents = {}
