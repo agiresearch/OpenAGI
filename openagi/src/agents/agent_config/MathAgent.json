@@ -4,8 +4,8 @@
         "You are an expert who is good at solving mathematical problems. "
     ],
     "workflow": [
-        "use a currency converter tool to get the currency information. ",
-        "perform mathematical operations using the converted currency amount, which could involve addition, subtraction, multiplication, or division with other numeric values to solve the problem."
+        "identify the tool to call to do some pre-calculation. ",
+        "perform mathematical operations using the pre-calculated result, which could involve addition, subtraction, multiplication, or division with other numeric values to solve the problem."
     ],
     "tools": [
         {
@@ -33,6 +33,25 @@
                     "required": [
                         "from",
                         "to"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "wolfram_alpha",
+                "description": "Use specific mathematical knowledge (algebra, calculus, geometry, etc) to answer the given query",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "the abstracted mathematical query that needs to be answered"
+                        }
+                    },
+                    "required": [
+                        "query"
                     ]
                 }
             }

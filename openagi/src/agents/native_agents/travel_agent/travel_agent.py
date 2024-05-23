@@ -72,16 +72,16 @@ class TravelAgent(BaseAgent):
             )
             
             response_message = response.response_message
-
-            self.set_start_time(start_times[0])
+            if i == 0:
+                self.set_start_time(start_times[0])
 
             tool_calls = response.tool_calls
 
+            request_waiting_times.extend(waiting_times)
+            request_turnaround_times.extend(turnaround_times)
+
             if tool_calls:
                 self.logger.log(f"***** It starts to call external tools *****\n", level="info")
-
-                request_waiting_times.extend(waiting_times)
-                request_turnaround_times.extend(turnaround_times)
 
                 function_responses = ""
                 for tool_call in tool_calls:
@@ -89,9 +89,12 @@ class TravelAgent(BaseAgent):
                     function_to_call = self.tool_list[function_name]
                     function_args = json.loads(tool_call.function.arguments)
 
-                    function_response = function_to_call.run(function_args)
-                    function_responses += function_response
-                    prompt += function_response
+                    try:
+                        function_response = function_to_call.run(function_args)
+                        function_responses += function_response
+                        prompt += function_response
+                    except Exception:
+                        continue
 
                 self.logger.log(f"The solution to step {rounds+1}: It will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
             else:
