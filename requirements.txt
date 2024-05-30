@@ -23,5 +23,3 @@ llama-index-vector-stores-chroma==0.1.8
 llama-index-embeddings-huggingface==0.2.0
 llama-index-readers-file==0.1.22
 chromadb==0.4.23
-opentelemetry-proto==1.24.0
-opentelemetry-exporter-otlp-proto-grpc==1.24.0
