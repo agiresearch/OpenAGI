@@ -28,3 +28,7 @@ generated_music/
 .env
 
 chroma_db/
+
+dist/
+/dist/
+dist
