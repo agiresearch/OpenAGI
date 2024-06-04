@@ -9,7 +9,7 @@
 #### (1) use OpenAGI in AIOS
 1. follow [AIOS](https://github.com/agiresearch/AIOS) instruction to install the virtual environment
 
-2. Allow your code to be able to see 'openagi'
+2. git clone and install openagi under the AIOS virtual environment
 ```
 $ pip install -e .
 ```
@@ -37,23 +37,7 @@ cp .env.example .env
 ```
 
 ## 2. Contributing
-Run tests: Add your test code into the tests/ directory if any, then run test via pytest
-```
-cd openagi
-pytest -v tests
-```
-sample output
-```
-============================================================================================================================= test session starts ==============================================================================================================================
-platform darwin -- Python 3.11.9, pytest-8.1.1, pluggy-1.5.0 -- ""
-cachedir: .pytest_cache
-rootdir: ""
-plugins: anyio-4.3.0
-collected 2 items                                                                                                                                                                                                                                                              
-
-tests/test_agent_creation.py::test_agent_creation PASSED                                                                                                                                                                                                                 [ 50%]
-tests/test_tools.py::test_currency_converter_api PASSED                                                                                                                                                                                                                  [100%]
-```
+For detailed information on how to contribute, see [CONTRIBUTE](https://github.com/agiresearch/OpenAGI/blob/main/CONTRIBUTE.md). If you would like to contribute to the codebase, [issues](https://github.com/agiresearch/OpenAGI/issues) or [pull requests](https://github.com/agiresearch/OpenAGI/pulls) are always welcome! 
 
 ## 🖋️ 3. Research
 Please check out our [implementation](./research) for our research paper [OpenAGI: When LLM Meets Domain Experts](https://arxiv.org/abs/2304.04370).
