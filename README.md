@@ -28,7 +28,7 @@ $ pip install -e .
 ```
 
 ### 1.2 Usage
-If you use external tool APIs in your agents, you can follow instructions of setting up tools in [How to setup external tools](./tools.md). 
+If you use external tool APIs in your agents, you can follow instructions of setting up tools in [How to setup external tools](./tools.md).
 
 You can also create .env file from the .env.example file, and then use dotenv to load the environment variables using .env file into your application's environment at runtime.
 
@@ -37,7 +37,7 @@ cp .env.example .env
 ```
 
 ## 2. Contributing
-For detailed information on how to contribute, see [CONTRIBUTE](https://github.com/agiresearch/OpenAGI/blob/main/CONTRIBUTE.md). If you would like to contribute to the codebase, [issues](https://github.com/agiresearch/OpenAGI/issues) or [pull requests](https://github.com/agiresearch/OpenAGI/pulls) are always welcome! 
+For detailed information on how to contribute, see [CONTRIBUTE](./CONTRIBUTE.md). If you would like to contribute to the codebase, [issues](https://github.com/agiresearch/OpenAGI/issues) or [pull requests](https://github.com/agiresearch/OpenAGI/pulls) are always welcome!
 
 ## 🖋️ 3. Research
 Please check out our [implementation](./research) for our research paper [OpenAGI: When LLM Meets Domain Experts](https://arxiv.org/abs/2304.04370).

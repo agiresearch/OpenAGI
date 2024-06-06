@@ -1,0 +1,30 @@
+name: Run Tests on Pull Request
+
+on:
+  # push:
+  #   branches:
+  #     - main  # Adjust this as necessary for your default branch name
+  pull_request:
+    branches:
+      - main  # Adjust this as necessary for your default branch name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        pytest -v openagi/tests

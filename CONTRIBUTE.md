@@ -45,7 +45,7 @@ platform darwin -- Python 3.11.9, pytest-8.1.1, pluggy-1.5.0 -- ""
 cachedir: .pytest_cache
 rootdir: ""
 plugins: anyio-4.3.0
-collected 2 items                                                                                                                                                                                                                                                              
+collected 2 items
 
 tests/test_agent_creation.py::test_agent_creation PASSED                                                                                                                                                                                                                 [ 50%]
 tests/test_tools.py::test_currency_converter_api PASSED                                                                                                                                                                                                                  [100%]
@@ -56,7 +56,7 @@ tests/test_tools.py::test_currency_converter_api PASSED                         
 ### Code format check
 Please ensure your code is formatted correctly using pre-commit
 
-### Git commit format
+### Git commit message
 We strongly recommend your git commit follows the format below
 ```bash
 git commit -m <type>: <subject>
@@ -74,6 +74,7 @@ git commit -m <type>: <subject>
 | `chore`     | Change the build procedure or add dependencies   |
 | `revert`    | Revert to the previous version                   |
 
+💡Try to shrink the number of git commit messages to make it clear and concise. If you find you have already made too many commit messages, no worries, use git rebase and squash to merge multiple messages. Here is the [guide](https://www.freecodecamp.org/news/git-squash-commits/#:~:text=The%20first%20thing%20you%20need,to%20go%20back%206%20commits.&text=Now%2C%20you%20need%20to%20replace,apart%20from%20the%20first%20one).
 ### Create a Pull Request
 
 1. Visit your forked AIOS repository on GitHub and click the "Compare & pull request" button to initiate the process of submitting your changes to the original repository for review and potential merging.

@@ -1,4 +1,4 @@
-from openagi.src.utils.utils import get_from_env
+from src.utils.utils import get_from_env
 import json
 
 class BaseTool:
