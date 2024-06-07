@@ -62,7 +62,6 @@ def mock_response(monkeypatch):
 
     monkeypatch.setattr(requests, "get", mock_get)
 
-
 @pytest.mark.parametrize(
     "valid_start, valid_end",
     [
