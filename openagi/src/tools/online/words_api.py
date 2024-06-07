@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 # from pydantic import root_validator
 
-from openagi.src.utils.utils import get_from_env
+from ...utils.utils import get_from_env
 
 import requests
 
@@ -41,12 +41,12 @@ class WordsAPI(BaseRapidAPITool):
                 "The keys in params do not match the excepted keys in params for words api. "
                 "Please make sure it contains two keys: 'words' and 'api_name'"
             )
-        
+
         if not self.is_supported(self.api_name):
             raise ValueError(
                 f"{self.api_name} is currently not supported!"
             )
-        
+
         self.url = f"{self.base_url}{self.word}/{self.api_name}"
         response = requests.get(self.url, headers=headers).json()
         result = self.parse_result(response)
@@ -56,7 +56,7 @@ class WordsAPI(BaseRapidAPITool):
         # fail response: {'success': False, 'message': 'word not found'}
         if ("success" in response and response["success"] == False):
             return response["message"]
-        
+
         return response["word"] + " " + self.api_name + " [" + ",".join(response[self.api_name]) + "]"
 
     def is_supported(self, api_name):

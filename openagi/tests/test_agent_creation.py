@@ -1,4 +1,4 @@
-from openagi.src.agents.agent_process import AgentProcess
+from src.agents.agent_process import AgentProcess
 import pytest
 
 def test_agent_creation():

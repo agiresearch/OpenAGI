@@ -7,6 +7,15 @@ import json
 from src.tools.online.imdb.top_series import ImdbTopSeriesAPI
 from dotenv import load_dotenv, find_dotenv
 
+@pytest.fixture(scope="module")
+def test_api_key():
+    load_dotenv(find_dotenv())
+    if "RAPID_API_KEY" not in os.environ or not os.environ["RAPID_API_KEY"]:
+        with pytest.raises(ValueError):
+            ImdbTopSeriesAPI()
+        pytest.skip("RAPID API key has not been set.")
+    else:
+        return True
 
 class ImdbTopSeriesMock:
     @staticmethod
@@ -53,16 +62,6 @@ def mock_response(monkeypatch):
 
     monkeypatch.setattr(requests, "get", mock_get)
 
-
-def test_top_series_api__missing_key_raises_valueerror():
-    load_dotenv(find_dotenv())
-    if "RAPID_API_KEY" not in os.environ or not os.environ["RAPID_API_KEY"]:
-        with pytest.raises(ValueError):
-            ImdbTopSeriesAPI()
-    else:
-        pytest.skip("RAPID API key is set")
-
-
 @pytest.mark.parametrize(
     "valid_start, valid_end",
     [
@@ -71,6 +70,7 @@ def test_top_series_api__missing_key_raises_valueerror():
         [60, 62],
     ],
 )
+@pytest.mark.usefixtures("test_api_key")
 def test_top_series_api_valid_input_outputs_valid_delimiter_count(
     valid_start, valid_end
 ):
@@ -81,7 +81,7 @@ def test_top_series_api_valid_input_outputs_valid_delimiter_count(
     assert isinstance(result, str)
     assert result.count(";") == max(0, int(valid_end) - int(valid_start))
 
-
+@pytest.mark.usefixtures("test_api_key")
 def test_top_series_api_reverse_range_returns_blank():
     load_dotenv(find_dotenv())
     top_series_api = ImdbTopSeriesAPI()
@@ -91,8 +91,15 @@ def test_top_series_api_reverse_range_returns_blank():
 
 
 @pytest.mark.parametrize(
-    "invalid_start, valid_end", [["0", 100], [0.5, 100], [[], 100], [{}, 100]]
+    "invalid_start, valid_end",
+    [
+        ["0", 100],
+        [0.5, 100],
+        [[], 100],
+        [{}, 100]
+    ]
 )
+@pytest.mark.usefixtures("test_api_key")
 def test_top_series_api_invalid_start_type_raises_typeerror(invalid_start, valid_end):
     load_dotenv(find_dotenv())
     top_series_api = ImdbTopSeriesAPI()
@@ -102,8 +109,15 @@ def test_top_series_api_invalid_start_type_raises_typeerror(invalid_start, valid
 
 
 @pytest.mark.parametrize(
-    "invalid_start, valid_end", [[1, "0"], [1, 0.5], [1, []], [1, {}]]
+    "invalid_start, valid_end",
+    [
+        [1, "0"],
+        [1, 0.5],
+        [1, []],
+        [1, {}]
+    ]
 )
+@pytest.mark.usefixtures("test_api_key")
 def test_top_series_api_invalid_end_type_raises_typeerror(invalid_start, valid_end):
     load_dotenv(find_dotenv())
     top_series_api = ImdbTopSeriesAPI()
@@ -111,7 +125,7 @@ def test_top_series_api_invalid_end_type_raises_typeerror(invalid_start, valid_e
     with pytest.raises(TypeError):
         top_series_api.run(params=params)
 
-
+@pytest.mark.usefixtures("test_api_key")
 def test_top_series_api_invalid_start_count_raises_indexerror():
     load_dotenv(find_dotenv())
     top_series_api = ImdbTopSeriesAPI()
@@ -119,24 +133,10 @@ def test_top_series_api_invalid_start_count_raises_indexerror():
     with pytest.raises(IndexError):
         top_series_api.run(params=invalid_start)
 
-
+@pytest.mark.usefixtures("test_api_key")
 def test_top_series_api_invalid_end_count_raises_indexerror():
     load_dotenv(find_dotenv())
     top_series_api = ImdbTopSeriesAPI()
     invalid_end = {"start": 1, "end": 101}
     with pytest.raises(IndexError):
         top_series_api.run(params=invalid_end)
-
-
-def main():
-    test_top_series_api__missing_key_raises_valueerror()
-    test_top_series_api_valid_input_outputs_valid_delimiter_count()
-    test_top_series_api_reverse_range_returns_blank()
-    test_top_series_api_invalid_start_type_raises_typeerror()
-    test_top_series_api_invalid_end_type_raises_typeerror()
-    test_top_series_api_invalid_start_count_raises_indexerror()
-    test_top_series_api_invalid_end_count_raises_indexerror()
-
-
-if __name__ == "__main__":
-    main()
