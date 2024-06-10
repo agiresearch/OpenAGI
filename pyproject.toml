@@ -6,23 +6,14 @@ requires = ["hatchling", "hatch-requirements-txt"]
 
 dynamic = ["dependencies"]
 
-authors = [
-  # {name = "Kai Mei", email = "marknju2018@gmail.com"},
-  # {name = "Yongfeng Zhang", email = "yongfeng@email.com"},
-]
-
 description = "OpenAGI: Package for AI Agent Creation"
-keywords = ["machine learning", "agents", "agi", "ai"]
+keywords = ["llm", "agi"]
 license = {file = "LICENSE"}
-maintainers = [
-  {name = "Kai Mei", email = "marknju2018@gmail.com"},
-  {name = "Yongfeng Zhang", email = "yongfeng@email.com"},
-  {name = "Balaji Rama", email = "balajirw10@gmail.com"},
-]
+
 name = "pyopenagi"
 readme = "README.md"
-requires-python = ">=3.7"
-version = "0.0.1"
+requires-python = ">=3.9"
+version = "0.0.4"
 
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -30,8 +21,6 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -42,8 +31,13 @@ Homepage = "https://github.com/agiresearch/OpenAGI"
 Repository = "https://github.com/agiresearch/OpenAGI.git"
 "Tools Docs" = "https://github.com/agiresearch/OpenAGI/tools.md"
 
+
+[tool.hatch.build]
+exclude = ["research/", "pyopenagi.egg-info/", "dist", "__pycache__/", ".pytest_cache/"]
+
 [tool.hatch.metadata.hooks.requirements_txt]
 files = ["requirements.txt"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["openagi/src"]
+packages = ["pyopenagi"]
+packages = ["pyopenagi"]
