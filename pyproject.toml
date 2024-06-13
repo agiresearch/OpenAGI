@@ -13,13 +13,14 @@ license = {file = "LICENSE"}
 name = "pyopenagi"
 readme = "README.md"
 requires-python = ">=3.9"
-version = "0.0.3"
+version = "0.0.4"
 
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Topic :: Software Development :: Libraries :: Python Modules",
   "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -29,6 +30,9 @@ classifiers = [
 Homepage = "https://github.com/agiresearch/OpenAGI"
 Repository = "https://github.com/agiresearch/OpenAGI.git"
 "Tools Docs" = "https://github.com/agiresearch/OpenAGI/tools.md"
+
+[tool.hatch.build]
+exclude = ["research/", "pyopenagi.egg-info/", "dist", "__pycache__/"]
 
 [tool.hatch.metadata.hooks.requirements_txt]
 files = ["requirements.txt"]
