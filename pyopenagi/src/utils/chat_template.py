@@ -1,11 +1,9 @@
-class Message:
+class Query:
     def __init__(self,
-            prompt,
-            context = None,
+            messages,
             tools = None
         ) -> None:
-        self.prompt = prompt
-        self.context = context
+        self.messages = messages
         self.tools = tools
 
 class Response:

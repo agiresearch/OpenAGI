@@ -5,7 +5,7 @@ import argparse
 import time
 import numpy as np
 from concurrent.futures import as_completed
-from ....utils.message import Message
+from ....utils.chat_template import Query
 
 from ...base import BaseAgent
 from ....tools.online.trip_advisor.hotels import HotelLocationSearch, HotelSearch, GetHotelDetails
@@ -33,24 +33,14 @@ class TravelAgent(BaseAgent):
             "get_restaurant_details": GetRestaurantDetails(),
             "wikipedia": Wikipedia(),
         }
-        self.tool_check_max_fail_times = 10
-        self.tool_select_max_fail_times = 10
-        self.tool_calling_max_fail_times = 10
-        self.tools = self.config["tools"]
-        self.workflow = self.config["workflow"]
 
     def load_flow(self):
         return
 
     def run(self):
-        prompt = ""
-        prefix = self.prefix
-        task_input = self.task_input
-        prompt += prefix
         request_waiting_times = []
         request_turnaround_times = []
-        task_input = "The task you need to solve is: " + task_input
-        prompt += task_input
+        task_input = "The task you need to solve is: " + self.task_input
 
         self.logger.log(f"{task_input}\n", level="info")
 
@@ -58,20 +48,25 @@ class TravelAgent(BaseAgent):
 
         # TODO replace fixed steps with dynamic steps
         for i, step in enumerate(self.workflow):
-            prompt += f"\nIn step {rounds + 1}, you need to {step}. Output should focus on current step and don't be verbose!"
-            self.logger.log(f"Step {i+1}: {step}\n", level="info")
+            query = f"\nAt current step, you need to {step}. Output should focus on current step and don't be verbose!"
+            self.messages.append({
+                "role": "user",
+                "content": query
+            })
+            self.logger.log(f"At current step, {step}\n", level="info")
 
             # Avoid calling tools in the last step
             tools_to_use = self.tools if i < len(self.workflow) - 1 else None
 
             response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
-                message = Message(
-                    prompt = prompt,
+                query = Query(
+                    messages = self.messages,
                     tools = tools_to_use
                 )
             )
 
             response_message = response.response_message
+
             if i == 0:
                 self.set_start_time(start_times[0])
 
@@ -92,17 +87,31 @@ class TravelAgent(BaseAgent):
                     try:
                         function_response = function_to_call.run(function_args)
                         function_responses += function_response
-                        prompt += function_response
+
+                        self.messages.append({
+                            "role": "user",
+                            "content": f"It calls the {function_name} with the params as {function_args} to solve this. The tool response is {function_responses}\n"
+                        })
+
+                        self.logger.log(f"For current step, it will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
+
                     except Exception:
                         continue
 
-                self.logger.log(f"The solution to step {rounds+1}: It will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
-            else:
-                self.logger.log(f"The solution to step {rounds+1}: {response_message}\n", level="info")
+                if response_message is None:
+                    response_message = function_responses
+                    if i == len(self.workflow) - 1:
+                        final_result = response_message
 
-            if i == len(self.workflow) - 1:
-                self.logger.log(f"Final result is: {response_message}\n", level="info")
-                final_result = response_message
+            else:
+                self.messages.append({
+                    "role": "user",
+                    "content": response_message
+                })
+
+                if i == len(self.workflow) - 1:
+                    final_result = response_message
+                self.logger.log(f"{response_message}\n", level="info")
 
             rounds += 1
 

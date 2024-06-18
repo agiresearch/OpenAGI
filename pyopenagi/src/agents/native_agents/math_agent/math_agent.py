@@ -19,7 +19,7 @@ from ....tools.online.currency_converter import CurrencyConverterAPI
 
 from ....tools.online.wolfram_alpha import WolframAlpha
 
-from ....utils.message import Message
+from ....utils.chat_template import Query
 
 import time
 
@@ -39,21 +39,15 @@ class MathAgent(BaseAgent):
             "wolfram_alpha": WolframAlpha(),
             "currency_converter": CurrencyConverterAPI()
         }
-        self.workflow = self.config["workflow"]
-        self.tools = self.config["tools"]
+
 
     def load_flow(self):
         return
 
     def run(self):
-        prompt = ""
-        prefix = self.prefix
         task_input = self.task_input
-        prompt += prefix
         request_waiting_times = []
         request_turnaround_times = []
-        task_input = "The task you need to solve is: " + task_input
-        prompt += task_input
 
         self.logger.log(f"{task_input}\n", level="info")
 
@@ -65,65 +59,68 @@ class MathAgent(BaseAgent):
         # Step 2 "perform mathematical operations using the converted currency amount, which could involve addition, subtraction, multiplication, or division with other numeric values to solve the problem."
 
         for i, step in enumerate(self.workflow):
-            prompt += f"\nIn step {rounds + 1}, you need to {step}. Output should focus on current step and don't be verbose!"
-            if i == 0:
-                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
-                    message = Message(
-                        prompt = prompt,
-                        tools = self.tools
-                    )
-                )
-                response_message = response.response_message
 
+            prompt = f"\nAt current step, you need to {step}. Output should focus on current step and don't be verbose!"
+            self.messages.append({
+                "role": "user",
+                "content": prompt
+            })
+            tool_use = self.tools if i == 0 else None
+            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                query = Query(
+                    messages = self.messages,
+                    tools = tool_use
+                )
+            )
+            response_message = response.response_message
+            if i == 0:
                 self.set_start_time(start_times[0])
 
-                tool_calls = response.tool_calls
+            tool_calls = response.tool_calls
 
-                request_waiting_times.extend(waiting_times)
-                request_turnaround_times.extend(turnaround_times)
+            request_waiting_times.extend(waiting_times)
+            request_turnaround_times.extend(turnaround_times)
 
-                if tool_calls:
-                    self.logger.log(f"***** It starts to call external tools *****\n", level="info")
+            if tool_calls:
+                self.logger.log(f"***** It starts to call external tools *****\n", level="info")
 
-                    function_responses = ""
-                    if tool_calls:
-                        for tool_call in tool_calls:
-                            function_name = tool_call.function.name
-                            function_to_call = self.tool_list[function_name]
-                            function_args = json.loads(tool_call.function.arguments)
+                function_responses = ""
+                for tool_call in tool_calls:
+                    function_name = tool_call.function.name
+                    function_to_call = self.tool_list[function_name]
+                    function_args = json.loads(tool_call.function.arguments)
 
-                            try:
-                                function_response = function_to_call.run(function_args)
-                                function_responses += function_response
-                                prompt += function_response
-                            except Exception:
-                                continue
+                    try:
+                        function_response = function_to_call.run(function_args)
+                        function_responses += function_response
 
-                        self.logger.log(f"The solution to step {rounds+1}: It will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
+                        self.messages.append({
+                            "role": "user",
+                            "content": f"It calls the {function_name} with the params as {function_args} to solve this. The tool response is {function_responses}\n"
+                        })
 
-                else:
-                    self.logger.log(f"The solution to step {rounds+1}: {response_message}\n", level="info")
+                        self.logger.log(f"For current step, it will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
 
-                rounds += 1
+                    except Exception:
+                        continue
+
+                if response_message is None:
+                    response_message = function_responses
+                    if i == len(self.workflow) - 1:
+                        final_result = response_message
 
             else:
-                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
-                    message = Message(
-                        prompt = prompt,
-                        tools = None
-                    )
-                )
-                request_waiting_times.extend(waiting_times)
-                request_turnaround_times.extend(turnaround_times)
-
-                response_message = response.response_message
+                self.messages.append({
+                    "role": "user",
+                    "content": response_message
+                })
 
                 if i == len(self.workflow) - 1:
-                    self.logger.log(f"Final result is: {response_message}\n", level="info")
                     final_result = response_message
 
-                else:
-                    self.logger.log(f"The solution to step {rounds+1}: {response_message}\n", level="info")
+                self.logger.log(f"{response_message}\n", level="info")
+
+            round += 1
 
         self.set_status("done")
         self.set_end_time(time=time.time())

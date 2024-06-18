@@ -40,4 +40,3 @@ files = ["requirements.txt"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["pyopenagi"]
-packages = ["pyopenagi"]

@@ -14,15 +14,15 @@ from threading import Thread, Lock, Event
 
 from pympler import asizeof
 
-from ..utils.message import Message
+from ..utils.chat_template import Query
 
 class AgentProcess:
     def __init__(self,
             agent_name,
-            message
+            query
         ):
         self.agent_name = agent_name
-        self.message = message
+        self.query = query
         self.pid: int = None
         self.status = None
         self.response = None
@@ -95,12 +95,12 @@ class AgentProcessFactory:
 
         self.agent_process_log_mode = agent_process_log_mode
 
-    def activate_agent_process(self, agent_name, message):
+    def activate_agent_process(self, agent_name, query):
         if not self.terminate_signal.is_set():
             with self.current_agent_processes_lock:
                 agent_process = AgentProcess(
                     agent_name = agent_name,
-                    message = message
+                    query = query
                 )
                 pid = heapq.heappop(self.pid_pool)
                 agent_process.set_pid(pid)

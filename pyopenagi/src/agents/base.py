@@ -19,7 +19,7 @@ import numpy as np
 
 from ..utils.logger import AgentLogger
 
-from ..utils.message import Message
+from ..utils.chat_template import Query
 class CustomizedThread(Thread):
     def __init__(self, target, args=()):
         super().__init__()
@@ -45,8 +45,19 @@ class BaseAgent:
         ):
         self.agent_name = agent_name
         self.config = self.load_config()
-        self.prefix = " ".join(self.config["description"])
+        self.workflow = self.config["workflow"]
+        self.tools = self.config["tools"]
         self.task_input = task_input
+        self.messages = [
+            {
+                "role": "system",
+                "content": " ".join(self.config["description"])
+            },
+            {
+                "role": "user",
+                "content": task_input
+            }
+        ]
         self.llm = llm
         self.agent_process_queue = agent_process_queue
         self.agent_process_factory = agent_process_factory
@@ -75,15 +86,15 @@ class BaseAgent:
             return config
 
     def get_response(self,
-            message,
+            query,
             temperature=0.0
         ):
-        thread = CustomizedThread(target=self.query_loop, args=(message, ))
+        thread = CustomizedThread(target=self.query_loop, args=(query, ))
         thread.start()
         return thread.join()
 
-    def query_loop(self, message):
-        agent_process = self.create_agent_request(message)
+    def query_loop(self, query):
+        agent_process = self.create_agent_request(query)
 
         completed_response, start_times, end_times, waiting_times, turnaround_times = "", [], [], [], []
 
@@ -119,10 +130,10 @@ class BaseAgent:
 
         return completed_response, start_times, end_times, waiting_times, turnaround_times
 
-    def create_agent_request(self, message):
+    def create_agent_request(self, query):
         agent_process = self.agent_process_factory.activate_agent_process(
             agent_name = self.agent_name,
-            message = message
+            query = query
         )
         agent_process.set_created_time(time.time())
         # print("Already put into the queue")
