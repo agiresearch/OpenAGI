@@ -4,14 +4,14 @@ from typing import Any, Dict, List, Optional
 
 # from pydantic import root_validator
 
-from src.utils.utils import get_from_env
+from pyopenagi.utils.utils import get_from_env
 
 import requests
 
-class ImdbTopSeriesAPI(BaseRapidAPITool):
+class ImdbTopMovieAPI(BaseRapidAPITool):
     def __init__(self):
         super().__init__()
-        self.url = "https://imdb-top-100-movies.p.rapidapi.com/series/"
+        self.url = "https://imdb-top-100-movies.p.rapidapi.com/"
         self.host_name = "imdb-top-100-movies.p.rapidapi.com"
 
         self.api_key = get_from_env("RAPID_API_KEY")
@@ -30,6 +30,7 @@ class ImdbTopSeriesAPI(BaseRapidAPITool):
 
     def parse_result(self, response, start, end) -> str:
         result = []
+        # print(response)
         for i in range(start, end):
             item = response[i]
             result.append(f'{item["title"]}, {item["genre"]}, {item["rating"]}, published in {item["year"]}')

@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 
 from ..base import BaseTool
 
-from src.utils.utils import get_from_env
+from pyopenagi.utils.utils import get_from_env
 
 
 class GooglePlacesAPI(BaseTool):

@@ -4,7 +4,7 @@ import requests
 from requests.models import Response
 import json
 
-from src.tools.online.wolfram_alpha import WolframAlpha
+from pyopenagi.tools.online.wolfram_alpha import WolframAlpha
 from dotenv import load_dotenv, find_dotenv
 
 @pytest.fixture(scope="module")

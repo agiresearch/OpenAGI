@@ -4,7 +4,7 @@ from ..base import BaseTool
 
 from pydantic import root_validator
 
-from src.utils.utils import get_from_env
+from pyopenagi.utils.utils import get_from_env
 
 class GoogleSearch(BaseTool):
     """Google Search Tool, refactored from langchain.

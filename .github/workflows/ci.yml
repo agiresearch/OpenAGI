@@ -8,6 +8,10 @@ on:
     branches:
       - main  # Adjust this as necessary for your default branch name
 
+  push:
+    branches:
+      - main  # Adjust this as necessary for your default branch name
+
 jobs:
   build:
     runs-on: ubuntu-latest

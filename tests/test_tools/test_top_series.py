@@ -4,7 +4,7 @@ import requests
 from requests.models import Response
 import json
 
-from src.tools.online.imdb.top_series import ImdbTopSeriesAPI
+from pyopenagi.tools.online.imdb.top_series import ImdbTopSeriesAPI
 from dotenv import load_dotenv, find_dotenv
 
 @pytest.fixture(scope="module")
