@@ -40,7 +40,6 @@ class MathAgent(BaseAgent):
             "currency_converter": CurrencyConverterAPI()
         }
 
-
     def load_flow(self):
         return
 
