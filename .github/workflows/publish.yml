@@ -6,8 +6,12 @@ on:
       - "v*"
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+
+    environment: release
+    permissions:
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -22,5 +26,8 @@ jobs:
           pip install hatch
       - name: Build package
         run: hatch build
+      - name: Clear GZ
+        run: |
+          find dist -name "pyopenagi-*.tar.gz" -delete
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

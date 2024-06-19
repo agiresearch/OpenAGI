@@ -31,4 +31,4 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest -v pyopenagi/tests
+        pytest -v tests
