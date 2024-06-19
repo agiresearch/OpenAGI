@@ -13,7 +13,7 @@ license = {file = "LICENSE"}
 name = "pyopenagi"
 readme = "README.md"
 requires-python = ">=3.9"
-version = "0.0.4"
+version = "0.0.5"
 
 classifiers = [
   "Development Status :: 3 - Alpha",

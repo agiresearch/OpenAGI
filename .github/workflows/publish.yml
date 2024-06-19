@@ -1,12 +1,9 @@
-name: Publish to PyPI
+name: Publish Python Package
 
 on:
   push:
     tags:
-      - 'v*'
-
-permissions:
-  contents: read
+      - "v*"
 
 jobs:
   deploy:
