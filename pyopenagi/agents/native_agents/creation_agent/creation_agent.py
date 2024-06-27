@@ -97,8 +97,8 @@ class CreationAgent(BaseAgent):
 
 
                         self.messages.append({
-                            "role": "user",
-                            "content": f"It calls the {function_name} with the params as {function_args} to solve this. The tool response is {function_responses}\n"
+                            "role": "assistant",
+                            "content": f"I will call the {function_name} with the params as {function_args} to solve this. The tool response is {function_responses}\n"
                         })
 
                     except Exception:
@@ -111,7 +111,7 @@ class CreationAgent(BaseAgent):
 
             else:
                 self.messages.append({
-                    "role": "user",
+                    "role": "assistant",
                     "content": response_message
                 })
                 if i == len(self.workflow) - 1:
