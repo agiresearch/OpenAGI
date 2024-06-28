@@ -12,7 +12,7 @@
             "type": "function",
             "function": {
                 "name": "sdxl-turbo",
-                "description": "generate images by calling SDXL-turbo model",
+                "description": "generate images by calling sdxl-turbo model",
                 "parameters": {
                     "type": "object",
                     "properties": {

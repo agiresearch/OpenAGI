@@ -83,8 +83,8 @@ class RecAgent(BaseAgent):
                         function_responses += function_response
 
                         self.messages.append({
-                            "role": "user",
-                            "content": f"It calls the {function_name} with the params as {function_args} to solve this. The tool response is {function_responses}\n"
+                            "role": "assistant",
+                            "content": f"I will call the {function_name} with the params as {function_args} to solve this. The tool response is {function_responses}\n"
                         })
 
                         self.logger.log(f"For current step, it will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
@@ -99,7 +99,7 @@ class RecAgent(BaseAgent):
 
             else:
                 self.messages.append({
-                    "role": "user",
+                    "role": "assistant",
                     "content": response_message
                 })
 
