@@ -14,7 +14,7 @@ numpy==1.23.5
 opencv_python==4.7.0.68
 Pillow==9.5.0
 PyYAML==6.0
-requests==2.28.1
+requests==2.32.2
 scikit_image==0.19.3
 scikit_learn==1.2.2
 scipy==1.10.1
