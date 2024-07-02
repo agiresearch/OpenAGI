@@ -75,25 +75,22 @@ class CreationAgent(BaseAgent):
                 self.logger.log(f"***** It starts to call external tools *****\n", level="info")
 
                 function_responses = ""
+
                 for tool_call in tool_calls:
-                    function_name = tool_call.function.name
+                    function_name = tool_call["name"]
                     function_to_call = self.tool_list[function_name]
-                    function_args = json.loads(tool_call.function.arguments)
+                    function_params = tool_call["parameters"]
+
                     try:
-                        function_response = function_to_call.run(function_args)
-                        if isinstance(function_response, str):
-                            function_responses += function_response
+                        function_response = function_to_call.run(function_params)
+                        function_responses += function_response
 
-                        else:
-                            if isinstance(function_response, PIL.Image.Image):
-                                save_path = os.path.join(self.script_dir, "demo.png")
-                                self.save_image(function_response, save_path)
-                                # if response_message is None:
-                                #     response_message = f"Content has been generated and saved to {save_path}"
+                        self.messages.append({
+                            "role": "assistant",
+                            "content": f"I will call the {function_name} with the params as {function_params} to solve this. The tool response is {function_responses}\n"
+                        })
 
-                                function_responses += f"Content has been generated and saved to {save_path}"
-
-                        self.logger.log(f"For current step, it will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
+                        self.logger.log(f"At current step, it will call the {function_name} with the params as {function_params}. The tool response is {function_responses}\n", level="info")
 
 
                         self.messages.append({

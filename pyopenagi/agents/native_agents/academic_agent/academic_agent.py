@@ -74,20 +74,20 @@ class AcademicAgent(BaseAgent):
 
                 function_responses = ""
                 for tool_call in tool_calls:
-                    function_name = tool_call.function.name
+                    function_name = tool_call["name"]
                     function_to_call = self.tool_list[function_name]
-                    function_args = json.loads(tool_call.function.arguments)
+                    function_params = tool_call["parameters"]
 
                     try:
-                        function_response = function_to_call.run(function_args)
+                        function_response = function_to_call.run(function_params)
                         function_responses += function_response
 
                         self.messages.append({
                             "role": "assistant",
-                            "content": f"I will call the {function_name} with the params as {function_args} to solve this. The tool response is {function_responses}\n"
+                            "content": f"I will call the {function_name} with the params as {function_params} to solve this. The tool response is {function_responses}\n"
                         })
 
-                        self.logger.log(f"At current step, it will call the {function_name} with the params as {function_args}. The tool response is {function_responses}\n", level="info")
+                        self.logger.log(f"At current step, it will call the {function_name} with the params as {function_params}. The tool response is {function_responses}\n", level="info")
 
                     except Exception:
                         continue
