@@ -1,19 +1,15 @@
-name: Run Tests on Pull Request
+name: CI
 
 on:
-  # push:
-  #   branches:
-  #     - main  # Adjust this as necessary for your default branch name
   pull_request:
     branches:
-      - main  # Adjust this as necessary for your default branch name
-
+      - main
   push:
     branches:
-      - main  # Adjust this as necessary for your default branch name
+      - main
 
 jobs:
-  build:
+  run-pytest:
     runs-on: ubuntu-latest
 
     steps:
