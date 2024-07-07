@@ -107,7 +107,7 @@ class BaseAgent(ABC):
     def load_config(self):
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
-        config_file = os.path.join(script_dir, "config.json")
+        config_file = os.path.join(script_dir, self.agent_name, "config.json")
         with open(config_file, "r") as f:
             config = json.load(f)
             return config
