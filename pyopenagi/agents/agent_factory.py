@@ -2,17 +2,15 @@ from datetime import datetime
 
 import heapq
 
-from .native_agents.travel_agent.travel_agent import TravelAgent
+from .example.travel_agent.agent import TravelAgent
 
-# from .native_agents.rag_agent.rag_agent import RAGAgent
+from .example.math_agent.agent import MathAgent
 
-from .native_agents.math_agent.math_agent import MathAgent
+from .example.academic_agent.agent import AcademicAgent
 
-from .native_agents.academic_agent.academic_agent import AcademicAgent
+from .example.rec_agent.agent import RecAgent
 
-from .native_agents.rec_agent.rec_agent import RecAgent
-
-from .native_agents.creation_agent.creation_agent import CreationAgent
+from .example.creation_agent.agent import CreationAgent
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -30,12 +28,12 @@ class AgentFactory:
         self.agent_process_factory = agent_process_factory
 
         self.agent_table = {
-            "MathAgent": MathAgent,
-            "AcademicAgent": AcademicAgent,
-            "RecAgent": RecAgent,
-            "TravelAgent": TravelAgent,
+            "math_agent": MathAgent,
+            "academic_agent": AcademicAgent,
+            "rec_agent": RecAgent,
+            "travel_agent": TravelAgent,
             # "RAGAgent": RAGAgent,
-            "CreationAgent": CreationAgent
+            "creation_agent": CreationAgent
         }
 
         self.current_agents = {}

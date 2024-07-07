@@ -4,7 +4,7 @@ import time
 
 import argparse
 
-from ....utils.message import Message
+from ....utils import Message
 
 from pathlib import PurePosixPath
 import os

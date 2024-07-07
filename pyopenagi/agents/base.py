@@ -20,6 +20,8 @@ import numpy as np
 from ..utils.logger import AgentLogger
 
 from ..utils.chat_template import Query
+
+from abc import ABC, abstractmethod
 class CustomizedThread(Thread):
     def __init__(self, target, args=()):
         super().__init__()
@@ -34,7 +36,7 @@ class CustomizedThread(Thread):
         super().join()
         return self.result
 
-class BaseAgent:
+class BaseAgent(ABC):
     def __init__(self,
                  agent_name,
                  task_input,
@@ -47,17 +49,11 @@ class BaseAgent:
         self.config = self.load_config()
         self.workflow = self.config["workflow"]
         self.tools = self.config["tools"]
+        self.tool_list: dict = None
+
         self.task_input = task_input
-        self.messages = [
-            {
-                "role": "system",
-                "content": " ".join(self.config["description"])
-            },
-            {
-                "role": "user",
-                "content": task_input
-            }
-        ]
+        self.messages = []
+
         self.llm = llm
         self.agent_process_queue = agent_process_queue
         self.agent_process_factory = agent_process_factory
@@ -68,10 +64,41 @@ class BaseAgent:
 
         self.set_status("active")
         self.set_created_time(time.time())
+        self.build_system_instruction(self.messages)
 
     def run(self):
         '''Execute each step to finish the task.'''
         pass
+
+    # can be customization
+    def build_system_instruction(self, messages):
+        pass
+
+    def call_tools(self, tool_calls):
+        self.logger.log(f"***** It starts to call external tools *****\n", level="info")
+        tool_call_responses = None
+        for tool_call in tool_calls:
+            function_name = tool_call["name"]
+            function_to_call = self.tool_list[function_name]
+            function_params = tool_call["parameters"]
+
+            try:
+                function_response = function_to_call.run(function_params)
+                if tool_call_responses is None:
+                    tool_call_responses = f"I will call the {function_name} with the params as {function_params} to solve this. The tool response is {function_response}\n"
+                else:
+                    tool_call_responses += f"I will call the {function_name} with the params as {function_params} to solve this. The tool response is {function_response}\n"
+
+            except Exception:
+                continue
+
+        if tool_call_responses:
+            self.logger.log(f"At current step, {tool_call_responses}", level="info")
+
+        else:
+            self.logger.log("At current step, I fail to call any tools.")
+
+        return tool_call_responses
 
     def setup_logger(self):
         logger = AgentLogger(self.agent_name, self.log_mode)
@@ -80,11 +107,12 @@ class BaseAgent:
     def load_config(self):
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
-        config_file = os.path.join(script_dir, "agent_config/{}.json".format(self.agent_name))
+        config_file = os.path.join(script_dir, "config.json")
         with open(config_file, "r") as f:
             config = json.load(f)
             return config
 
+    # the default method used for getting response from AIOS
     def get_response(self,
             query,
             temperature=0.0
@@ -189,6 +217,3 @@ class BaseAgent:
 
     def get_end_time(self):
         return self.end_time
-
-    def parse_result(self, prompt):
-        pass

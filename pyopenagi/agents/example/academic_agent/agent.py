@@ -70,30 +70,10 @@ class AcademicAgent(BaseAgent):
             request_turnaround_times.extend(turnaround_times)
 
             if tool_calls:
-                self.logger.log(f"***** It starts to call external tools *****\n", level="info")
-
-                function_responses = ""
-                for tool_call in tool_calls:
-                    function_name = tool_call["name"]
-                    function_to_call = self.tool_list[function_name]
-                    function_params = tool_call["parameters"]
-
-                    try:
-                        function_response = function_to_call.run(function_params)
-                        function_responses += function_response
-
-                        self.messages.append({
-                            "role": "assistant",
-                            "content": f"I will call the {function_name} with the params as {function_params} to solve this. The tool response is {function_responses}\n"
-                        })
-
-                        self.logger.log(f"At current step, it will call the {function_name} with the params as {function_params}. The tool response is {function_responses}\n", level="info")
-
-                    except Exception:
-                        continue
+                tool_call_responses = self.call_tools(tool_calls=tool_calls)
 
                 if response_message is None:
-                    response_message = function_responses
+                    response_message = tool_call_responses
                     if i == len(self.workflow) - 1:
                         final_result = response_message
 
