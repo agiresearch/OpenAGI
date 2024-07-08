@@ -1,24 +1,11 @@
 from datetime import datetime
-
 import heapq
-
-from .native_agents.travel_agent.travel_agent import TravelAgent
-
-# from .native_agents.rag_agent.rag_agent import RAGAgent
-
-from .native_agents.math_agent.math_agent import MathAgent
-
-from .native_agents.academic_agent.academic_agent import AcademicAgent
-
-from .native_agents.rec_agent.rec_agent import RecAgent
-
-from .native_agents.creation_agent.creation_agent import CreationAgent
-
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
 from threading import Thread, Lock, Event
-
 from pympler import asizeof
+from .interact import Interactor
+import os
+import importlib
 
 class AgentFactory:
     def __init__(self, llm, agent_process_queue, agent_process_factory, agent_log_mode):
@@ -29,15 +16,6 @@ class AgentFactory:
         self.agent_process_queue = agent_process_queue
         self.agent_process_factory = agent_process_factory
 
-        self.agent_table = {
-            "MathAgent": MathAgent,
-            "AcademicAgent": AcademicAgent,
-            "RecAgent": RecAgent,
-            "TravelAgent": TravelAgent,
-            # "RAGAgent": RAGAgent,
-            "CreationAgent": CreationAgent
-        }
-
         self.current_agents = {}
 
         self.current_agents_lock = Lock()
@@ -46,8 +24,40 @@ class AgentFactory:
 
         self.agent_log_mode = agent_log_mode
 
+    def snake_to_camel(self, snake_str):
+        components = snake_str.split('_')
+        return ''.join(x.title() for x in components)
+
+    def load_agent_instance(self, script_dir, agent_name, task_input):
+        author, name = agent_name.split("/")
+        file_path = os.path.join(script_dir, author, name, "agent.py")
+        module_name = ".".join(["pyopenagi", "agents", author, name, "agent"])
+        class_name = self.snake_to_camel(name)
+
+        print(file_path)
+        print(module_name)
+        print(class_name)
+
+        agent_module = importlib.import_module(module_name)
+
+        agent_class = getattr(agent_module, class_name)
+        return agent_class
+
     def activate_agent(self, agent_name, task_input):
-        agent = self.agent_table[agent_name](
+        script_path = os.path.abspath(__file__)
+        script_dir = os.path.dirname(script_path)
+
+        if not os.path.exists(os.path.join(script_dir, agent_name)):
+            interactor = Interactor()
+            interactor.download_agent(agent_name)
+
+        agent_class = self.load_agent_instance(
+            script_dir,
+            agent_name,
+            task_input
+        )
+
+        agent = agent_class(
             agent_name = agent_name,
             task_input = task_input,
             llm = self.llm,
@@ -55,6 +65,7 @@ class AgentFactory:
             agent_process_factory = self.agent_process_factory,
             log_mode = self.agent_log_mode
         )
+
         aid = heapq.heappop(self.aid_pool)
 
         agent.set_aid(aid)

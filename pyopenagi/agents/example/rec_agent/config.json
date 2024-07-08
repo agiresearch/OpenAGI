@@ -3,10 +3,6 @@
     "description": [
         "You are an expert who is good at recommending TV series and movies."
     ],
-    "workflow": [
-        "identify the tool that you need to call to obtain information. ",
-        "based on the information, give recommendations for the user based on the constrains. "
-    ],
     "tools": [
         {
             "type": "function",
@@ -56,5 +52,10 @@
                 }
             }
         }
-    ]
+    ],
+    "meta": {
+		"author": "example",
+		"version": "0.0.1",
+		"license": "CC0"
+	}
 }

@@ -1,0 +1,269 @@
+{
+	"name": "travel_agent",
+	"description": [
+		"You are an expert in planning and managing travel itineraries."
+	],
+	"tools": [
+		{
+			"type": "function",
+			"function": {
+				"name": "hotel_location_search",
+				"description": "Search for a hotel location by query",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"query": {
+							"type": "string",
+							"description": "Search query for hotel location"
+						}
+					},
+					"required": [
+						"query"
+					]
+				}
+			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "hotel_search",
+				"description": "Provides details about a hotel",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"geoId": {
+							"type": "string",
+							"description": "The geoId of the hotel to search for"
+						},
+						"checkIn": {
+							"type": "string",
+							"format": "date",
+							"description": "The check in date"
+						},
+						"checkOut": {
+							"type": "string",
+							"format": "date",
+							"description": "The check out date"
+						}
+					},
+					"required": [
+						"geoId",
+						"checkIn",
+						"checkOut"
+					]
+				}
+			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "get_hotel_details",
+				"description": "Provides details about a hotel",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"id": {
+							"type": "string",
+							"description": "The ID of the hotel to get details for"
+						},
+						"checkIn": {
+							"type": "string",
+							"format": "date",
+							"description": "The check in date"
+						},
+						"checkOut": {
+							"type": "string",
+							"format": "date",
+							"description": "The check out date"
+						}
+					},
+					"required": [
+						"id",
+						"checkIn",
+						"checkOut"
+					]
+				}
+			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "airport_search",
+				"description": "Search for an airport by query",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"query": {
+							"type": "string",
+							"description": "Search query for airport"
+						}
+					},
+					"required": [
+						"query"
+					]
+				}
+			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "flight_search",
+				"description": "Provides details about a flight",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"sourceAirportCode": {
+							"type": "string",
+							"description": "The source airport code of the flight to search for"
+						},
+						"date": {
+							"type": "string",
+							"format": "date",
+							"description": "The date of the flight"
+						},
+						"returnDate": {
+							"type": "string",
+							"format": "date",
+							"description": "The return date of the flight"
+						},
+						"destinationAirportCode": {
+							"type": "string",
+							"description": "The destination airport code of the flight"
+						},
+						"itineraryType": {
+							"type": "string",
+							"enum": [
+								"ONE_WAY",
+								"ROUND_TRIP"
+							],
+							"description": "The type of itinerary"
+						},
+						"sortOrder": {
+							"type": "string",
+							"enum": [
+								"ML_BEST_VALUE",
+								"DURATION",
+								"PRICE",
+								"EARLIEST_OUTBOUND_DEPARTURE",
+								"EARLIEST_OUTBOUND_ARRIVAL",
+								"LATEST_OUTBOUND_DEPARTURE",
+								"LATEST_OUTBOUND_ARRIVAL"
+							],
+							"description": "The order to sort the results"
+						},
+						"classOfService": {
+							"type": "string",
+							"enum": [
+								"ECONOMY",
+								"PREMIUM_ECONOMY",
+								"BUSINESS",
+								"FIRST"
+							],
+							"description": "The class of service for the flight"
+						},
+						"numSeniors": {
+							"type": "number",
+							"description": "The number of seniors in the itinerary"
+						},
+						"numAdults": {
+							"type": "number",
+							"description": "The number of adults in the itinerary"
+						}
+					},
+					"required": [
+						"sourceAirportCode",
+						"date",
+						"destinationAirportCode",
+						"itineraryType",
+						"sortOrder",
+						"classOfService",
+						"numSeniors",
+						"numAdults",
+						"returnDate"
+					]
+				}
+			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "restaurant_location_search",
+				"description": "Search for a restaurant location by query",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"query": {
+							"type": "string",
+							"description": "Search query for restaurant location"
+						}
+					},
+					"required": [
+						"query"
+					]
+				}
+			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "restaurant_search",
+				"description": "Search for a restaurant by locationID",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"locationId ": {
+							"type": "string",
+							"description": "The locationID of the restaurant to search for"
+						}
+					},
+					"required": [
+						"locationId"
+					]
+				}
+			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "get_restaurant_details",
+				"description": "Provides details about a restaurant",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"restaurantsId": {
+							"type": "string",
+							"description": "The ID of the restaurant to get details for"
+						}
+					},
+					"required": [
+						"restaurantsId"
+					]
+				}
+			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "wikipedia",
+				"description": "Provides relevant information about the destination",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"query": {
+							"type": "string",
+							"description": "Search query for Wikipedia"
+						}
+					},
+					"required": [
+						"query"
+					]
+				}
+			}
+		}
+	],
+	"meta": {
+		"author": "example",
+		"version": "0.0.1",
+		"license": "CC0"
+	}
+}
