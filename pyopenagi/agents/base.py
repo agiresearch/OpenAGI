@@ -47,16 +47,20 @@ class BaseAgent(ABC):
         ):
         self.agent_name = agent_name
         self.config = self.load_config()
-        self.workflow = self.config["workflow"]
         self.tools = self.config["tools"]
-        self.tool_list: dict = None
-
-        self.task_input = task_input
-        self.messages = []
-
         self.llm = llm
         self.agent_process_queue = agent_process_queue
         self.agent_process_factory = agent_process_factory
+        self.tool_list: dict = None
+
+        self.start_time = None
+        self.end_time = None
+        self.request_waiting_times: list = []
+        self.request_turnaround_times: list = []
+        self.task_input = task_input
+        self.messages = []
+        self.workflow_mode = "manual" # (mannual, automatic)
+        self.rounds = 0
 
         self.log_mode = log_mode
         self.logger = self.setup_logger()
@@ -64,14 +68,49 @@ class BaseAgent(ABC):
 
         self.set_status("active")
         self.set_created_time(time.time())
-        self.build_system_instruction(self.messages)
+
+        self.build_system_instruction()
 
     def run(self):
         '''Execute each step to finish the task.'''
         pass
 
     # can be customization
-    def build_system_instruction(self, messages):
+    def build_system_instruction(self):
+        pass
+
+    def automatic_workflow(self):
+        for i in range(self.plan_max_fail_times):
+            try:
+                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                    query = Query(
+                        messages = self.messages,
+                        tools = None
+                    )
+                )
+
+                if self.rounds == 0:
+                    self.set_start_time(start_times[0])
+
+                self.request_waiting_times.extend(waiting_times)
+                self.request_turnaround_times.extend(turnaround_times)
+
+                workflow = json.loads(response.response_message)
+                self.rounds += 1
+
+                return workflow
+
+            except Exception:
+                self.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": f"Fail {i+1} times to generate a valid plan. I need to regenerate a plan"
+                    }
+                )
+                continue
+        return None
+
+    def manual_workflow(self):
         pass
 
     def call_tools(self, tool_calls):

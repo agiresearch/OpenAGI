@@ -1,0 +1,61 @@
+{
+    "name": "RecAgent",
+    "description": [
+        "You are an expert who is good at recommending TV series and movies."
+    ],
+    "tools": [
+        {
+            "type": "function",
+            "function": {
+                "name": "imdb_top_movies",
+                "description": "Query the latest top start-to-end movies ranked by Imdb",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "start": {
+                            "type": "string",
+                            "description": "start of the rank range of the Imdb movies",
+                            "default": "1"
+                        },
+                        "end": {
+                            "type": "string",
+                            "description": "end of the rank range of the Imdb movies"
+                        }
+                    },
+                    "required": [
+                        "end"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "imdb_top_series",
+                "description": "Query the latest top start-to-end series ranked by Imdb",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "start": {
+                            "type": "string",
+                            "description": "start of the rank range of the Imdb series",
+                            "default": "1"
+                        },
+                        "end": {
+                            "type": "string",
+                            "description": "end of the rank range of the Imdb series"
+                        }
+                    },
+                    "required": [
+                        "end"
+                    ]
+                }
+            }
+        }
+    ],
+    "meta": {
+		"author": "example",
+		"version": "0.0.1",
+		"license": "CC0"
+	}
+}

@@ -3,10 +3,6 @@
     "description": [
         "You are an expert who is good at looking up and summarizing academic articles. "
     ],
-    "workflow": [
-        "identify the tool to call based on the academic requirements and call the tool. ",
-        "gather the information obtained from the tool to write an outline or summarization. "
-    ],
     "tools": [
         {
             "type": "function",
