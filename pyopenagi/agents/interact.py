@@ -7,6 +7,16 @@ import base64
 import sys
 import os
 
+def list_available_agents():
+    url = "https://openagi-beta.vercel.app/api/get_all_agents"
+    response = requests.get(url)
+    response: dict = response.json()
+    agent_list = []
+    for v in list(response.values())[:-1]:
+        agent_list.append({
+            "agent": "/".join([v["author"], v["name"]])
+        })
+    return agent_list
 class Interactor:
     def __init__(self, base_folder=''):
         script_path = os.path.abspath(__file__)
@@ -167,13 +177,17 @@ def parse_args():
     return args
 
 if __name__ == '__main__':
-    args = parse_args()
-    mode = args.mode
-    agent = args.agent
+    pass
+    # list_available_agents() # list agents that can be used from db
 
-    client = Interactor()
-    if mode == "download":
-        client.download_agent(agent)
-    else:
-        assert mode == "upload"
-        client.upload_agent(agent)
+    # args = parse_args()
+    # mode = args.mode
+    # agent = args.agent
+
+    # client = Interactor()
+    # if mode == "download":
+    #     client.download_agent(agent) # download agents
+
+    # else:
+    #     assert mode == "upload"
+    #     client.upload_agent(agent) # upload agents
