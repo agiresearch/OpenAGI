@@ -97,3 +97,25 @@ class Arxiv(BaseTool):
             return "\n\n".join(docs)[: self.doc_content_chars_max]
         else:
             return "No good Arxiv Result was found"
+
+    def get_tool_call_format(self):
+        tool_call_format = {
+            "type": "function",
+            "function": {
+                "name": "arxiv",
+                "description": "Query articles or topics in arxiv",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Input query that describes what to search in arxiv"
+                        }
+                    },
+                    "required": [
+                        "query"
+                    ]
+                }
+            }
+        }
+        return tool_call_format

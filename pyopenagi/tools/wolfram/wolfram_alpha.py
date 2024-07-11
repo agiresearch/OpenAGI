@@ -46,3 +46,26 @@ class WolframAlpha(BaseTool):
             return "No good Wolfram Alpha Result was found"
         else:
             return f"Assumption: {assumption} \nAnswer: {answer}"
+
+
+    def get_tool_call_format(self):
+        tool_call_format = {
+            "type": "function",
+            "function": {
+                "name": "wolfram_alpha",
+                "description": "Use specific mathematical knowledge (algebra, calculus, geometry, etc) to answer the given query",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "the abstracted mathematical query that needs to be answered"
+                        }
+                    },
+                    "required": [
+                        "query"
+                    ]
+                }
+            }
+        }
+        return tool_call_format

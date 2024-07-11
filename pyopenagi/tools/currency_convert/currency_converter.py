@@ -8,7 +8,7 @@ import requests
 
 import os
 
-class CurrencyConverterAPI(BaseRapidAPITool):
+class CurrencyConverter(BaseRapidAPITool):
     def __init__(self):
         super().__init__()
         self.url = "https://currency-converter5.p.rapidapi.com/currency/convert"
@@ -51,3 +51,35 @@ class CurrencyConverterAPI(BaseRapidAPITool):
             results.append(amount + " " + base + "can be converted to " + converted_amount + " " + converted + ".")
 
         return " ".join(results)
+
+    def get_tool_call_format(self):
+        tool_call_format = {
+            "type": "function",
+            "function": {
+                "name": "currency_converter",
+                "description": "Provides currency exchange rates convert base currency to desired currency with the given amount",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "from": {
+                            "type": "string",
+                            "description": "Base currency code, e.g., AUD, CAD, EUR, GBP..."
+                        },
+                        "to": {
+                            "type": "string",
+                            "description": "Desired currency code, e.g., AUD, CAD, EUR, GBP..."
+                        },
+                        "amount": {
+                            "type": "string",
+                            "default": "1.0",
+                            "description": "The amount to be converted"
+                        }
+                    },
+                    "required": [
+                        "from",
+                        "to"
+                    ]
+                }
+            }
+        }
+        return tool_call_format

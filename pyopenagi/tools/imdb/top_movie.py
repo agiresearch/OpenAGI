@@ -8,7 +8,7 @@ from pyopenagi.utils.utils import get_from_env
 
 import requests
 
-class ImdbTopMovieAPI(BaseRapidAPITool):
+class TopMovieAPI(BaseRapidAPITool):
     def __init__(self):
         super().__init__()
         self.url = "https://imdb-top-100-movies.p.rapidapi.com/"
@@ -36,3 +36,30 @@ class ImdbTopMovieAPI(BaseRapidAPITool):
             result.append(f'{item["title"]}, {item["genre"]}, {item["rating"]}, published in {item["year"]}')
 
         return f"Top {start}-{end} series ranked by IMDB are: " + ";".join(result)
+
+    def get_tool_call_format(self):
+        tool_call_format = {
+            "type": "function",
+            "function": {
+                "name": "top_movies",
+                "description": "Query the latest top start-to-end movies ranked by Imdb",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "start": {
+                            "type": "string",
+                            "description": "start of the rank range of the Imdb movies",
+                            "default": "1"
+                        },
+                        "end": {
+                            "type": "string",
+                            "description": "end of the rank range of the Imdb movies"
+                        }
+                    },
+                    "required": [
+                        "end"
+                    ]
+                }
+            }
+        }
+        return tool_call_format

@@ -24,7 +24,7 @@ class Wikipedia(BaseTool):
 
     def build_client(self):
         try:
-            import wikipedia
+            import pyopenagi.tools.wikipedia.wikipedia as wikipedia
 
             wikipedia.set_lang(self.lang)
 
@@ -53,3 +53,25 @@ class Wikipedia(BaseTool):
     @staticmethod
     def _formatted_page_summary(page_title: str, wiki_page: Any) -> Optional[str]:
         return f"Page: {page_title}\nSummary: {wiki_page.summary}"
+
+    def get_tool_call_format(self):
+        tool_call_format = {
+			"type": "function",
+			"function": {
+				"name": "wikipedia",
+				"description": "Provides relevant information about the destination",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"query": {
+							"type": "string",
+							"description": "Search query for Wikipedia"
+						}
+					},
+					"required": [
+						"query"
+					]
+				}
+			}
+		}
+        return tool_call_format
