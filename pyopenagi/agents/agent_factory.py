@@ -53,6 +53,8 @@ class AgentFactory:
 
         agent_class = self.load_agent_instance(agent_name)
 
+        print(type(agent_class))
+
         agent = agent_class(
             agent_name = agent_name,
             task_input = task_input,

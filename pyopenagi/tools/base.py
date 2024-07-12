@@ -9,6 +9,7 @@ class BaseTool:
 
     def run(self):
         pass
+
 class BaseRapidAPITool(BaseTool):
     """Base class for calling tool from RapidAPI hub: https://rapidapi.com/hub
 

@@ -1,4 +1,4 @@
-from ...base import BaseAgent
+from ...base_agent import BaseAgent
 
 import time
 

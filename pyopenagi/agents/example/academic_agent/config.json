@@ -4,25 +4,7 @@
         "You are an expert who is good at looking up and summarizing academic articles. "
     ],
     "tools": [
-        {
-            "type": "function",
-            "function": {
-                "name": "arxiv",
-                "description": "Query articles or topics in arxiv",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": {
-                            "type": "string",
-                            "description": "Input query that describes what to search in arxiv"
-                        }
-                    },
-                    "required": [
-                        "query"
-                    ]
-                }
-            }
-        }
+        "arxiv/arxiv"
     ],
     "meta": {
         "author": "example",

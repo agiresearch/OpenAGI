@@ -110,8 +110,8 @@ class Interactor:
         response = requests.get(query)
         response: dict = response.json()
 
-        if response:
-            print("Successfully downloaded")
+        # if response:
+        #     print("Successfully downloaded")
 
         agent_folder = os.path.join(self.base_folder, agent)
 
@@ -150,6 +150,8 @@ class Interactor:
 
     def download_reqs(self, reqs_data, agent):
         reqs_path = os.path.join(self.base_folder, agent, "meta_requirements.txt")
+
+        reqs_data = reqs_data.replace(";", "\n")
 
         with open(reqs_path, 'w') as file:
             file.write(reqs_data)

@@ -21,7 +21,8 @@ from ..utils.logger import AgentLogger
 
 from ..utils.chat_template import Query
 
-from abc import ABC, abstractmethod
+import importlib
+
 class CustomizedThread(Thread):
     def __init__(self, target, args=()):
         super().__init__()
@@ -36,7 +37,7 @@ class CustomizedThread(Thread):
         super().join()
         return self.result
 
-class BaseAgent(ABC):
+class BaseAgent:
     def __init__(self,
                  agent_name,
                  task_input,
@@ -47,11 +48,15 @@ class BaseAgent(ABC):
         ):
         self.agent_name = agent_name
         self.config = self.load_config()
-        self.tools = self.config["tools"]
+        self.tool_names = self.config["tools"]
+
+
         self.llm = llm
         self.agent_process_queue = agent_process_queue
         self.agent_process_factory = agent_process_factory
-        self.tool_list: dict = None
+        self.tool_list = dict()
+        self.tools = []
+        self.load_tools(self.tool_names)
 
         self.start_time = None
         self.end_time = None
@@ -69,7 +74,6 @@ class BaseAgent(ABC):
         self.set_status("active")
         self.set_created_time(time.time())
 
-        self.build_system_instruction()
 
     def run(self):
         '''Execute each step to finish the task.'''
@@ -79,65 +83,74 @@ class BaseAgent(ABC):
     def build_system_instruction(self):
         pass
 
+    def check_workflow(self, message):
+        try:
+            workflow = json.loads(message)
+            if not isinstance(workflow, list):
+                return None
+
+            for step in workflow:
+                if "message" not in step or "tool_use" not in step:
+                    return None
+
+            return workflow
+
+        except json.JSONDecodeError:
+            return None
+
     def automatic_workflow(self):
         for i in range(self.plan_max_fail_times):
-            try:
-                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
-                    query = Query(
-                        messages = self.messages,
-                        tools = None
-                    )
+            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                query = Query(
+                    messages = self.messages,
+                    tools = None
                 )
+            )
 
-                if self.rounds == 0:
-                    self.set_start_time(start_times[0])
+            if self.rounds == 0:
+                self.set_start_time(start_times[0])
 
-                self.request_waiting_times.extend(waiting_times)
-                self.request_turnaround_times.extend(turnaround_times)
+            self.request_waiting_times.extend(waiting_times)
+            self.request_turnaround_times.extend(turnaround_times)
 
-                workflow = json.loads(response.response_message)
-                self.rounds += 1
+            workflow = self.check_workflow(response.response_message)
 
+            self.rounds += 1
+
+            if workflow:
                 return workflow
 
-            except Exception:
+            else:
                 self.messages.append(
                     {
                         "role": "assistant",
                         "content": f"Fail {i+1} times to generate a valid plan. I need to regenerate a plan"
                     }
                 )
-                continue
         return None
 
     def manual_workflow(self):
         pass
 
-    def call_tools(self, tool_calls):
-        self.logger.log(f"***** It starts to call external tools *****\n", level="info")
-        tool_call_responses = None
-        for tool_call in tool_calls:
-            function_name = tool_call["name"]
-            function_to_call = self.tool_list[function_name]
-            function_params = tool_call["parameters"]
+    def snake_to_camel(self, snake_str):
+        components = snake_str.split('_')
+        return ''.join(x.title() for x in components)
 
-            try:
-                function_response = function_to_call.run(function_params)
-                if tool_call_responses is None:
-                    tool_call_responses = f"I will call the {function_name} with the params as {function_params} to solve this. The tool response is {function_response}\n"
-                else:
-                    tool_call_responses += f"I will call the {function_name} with the params as {function_params} to solve this. The tool response is {function_response}\n"
+    def load_tools(self, tool_names):
+        for tool_name in tool_names:
+            org, name = tool_name.split("/")
 
-            except Exception:
-                continue
+            module_name = ".".join(["pyopenagi", "tools", org, name])
 
-        if tool_call_responses:
-            self.logger.log(f"At current step, {tool_call_responses}", level="info")
+            class_name = self.snake_to_camel(name)
 
-        else:
-            self.logger.log("At current step, I fail to call any tools.")
+            tool_module = importlib.import_module(module_name)
 
-        return tool_call_responses
+            tool_class = getattr(tool_module, class_name)
+
+            self.tool_list[name] = tool_class()
+
+            self.tools.append(tool_class().get_tool_call_format())
 
     def setup_logger(self):
         logger = AgentLogger(self.agent_name, self.log_mode)

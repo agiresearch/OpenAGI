@@ -6,7 +6,7 @@ from ..base import BaseTool
 from pyopenagi.utils.utils import get_from_env
 
 
-class GooglePlacesAPI(BaseTool):
+class GooglePlaces(BaseTool):
     """Google Places API, refactored from langchain.
 
     To use, you should have the ``googlemaps`` python package installed,
