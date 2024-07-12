@@ -47,13 +47,15 @@ class AgentFactory:
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
 
+        interactor = Interactor()
+
         if not os.path.exists(os.path.join(script_dir, agent_name)):
-            interactor = Interactor()
             interactor.download_agent(agent_name)
 
-        agent_class = self.load_agent_instance(agent_name)
+        if not interactor.check_reqs_installed(agent_name):
+            interactor.install_agent_reqs(agent_name)
 
-        print(type(agent_class))
+        agent_class = self.load_agent_instance(agent_name)
 
         agent = agent_class(
             agent_name = agent_name,

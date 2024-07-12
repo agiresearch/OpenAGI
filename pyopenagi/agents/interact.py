@@ -156,6 +156,36 @@ class Interactor:
         with open(reqs_path, 'w') as file:
             file.write(reqs_data)
 
+    def download_code(self, code_data, agent):
+        code_path = os.path.join(self.base_folder, agent, "agent.py")
+
+        with open(code_path, 'w', newline='') as file:
+            file.write(code_data)
+
+    def check_reqs_installed(self, agent):
+    # Run the `conda list` command and capture the output
+        reqs_path = os.path.join(self.base_folder, agent, "meta_requirements.txt")
+
+        result = subprocess.run(['conda', 'list'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Decode the output from bytes to string
+        with open(reqs_path, "r") as f:
+            reqs = f.readlines()
+
+        output = result.stdout.decode('utf-8')
+
+        # Extract the list of installed packages
+        installed_packages = [line.split()[0] for line in output.splitlines() if line]
+
+        # Check for each package if it is installed
+        for req in reqs:
+            if req not in installed_packages:
+                return False
+
+        return True
+
+
+    def install_agent_reqs(self, agent):
+        reqs_path = os.path.join(self.base_folder, agent, "meta_requirements.txt")
         subprocess.check_call([
             sys.executable,
             "-m",
@@ -165,15 +195,9 @@ class Interactor:
             reqs_path
         ])
 
-    def download_code(self, code_data, agent):
-        code_path = os.path.join(self.base_folder, agent, "agent.py")
-
-        with open(code_path, 'w', newline='') as file:
-            file.write(code_data)
-
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", required=True, choices=["download", "upload"])
+    parser.add_argument("--mode", choices=["download", "upload"])
     parser.add_argument("--agent", required=True)
     args = parser.parse_args()
     return args
@@ -182,10 +206,12 @@ if __name__ == '__main__':
     pass
     # list_available_agents() # list agents that can be used from db
 
-    # args = parse_args()
-    # mode = args.mode
-    # agent = args.agent
+    args = parse_args()
+    mode = args.mode
+    agent = args.agent
 
+    client = Interactor()
+    client.check_reqs_installed(agent)
     # client = Interactor()
     # if mode == "download":
     #     client.download_agent(agent) # download agents
