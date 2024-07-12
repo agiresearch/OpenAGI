@@ -23,7 +23,6 @@ from ..utils.chat_template import Query
 
 import importlib
 
-from abc import ABC, abstractmethod
 class CustomizedThread(Thread):
     def __init__(self, target, args=()):
         super().__init__()
@@ -38,7 +37,7 @@ class CustomizedThread(Thread):
         super().join()
         return self.result
 
-class BaseAgent(ABC):
+class BaseAgent:
     def __init__(self,
                  agent_name,
                  task_input,
@@ -84,35 +83,50 @@ class BaseAgent(ABC):
     def build_system_instruction(self):
         pass
 
+    def check_workflow(self, message):
+        try:
+            workflow = json.loads(message)
+            if not isinstance(workflow, list):
+                return None
+
+            for step in workflow:
+                if "message" not in step or "tool_use" not in step:
+                    return None
+
+            return workflow
+
+        except json.JSONDecodeError:
+            return None
+
     def automatic_workflow(self):
         for i in range(self.plan_max_fail_times):
-            try:
-                response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
-                    query = Query(
-                        messages = self.messages,
-                        tools = None
-                    )
+            response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
+                query = Query(
+                    messages = self.messages,
+                    tools = None
                 )
+            )
 
-                if self.rounds == 0:
-                    self.set_start_time(start_times[0])
+            if self.rounds == 0:
+                self.set_start_time(start_times[0])
 
-                self.request_waiting_times.extend(waiting_times)
-                self.request_turnaround_times.extend(turnaround_times)
+            self.request_waiting_times.extend(waiting_times)
+            self.request_turnaround_times.extend(turnaround_times)
 
-                workflow = json.loads(response.response_message)
-                self.rounds += 1
+            workflow = self.check_workflow(response.response_message)
 
+            self.rounds += 1
+
+            if workflow:
                 return workflow
 
-            except Exception:
+            else:
                 self.messages.append(
                     {
                         "role": "assistant",
                         "content": f"Fail {i+1} times to generate a valid plan. I need to regenerate a plan"
                     }
                 )
-                continue
         return None
 
     def manual_workflow(self):

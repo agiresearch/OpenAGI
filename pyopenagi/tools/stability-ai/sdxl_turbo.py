@@ -3,7 +3,7 @@ import torch
 
 from ..base import BaseHuggingfaceTool
 
-class SDXLTurbo(BaseHuggingfaceTool):
+class SdxlTurbo(BaseHuggingfaceTool):
     def __init__(self):
         super().__init__()
         self.pipe = AutoPipelineForText2Image.from_pretrained("stabilityai/sdxl-turbo", torch_dtype=torch.float16, variant="fp16")
@@ -18,7 +18,7 @@ class SDXLTurbo(BaseHuggingfaceTool):
         tool_call_format = {
             "type": "function",
             "function": {
-                "name": "sdxl-turbo",
+                "name": "sdxl_turbo",
                 "description": "generate images by calling sdxl-turbo model",
                 "parameters": {
                     "type": "object",

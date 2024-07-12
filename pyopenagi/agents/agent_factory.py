@@ -34,10 +34,6 @@ class AgentFactory:
         module_name = ".".join(["pyopenagi", "agents", author, name, "agent"])
         class_name = self.snake_to_camel(name)
 
-        print(file_path)
-        print(module_name)
-        print(class_name)
-
         agent_module = importlib.import_module(module_name)
 
         agent_class = getattr(agent_module, class_name)
@@ -56,6 +52,8 @@ class AgentFactory:
             agent_name,
             task_input
         )
+
+        print(type(agent_class))
 
         agent = agent_class(
             agent_name = agent_name,
