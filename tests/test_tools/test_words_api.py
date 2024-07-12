@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from pyopenagi.tools.online.words_api import WordsAPI
+from pyopenagi.tools.words_api.words_api import WordsAPI
 from dotenv import load_dotenv, find_dotenv
 
 @pytest.fixture(scope="module")
