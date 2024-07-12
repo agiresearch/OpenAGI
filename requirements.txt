@@ -1,5 +1,3 @@
-pre-commit
-pytest
 python-dotenv
 Requests
 Pympler==1.0.1
