@@ -3,16 +3,6 @@ from .base_agent import BaseAgent
 
 import time
 
-from .agent_process import (
-    AgentProcess
-)
-
-import numpy as np
-
-import argparse
-
-from concurrent.futures import as_completed
-
 from ..utils.chat_template import Query
 
 import json
@@ -21,12 +11,16 @@ class ReactAgent(BaseAgent):
     def __init__(self,
                  agent_name,
                  task_input,
-                 llm,
-                 agent_process_queue,
                  agent_process_factory,
                  log_mode: str
         ):
-        BaseAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, agent_process_factory, log_mode)
+        BaseAgent.__init__(
+            self,
+            agent_name,
+            task_input,
+            agent_process_factory,
+            log_mode
+        )
 
         # self.tool_list = {}
 
@@ -45,27 +39,27 @@ class ReactAgent(BaseAgent):
                 'Generate a plan of steps you need to take.',
                 'The plan must follow the json format as: ',
                 '[',
-                '{"message1": "message_value1","tool_use": [tool_name1, tool_name2,...]}',
-                '{"message2": "message_value2", "tool_use": [tool_name1, tool_name2,...]}',
+                '{"message": "message_value1","tool_use": [tool_name1, tool_name2,...]}',
+                '{"message": "message_value2", "tool_use": [tool_name1, tool_name2,...]}',
                 '...',
                 ']',
                 'In each step of the planned workflow, you must select the most related tool to use',
-                'Plan examples can be:',
+                'Followings are some plan examples:',
                 '[',
                 '{"message": "Gather information from arxiv", "tool_use": ["arxiv"]},',
-                '{"message", "Based on the gathered information, write a summarization", "tool_use": None}',
+                '{"message", "Based on the gathered information, write a summarization", "tool_use": []}',
                 '];',
                 '[',
                 '{"message": "identify the tool that you need to call to obtain information.", "tool_use": ["imdb_top_movies", "imdb_top_series"]},',
-                '{"message", "based on the information, give recommendations for the user based on the constrains.", "tool_use": None}',
+                '{"message", "based on the information, give recommendations for the user based on the constrains.", "tool_use": []}',
                 '];',
                 '[',
                 '{"message": "identify the tool that you need to call to obtain information.", "tool_use": ["imdb_top_movies", "imdb_top_series"]},',
-                '{"message", "based on the information, give recommendations for the user based on the constrains.", "tool_use": None}',
+                '{"message", "based on the information, give recommendations for the user based on the constrains.", "tool_use": []}',
                 '];',
                 '[',
                 '{"message": "identify the tool that you need to call to obtain information.", "tool_use": ["imdb_top_movies", "imdb_top_series"]},'
-                '{"message", "based on the information, give recommendations for the user based on the constrains.", "tool_use": None}',
+                '{"message", "based on the information, give recommendations for the user based on the constrains.", "tool_use": []}',
                 ']'
             ]
         )
@@ -151,18 +145,24 @@ class ReactAgent(BaseAgent):
                 message = step["message"]
                 tool_use = step["tool_use"]
 
-                prompt = f"At step {self.rounds + 1}, you need to {message}. "
+                # print(f"message: {message}")
+                # print(f"tool use: {tool_use}")
+
+                prompt = f"At step {i + 1}, you need to {message}. "
                 self.messages.append({
                     "role": "user",
                     "content": prompt
                 })
+                if tool_use:
+                    selected_tools = self.pre_select_tools(tool_use)
 
-                used_tools = self.tools if tool_use else None
+                else:
+                    selected_tools = None
 
                 response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
                     query = Query(
                         messages = self.messages,
-                        tools = used_tools
+                        tools = selected_tools
                     )
                 )
                 if self.rounds == 0:
@@ -177,7 +177,7 @@ class ReactAgent(BaseAgent):
                 self.request_turnaround_times.extend(turnaround_times)
 
                 if tool_calls:
-                    for i in range(self.plan_max_fail_times):
+                    for _ in range(self.plan_max_fail_times):
                         actions, observations, success = self.call_tools(tool_calls=tool_calls)
 
                         action_messages = "[Action]: " + ";".join(actions)
@@ -201,7 +201,7 @@ class ReactAgent(BaseAgent):
                 if i == len(workflow) - 1:
                     final_result = self.messages[-1]
 
-                self.logger.log(f"At step {self.rounds + 1}, {self.messages[-1]}\n", level="info")
+                self.logger.log(f"At step {i + 1}, {self.messages[-1]}\n", level="info")
 
                 self.rounds += 1
 

@@ -3,9 +3,9 @@ import argparse
 import os
 import shutil
 
-from typing import Dict, List, Any, Optional
-
 import json
+
+from typing import Dict, Any, Optional
 
 import re
 

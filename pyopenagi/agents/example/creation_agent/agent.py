@@ -1,14 +1,12 @@
 from ...react_agent import ReactAgent
-class AcademicAgent(ReactAgent):
+class CreationAgent(ReactAgent):
     def __init__(self,
                  agent_name,
                  task_input,
-                 llm,
-                 agent_process_queue,
                  agent_process_factory,
                  log_mode: str
         ):
-        ReactAgent.__init__(self, agent_name, task_input, llm, agent_process_queue, agent_process_factory, log_mode)
+        ReactAgent.__init__(self, agent_name, task_input, agent_process_factory, log_mode)
         self.workflow_mode = "automatic"
 
     def automatic_workflow(self):
