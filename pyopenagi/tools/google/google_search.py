@@ -1,10 +1,8 @@
-from typing import Any, Dict, List, Optional
-
 from ..base import BaseTool
 
-from pydantic import root_validator
-
 from pyopenagi.utils.utils import get_from_env
+
+from typing import List, Any
 
 class GoogleSearch(BaseTool):
     """Google Search Tool, refactored from langchain.

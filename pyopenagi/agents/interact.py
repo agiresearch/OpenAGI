@@ -169,7 +169,14 @@ class Interactor:
         result = subprocess.run(['conda', 'list'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         # Decode the output from bytes to string
         with open(reqs_path, "r") as f:
-            reqs = f.readlines()
+            reqs = []
+            lines = f.readlines()
+            for line in lines:
+                line = line.replace("\n", "")
+                if "==" in line:
+                    reqs.append(line.split("==")[0])
+                else:
+                    reqs.append(line)
 
         output = result.stdout.decode('utf-8')
 
@@ -211,11 +218,11 @@ if __name__ == '__main__':
     agent = args.agent
 
     client = Interactor()
-    client.check_reqs_installed(agent)
+    # client.check_reqs_installed(agent)
     # client = Interactor()
-    # if mode == "download":
-    #     client.download_agent(agent) # download agents
+    if mode == "download":
+        client.download_agent(agent) # download agents
 
-    # else:
-    #     assert mode == "upload"
-    #     client.upload_agent(agent) # upload agents
+    else:
+        assert mode == "upload"
+        client.upload_agent(agent) # upload agents

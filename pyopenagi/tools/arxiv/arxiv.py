@@ -1,11 +1,10 @@
-import logging
-import os
 import re
-from typing import Any, Dict, Iterator, List, Optional
 
 from ..base import BaseTool
 
 import arxiv
+
+from typing import Optional
 
 class Arxiv(BaseTool):
     """Arxiv Tool, refactored from Langchain.

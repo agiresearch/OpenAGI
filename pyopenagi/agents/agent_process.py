@@ -1,25 +1,13 @@
-import os
-
-import time
-
-from queue import Queue
-
-from datetime import datetime
-
 import heapq
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
 from threading import Thread, Lock, Event
-
-from pympler import asizeof
 
 from ..utils.chat_template import Query
 
 class AgentProcess:
     def __init__(self,
             agent_name,
-            query
+            query: Query
         ):
         self.agent_name = agent_name
         self.query = query
@@ -78,6 +66,10 @@ class AgentProcess:
 
     def set_time_limit(self, time_limit):
         self.time_limit = time_limit
+
+
+class LLMRequestProcess(AgentProcess):
+    pass
 
 class AgentProcessFactory:
     def __init__(self, agent_process_log_mode = None):

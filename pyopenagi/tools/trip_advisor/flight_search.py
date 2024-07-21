@@ -4,8 +4,6 @@ from pyopenagi.utils.utils import get_from_env
 
 import requests
 
-import os
-
 import json
 
 class FlightSearch(BaseRapidAPITool):

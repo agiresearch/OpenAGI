@@ -3,25 +3,20 @@ import os
 import json
 
 from .agent_process import (
-    AgentProcess,
-    # AgentProcessQueue
+    AgentProcess
 )
-
-import logging
 
 import time
 
 from threading import Thread
-
-from datetime import datetime
-
-import numpy as np
 
 from ..utils.logger import AgentLogger
 
 from ..utils.chat_template import Query
 
 import importlib
+
+from ..queues.llm_request_queue import LLMRequestQueue
 
 class CustomizedThread(Thread):
     def __init__(self, target, args=()):
@@ -41,8 +36,6 @@ class BaseAgent:
     def __init__(self,
                  agent_name,
                  task_input,
-                 llm,
-                 agent_process_queue,
                  agent_process_factory,
                  log_mode: str
         ):
@@ -50,10 +43,8 @@ class BaseAgent:
         self.config = self.load_config()
         self.tool_names = self.config["tools"]
 
-
-        self.llm = llm
-        self.agent_process_queue = agent_process_queue
         self.agent_process_factory = agent_process_factory
+
         self.tool_list = dict()
         self.tools = []
         self.load_tools(self.tool_names)
@@ -69,7 +60,7 @@ class BaseAgent:
 
         self.log_mode = log_mode
         self.logger = self.setup_logger()
-        self.logger.log(f"Initialized. \n", level="info")
+        self.logger.log("Initialized. \n", level="info")
 
         self.set_status("active")
         self.set_created_time(time.time())
@@ -85,6 +76,7 @@ class BaseAgent:
 
     def check_workflow(self, message):
         try:
+            # print(f"Workflow message: {message}")
             workflow = json.loads(message)
             if not isinstance(workflow, list):
                 return None
@@ -103,7 +95,8 @@ class BaseAgent:
             response, start_times, end_times, waiting_times, turnaround_times = self.get_response(
                 query = Query(
                     messages = self.messages,
-                    tools = None
+                    tools = None,
+                    message_return_type="json"
                 )
             )
 
@@ -139,18 +132,24 @@ class BaseAgent:
     def load_tools(self, tool_names):
         for tool_name in tool_names:
             org, name = tool_name.split("/")
-
             module_name = ".".join(["pyopenagi", "tools", org, name])
-
             class_name = self.snake_to_camel(name)
 
             tool_module = importlib.import_module(module_name)
-
             tool_class = getattr(tool_module, class_name)
 
             self.tool_list[name] = tool_class()
-
             self.tools.append(tool_class().get_tool_call_format())
+
+    def pre_select_tools(self, tool_names):
+        pre_selected_tools = []
+        for tool_name in tool_names:
+            for tool in self.tools:
+                if tool["function"]["name"] == tool_name:
+                    pre_selected_tools.append(tool)
+                    break
+
+        return pre_selected_tools
 
     def setup_logger(self):
         logger = AgentLogger(self.agent_name, self.log_mode)
@@ -184,7 +183,7 @@ class BaseAgent:
             # reinitialize agent status
             agent_process.set_created_time(current_time)
             agent_process.set_response(None)
-            self.agent_process_queue.put(agent_process)
+            LLMRequestQueue.add_message(agent_process)
 
             thread.start()
             thread.join()
@@ -206,7 +205,7 @@ class BaseAgent:
             turnaround_times.append(turnaround_time)
             # Re-start the thread if not done
 
-        self.agent_process_factory.deactivate_agent_process(agent_process.get_pid())
+        # self.agent_process_factory.deactivate_agent_process(agent_process.get_pid())
 
         return completed_response, start_times, end_times, waiting_times, turnaround_times
 
@@ -219,7 +218,7 @@ class BaseAgent:
         # print("Already put into the queue")
         return agent_process
 
-    def listen(self, agent_process):
+    def listen(self, agent_process: AgentProcess):
         """Response Listener for agent
 
         Args:

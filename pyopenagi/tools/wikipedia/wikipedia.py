@@ -1,9 +1,6 @@
-import logging
-from typing import Any, Dict, Iterator, List, Optional
-
 from ..base import BaseTool
 # from langchain_core.documents import Document
-
+from typing import Optional, Any, Dict
 class Wikipedia(BaseTool):
     """Wikipedia tool, refactored from langchain.
 

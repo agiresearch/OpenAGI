@@ -1,14 +1,10 @@
 from ..base import BaseRapidAPITool
 
-from typing import Any, Dict, List, Optional
-
 # from pydantic import root_validator
 
 from pyopenagi.utils.utils import get_from_env
 
 import requests
-
-import os
 
 SUPPORTED_APIS = [
     "typeOf", "hasTypes", "partOf", "hasParts",
@@ -54,7 +50,7 @@ class WordsAPI(BaseRapidAPITool):
 
     def parse_result(self, response) -> str:
         # fail response: {'success': False, 'message': 'word not found'}
-        if ("success" in response and response["success"] == False):
+        if "success" in response and not response["success"]:
             return response["message"]
 
         return response["word"] + " " + self.api_name + " [" + ",".join(response[self.api_name]) + "]"
