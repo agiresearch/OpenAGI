@@ -9,7 +9,7 @@ def test_rapid_api_key():
     load_dotenv(find_dotenv())
     if "RAPID_API_KEY" not in os.environ or not os.environ["RAPID_API_KEY"]:
         with pytest.raises(ValueError):
-            words_api = WordsAPI()
+            WordsAPI()
         pytest.skip("Rapid api key is not set.")
 
 @pytest.mark.usefixtures("test_rapid_api_key")
