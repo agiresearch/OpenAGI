@@ -1,3 +1,6 @@
+# random helper utils AIOS uses
+# file is not particularly organized but mainly small functions
+
 import argparse
 
 import os

@@ -1,6 +1,23 @@
+<<<<<<< HEAD:pyopenagi/agents/agent_process.py
+=======
+# defines a process holder for agents to use in a single class
+# used in the base implementation for agents
+# this class isn't actually instantiated until the user instantiates
+# a specific agent like MathAgent
+
+import os
+
+import time
+
+from queue import Queue
+
+from datetime import datetime
+
+>>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_process.py
 import heapq
 
 from threading import Thread, Lock, Event
+<<<<<<< HEAD:pyopenagi/agents/agent_process.py
 
 from ..utils.chat_template import Query
 
@@ -8,6 +25,21 @@ class AgentProcess:
     def __init__(self,
             agent_name: str,
             query: Query
+=======
+# for memory usage statistics
+from pympler import asizeof
+
+from ..utils.message import Message
+
+class AgentProcess:
+    """
+    each agent holds the values defined in the constructor
+    """
+
+    def __init__(self, 
+            agent_name,
+            message
+>>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_process.py
         ):
         """Agent Process
 
@@ -24,6 +56,10 @@ class AgentProcess:
         self.created_time = None
         self.start_time = None
         self.end_time = None
+
+    #######################
+    # getters and setters #
+    #######################
 
     def set_created_time(self, time):
         self.created_time = time
@@ -78,7 +114,14 @@ class LLMRequestProcess(AgentProcess):
     pass
 
 class AgentProcessFactory:
+    """ 
+    used by AgentFactory
+    right now it is only set in agent activation
+    """
+
     def __init__(self, agent_process_log_mode = None):
+        # make a heap of every pid 1..1024 to remove from when agent created
+        # so pids can be reused
         self.max_pid = 1024
         self.pid_pool = [i for i in range(self.max_pid)]
         heapq.heapify(self.pid_pool)
@@ -93,9 +136,14 @@ class AgentProcessFactory:
 
         self.agent_process_log_mode = agent_process_log_mode
 
+<<<<<<< HEAD:pyopenagi/agents/agent_process.py
     def activate_agent_process(self, agent_name, query):
+=======
+    def activate_agent_process(self, agent_name, message):
+        """ run each agent and lock it """
+>>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_process.py
         if not self.terminate_signal.is_set():
-            with self.current_agent_processes_lock:
+           with self.current_agent_processes_lock:
                 agent_process = AgentProcess(
                     agent_name = agent_name,
                     query = query
@@ -107,6 +155,7 @@ class AgentProcessFactory:
                 return agent_process
 
     def print_agent_process(self):
+        """ print agent data in a clean format """
         headers = ["Agent Process ID", "Agent Name", "Created Time", "Status"]
         data = []
         for id, agent_process in self.current_agent_processes.items():
@@ -121,6 +170,8 @@ class AgentProcessFactory:
 
 
     def print(self, headers, data):
+        """ separate headers and data in printing """
+
         # align output
         column_widths = [
             max(len(str(row[i])) for row in [headers] + data) for i in range(len(headers))
@@ -136,10 +187,12 @@ class AgentProcessFactory:
 
 
     def format_row(self, row, widths, align="<"):
+        """ helper for print """
         row_str = " | ".join(f"{str(item):{align}{widths[i]}}" for i, item in enumerate(row))
         return row_str
 
     def deactivate_agent_process(self, pid):
+        """ after agent stops reallow pid """
         self.current_agent_processes.pop(pid)
         heapq.heappush(self.pid_pool, pid)
 

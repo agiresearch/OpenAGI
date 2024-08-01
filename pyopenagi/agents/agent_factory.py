@@ -1,3 +1,13 @@
+<<<<<<< HEAD:pyopenagi/agents/agent_factory.py
+=======
+# this class runs the "AgentProcess" for the agents and holds the pool
+# of agents currently usable
+# this class isn't actually instantiated until the user instantiates
+# a specific agent like MathAgent
+
+from datetime import datetime
+
+>>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_factory.py
 import heapq
 from threading import Lock, Event
 from pympler import asizeof
@@ -6,18 +16,41 @@ import os
 import importlib
 
 class AgentFactory:
+<<<<<<< HEAD:pyopenagi/agents/agent_factory.py
     def __init__(self,
                  agent_process_queue,
                  agent_process_factory,
                  agent_log_mode
         ):
+=======
+    """ duplicate of AgentProcessFactory """
+
+    def __init__(self, llm, agent_process_queue, agent_process_factory, agent_log_mode):
+        # 256 agent ids heapified similar to AgentProcessFactory
+>>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_factory.py
         self.max_aid = 256
         # self.llm = llm
         self.aid_pool = [i for i in range(self.max_aid)]
         heapq.heapify(self.aid_pool)
         self.agent_process_queue = agent_process_queue
+
+        # TODO: dead code
         self.agent_process_factory = agent_process_factory
 
+<<<<<<< HEAD:pyopenagi/agents/agent_factory.py
+=======
+        # manually add the built in agents to run
+        self.agent_table = {
+            "MathAgent": MathAgent,
+            "AcademicAgent": AcademicAgent,
+            "RecAgent": RecAgent,
+            "TravelAgent": TravelAgent,
+            "RAGAgent": RAGAgent,
+            "CreationAgent": CreationAgent
+        }
+
+        # added to with index aid
+>>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_factory.py
         self.current_agents = {}
 
         self.current_agents_lock = Lock()
@@ -46,6 +79,7 @@ class AgentFactory:
         return agent_class
 
     def activate_agent(self, agent_name, task_input):
+<<<<<<< HEAD:pyopenagi/agents/agent_factory.py
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
 
@@ -60,6 +94,10 @@ class AgentFactory:
         agent_class = self.load_agent_instance(agent_name)
 
         agent = agent_class(
+=======
+        """ initialize each agent """
+        agent = self.agent_table[agent_name](
+>>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_factory.py
             agent_name = agent_name,
             task_input = task_input,
             agent_process_factory = self.agent_process_factory,
@@ -77,6 +115,8 @@ class AgentFactory:
         return agent
 
     def run_agent(self, agent_name, task_input):
+        """ run the Thread and return output """
+
         agent = self.activate_agent(
             agent_name=agent_name,
             task_input=task_input
@@ -87,6 +127,7 @@ class AgentFactory:
         return output
 
     def print_agent(self):
+        """ print all agent information in a nice organized format """
         headers = ["Agent ID", "Agent Name", "Created Time", "Status", "Memory Usage"]
         data = []
         for id, agent in self.current_agents.items():
@@ -101,6 +142,7 @@ class AgentFactory:
 
 
     def print(self, headers, data):
+        """ generalized table printer for the agent data """
         # align output
         column_widths = [
             max(len(str(row[i])) for row in [headers] + data) for i in range(len(headers))
@@ -116,9 +158,12 @@ class AgentFactory:
 
 
     def format_row(self, row, widths, align="<"):
+        """ helper utility for print """
         row_str = " | ".join(f"{str(item):{align}{widths[i]}}" for i, item in enumerate(row))
         return row_str
 
     def deactivate_agent(self, aid):
+        """ remove the agent id from the pool and allow it to be re-used """
+
         self.current_agents.pop(aid)
         heapq.heappush(self.aid_pool, aid)

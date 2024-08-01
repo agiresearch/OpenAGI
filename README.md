@@ -48,6 +48,28 @@ If you want to look at implementations of other agents that others have develope
 python pyopenagi/agents/interact.py --mode download --agent <author_name/agent_name>
 ```
 
+<<<<<<< HEAD
+=======
+## 2. Contributing
+
+### 2.1 Documentation
+Each source directory contains a README.md file that explains what the files in that directory do. Additionally, each file has a header that describes the file's purpose. All comments follow the same styling documented in [AIOS](https://github.com/agiresearch/AIOS).
+
+### 2.2 Running tests
+Run tests: Add your test code into the tests/ directory if any, then run test via pytest
+```
+cd openagi
+pytest -v tests
+```
+sample output
+```
+============================================================================================================================= test session starts ==============================================================================================================================
+platform darwin -- Python 3.11.9, pytest-8.1.1, pluggy-1.5.0 -- ""
+cachedir: .pytest_cache
+rootdir: ""
+plugins: anyio-4.3.0
+collected 2 items                                                                                                                                                                                                                                                              
+>>>>>>> 00c34a4 (added readme files in each directory for source documentation)
 
 ## 🚀 Contributions
 For detailed information on how to contribute, see [CONTRIBUTE](./CONTRIBUTE.md). If you would like to contribute to the codebase, [issues](https://github.com/agiresearch/OpenAGI/issues) or [pull requests](https://github.com/agiresearch/OpenAGI/pulls) are always welcome!
