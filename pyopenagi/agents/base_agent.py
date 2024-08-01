@@ -15,18 +15,12 @@ from threading import Thread
 
 from ..utils.logger import AgentLogger
 
-<<<<<<< HEAD:pyopenagi/agents/base_agent.py
 from ..utils.chat_template import Query
 
 import importlib
 
 from ..queues.llm_request_queue import LLMRequestQueue
 
-=======
-from ..utils.message import Message
-
-# TODO: can be removed
->>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/base.py
 class CustomizedThread(Thread):
     """ provides a specific agent runtime """
 
@@ -59,18 +53,8 @@ class BaseAgent:
 
         self.agent_name = agent_name
         self.config = self.load_config()
-<<<<<<< HEAD:pyopenagi/agents/base_agent.py
         self.tool_names = self.config["tools"]
 
-=======
-        self.prefix = " ".join(self.config["description"])
-        self.task_input = task_input
-        self.llm = llm
-
-        # instantiated inside each agent's specific instantiation
-        # e.g. `myAgent = MathAgent()`
-        self.agent_process_queue = agent_process_queue
->>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/base.py
         self.agent_process_factory = agent_process_factory
 
         self.tool_list = dict()
@@ -205,23 +189,14 @@ class BaseAgent:
             query,
             temperature=0.0
         ):
-<<<<<<< HEAD:pyopenagi/agents/base_agent.py
+        """ value of the agent """
         thread = CustomizedThread(target=self.query_loop, args=(query, ))
         thread.start()
         return thread.join()
 
     def query_loop(self, query):
-        agent_process = self.create_agent_request(query)
-=======
-        """ value of the agent """
-        thread = CustomizedThread(target=self.query_loop, args=(message, ))
-        thread.start()
-        return thread.join()
-
-    def query_loop(self, message):
         """ custom function for the CustomizedThread """
-        agent_process = self.create_agent_request(message)
->>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/base.py
+        agent_process = self.create_agent_request(query)
 
         # because it might have to run multiple times
         completed_response, start_times, end_times, waiting_times, turnaround_times = "", [], [], [], []
@@ -260,12 +235,8 @@ class BaseAgent:
 
         return completed_response, start_times, end_times, waiting_times, turnaround_times
 
-<<<<<<< HEAD:pyopenagi/agents/base_agent.py
     def create_agent_request(self, query):
-=======
-    def create_agent_request(self, message):
         """ uses AgentFactory to initialize the agent in the pool """
->>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/base.py
         agent_process = self.agent_process_factory.activate_agent_process(
             agent_name = self.agent_name,
             query = query
@@ -332,7 +303,3 @@ class BaseAgent:
 
     def get_end_time(self):
         return self.end_time
-<<<<<<< HEAD:pyopenagi/agents/base_agent.py
-=======
-
->>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/base.py

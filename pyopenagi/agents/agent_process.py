@@ -1,45 +1,21 @@
-<<<<<<< HEAD:pyopenagi/agents/agent_process.py
-=======
 # defines a process holder for agents to use in a single class
 # used in the base implementation for agents
 # this class isn't actually instantiated until the user instantiates
 # a specific agent like MathAgent
 
-import os
-
-import time
-
-from queue import Queue
-
-from datetime import datetime
-
->>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_process.py
 import heapq
 
 from threading import Thread, Lock, Event
-<<<<<<< HEAD:pyopenagi/agents/agent_process.py
 
 from ..utils.chat_template import Query
-
-class AgentProcess:
-    def __init__(self,
-            agent_name: str,
-            query: Query
-=======
-# for memory usage statistics
-from pympler import asizeof
-
-from ..utils.message import Message
 
 class AgentProcess:
     """
     each agent holds the values defined in the constructor
     """
-
-    def __init__(self, 
-            agent_name,
-            message
->>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_process.py
+    def __init__(self,
+            agent_name: str,
+            query: Query
         ):
         """Agent Process
 
@@ -136,12 +112,8 @@ class AgentProcessFactory:
 
         self.agent_process_log_mode = agent_process_log_mode
 
-<<<<<<< HEAD:pyopenagi/agents/agent_process.py
     def activate_agent_process(self, agent_name, query):
-=======
-    def activate_agent_process(self, agent_name, message):
         """ run each agent and lock it """
->>>>>>> 00c34a4 (added readme files in each directory for source documentation):openagi/src/agents/agent_process.py
         if not self.terminate_signal.is_set():
            with self.current_agent_processes_lock:
                 agent_process = AgentProcess(
