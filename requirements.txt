@@ -1,7 +1,0 @@
-python-dotenv
-Requests
-Pympler==1.0.1
-click==8.1.7
-python-dotenv==1.0.0
-beautifulsoup4
-playwright
