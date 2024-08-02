@@ -1,4 +1,4 @@
-# openagi/src
+# pyopenagi
 
 The internal implementation for OpenAGI.
 

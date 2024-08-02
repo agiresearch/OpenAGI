@@ -1,4 +1,4 @@
-# openagi/src/utils
+# pyopenagi/utils
 
 Helper utils that are re-used in AIOS.
 
