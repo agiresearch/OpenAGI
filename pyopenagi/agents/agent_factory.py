@@ -23,15 +23,6 @@ class AgentFactory:
 
         self.agent_process_factory = agent_process_factory
 
-        # manually add the built in agents to run
-        self.agent_table = {
-            "MathAgent": MathAgent,
-            "AcademicAgent": AcademicAgent,
-            "RecAgent": RecAgent,
-            "TravelAgent": TravelAgent,
-            "RAGAgent": RAGAgent,
-            "CreationAgent": CreationAgent
-        }
 
         # added to with index aid
         self.current_agents = {}
