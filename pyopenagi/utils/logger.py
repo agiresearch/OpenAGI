@@ -1,3 +1,6 @@
+# contains tools for logging actions
+# the thread scheduler, agents, and the LLM kernel of AIOS are all loggable here
+
 import click
 
 import os
@@ -34,6 +37,8 @@ class BaseLogger:
             w.writelines(content)
 
 class SchedulerLogger(BaseLogger):
+    """ log the threads """
+
     def __init__(self, logger_name, log_mode="console") -> None:
         super().__init__(logger_name, log_mode)
         self.level_color = {
@@ -52,6 +57,8 @@ class SchedulerLogger(BaseLogger):
 
 
 class AgentLogger(BaseLogger):
+    """ log the agents """
+
     def __init__(self, logger_name, log_mode="console") -> None:
         super().__init__(logger_name, log_mode)
         self.level_color = {
@@ -71,6 +78,8 @@ class AgentLogger(BaseLogger):
 
 
 class LLMKernelLogger(BaseLogger):
+    """ log the LLM kernel """
+
     def __init__(self, logger_name, log_mode="console") -> None:
         super().__init__(logger_name, log_mode)
         self.level_color = {
