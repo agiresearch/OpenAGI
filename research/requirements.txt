@@ -11,7 +11,7 @@ lpips==0.1.4
 matplotlib==3.6.3
 natsort==8.2.0
 numpy==1.23.5
-opencv_python==4.7.0.68
+opencv_python==4.8.1.78
 Pillow==9.5.0
 PyYAML==6.0
 requests==2.32.2
