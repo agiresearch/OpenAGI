@@ -1,6 +1,0 @@
-torch
-skimage
-numpy
-matplotlib
-argparse
-PIL
