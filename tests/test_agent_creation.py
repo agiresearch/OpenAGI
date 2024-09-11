@@ -1,6 +1,7 @@
+# make sure we can create agents
+
 from pyopenagi.agents.agent_process import AgentProcess
 from pyopenagi.utils.chat_template import Query
-import pytest
 
 def test_agent_creation():
     agent_process = AgentProcess(

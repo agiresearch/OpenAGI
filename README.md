@@ -48,12 +48,12 @@ If you want to look at implementations of other agents that others have develope
 python pyopenagi/agents/interact.py --mode download --agent <author_name/agent_name>
 ```
 
-
 ## 🚀 Contributions
+
 For detailed information on how to contribute, see [CONTRIBUTE](./CONTRIBUTE.md). If you would like to contribute to the codebase, [issues](https://github.com/agiresearch/OpenAGI/issues) or [pull requests](https://github.com/agiresearch/OpenAGI/pulls) are always welcome!
 
 ## 🖋️ Research
-Please check out our [implementation](./research) for our research paper [OpenAGI: When LLM Meets Domain Experts](https://arxiv.org/abs/2304.04370).
+Please check out our [implementation](https://github.com/agiresearch/OpenAGI/tree/research) for our research paper [OpenAGI: When LLM Meets Domain Experts](https://arxiv.org/abs/2304.04370).
 
 ```
 @article{openagi,
