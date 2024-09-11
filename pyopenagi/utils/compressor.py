@@ -1,6 +1,3 @@
-# uses zlibrary to compress data 
-# same as util in AIOS
-
 import zlib
 
 class Compressor:

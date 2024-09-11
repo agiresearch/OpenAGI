@@ -1,6 +1,3 @@
-# stub implementation for agents
-# defines a class standard each agent has to subclass
-
 import os
 
 import json
@@ -19,11 +16,9 @@ from ..utils.chat_template import Query
 
 import importlib
 
-from ..queues.llm_request_queue import LLMRequestQueue
+from aios.hooks.stores._global import global_llm_req_queue_add_message
 
 class CustomizedThread(Thread):
-    """ provides a specific agent runtime """
-
     def __init__(self, target, args=()):
         super().__init__()
         self.target = target
@@ -31,15 +26,9 @@ class CustomizedThread(Thread):
         self.result = None
 
     def run(self):
-        """
-        instead of creating a Thread, it'll run a function and hold the value
-        in BaseAgent, it's only usage, it creates a Thread and sets certain 
-        values for the AgentProcess to provide runtime diagnostics
-        """
         self.result = self.target(*self.args)
 
     def join(self):
-        """ returns the result from the custom Thread runtime """
         super().join()
         return self.result
 
@@ -139,6 +128,22 @@ class BaseAgent:
     def manual_workflow(self):
         pass
 
+    def check_path(self, tool_calls):
+        script_path = os.path.abspath(__file__)
+        save_dir = os.path.join(os.path.dirname(script_path), "output") # modify the customized output path for saving outputs
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for tool_call in tool_calls:
+            try:
+                for k in tool_call["parameters"]:
+                    if "path" in k:
+                        path = tool_call["parameters"][k]
+                        if not path.startswith(save_dir):
+                            tool_call["parameters"][k] = os.path.join(save_dir, os.path.basename(path))
+            except Exception:
+                continue
+        return tool_calls
+
     def snake_to_camel(self, snake_str):
         components = snake_str.split('_')
         return ''.join(x.title() for x in components)
@@ -173,10 +178,6 @@ class BaseAgent:
         return logger
 
     def load_config(self):
-        """  
-        loads each agent config with the values in the json
-        such as the system prompt, functions 
-        """
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         config_file = os.path.join(script_dir, self.agent_name, "config.json")
@@ -189,16 +190,14 @@ class BaseAgent:
             query,
             temperature=0.0
         ):
-        """ value of the agent """
+
         thread = CustomizedThread(target=self.query_loop, args=(query, ))
         thread.start()
         return thread.join()
 
     def query_loop(self, query):
-        """ custom function for the CustomizedThread """
         agent_process = self.create_agent_request(query)
 
-        # because it might have to run multiple times
         completed_response, start_times, end_times, waiting_times, turnaround_times = "", [], [], [], []
 
         while agent_process.get_status() != "done":
@@ -207,7 +206,10 @@ class BaseAgent:
             # reinitialize agent status
             agent_process.set_created_time(current_time)
             agent_process.set_response(None)
-            LLMRequestQueue.add_message(agent_process)
+
+            global_llm_req_queue_add_message(agent_process)
+
+            # LLMRequestQueue.add_message(agent_process)
 
             thread.start()
             thread.join()
@@ -218,8 +220,6 @@ class BaseAgent:
                     f"Suspended due to the reach of time limit ({agent_process.get_time_limit()}s). Current result is: {completed_response.response_message}\n",
                     level="suspending"
                 )
-
-            # data from the AgentProcess temporarily held
             start_time = agent_process.get_start_time()
             end_time = agent_process.get_end_time()
             waiting_time = start_time - agent_process.get_created_time()
@@ -236,7 +236,6 @@ class BaseAgent:
         return completed_response, start_times, end_times, waiting_times, turnaround_times
 
     def create_agent_request(self, query):
-        """ uses AgentFactory to initialize the agent in the pool """
         agent_process = self.agent_process_factory.activate_agent_process(
             agent_name = self.agent_name,
             query = query
@@ -258,14 +257,6 @@ class BaseAgent:
             time.sleep(0.2)
 
         return agent_process.get_response()
-
-    def parse_result(self, prompt):
-        """ each agent has their own parser """
-        pass
-
-    #######################
-    # getters and setters #
-    #######################
 
     def set_aid(self, aid):
         self.aid = aid

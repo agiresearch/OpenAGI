@@ -1,5 +1,3 @@
-# make a queue for agents to use
-
 import queue
 
 class BaseQueue:
