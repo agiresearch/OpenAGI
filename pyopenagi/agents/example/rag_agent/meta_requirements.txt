@@ -1,0 +1,5 @@
+langchain_core==0.2.1
+llama_index==0.10.39
+llama_index.embeddings.huggingface==0.2.0
+llama-index-vector-stores-chroma==0.1.8
+chromadb==0.5.0
